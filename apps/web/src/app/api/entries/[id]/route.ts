@@ -24,7 +24,6 @@ export async function GET(
           dueDate: true,
           priority: true,
           status: true,
-          goalId: true,
           entryId: true,
           createdAt: true,
         },
