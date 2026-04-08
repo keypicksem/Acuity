@@ -6,29 +6,39 @@ import { prisma } from "@/lib/prisma";
 import { RecordButton } from "./record-button";
 import { EntryCard } from "./entry-card";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/auth/signin");
 
   const userId = session.user.id;
 
-  const [entries, tasks, goals] = await Promise.all([
-    prisma.entry.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      take: 7,
-    }),
-    prisma.task.findMany({
-      where: { userId, status: { in: ["TODO", "IN_PROGRESS"] } },
-      orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
-      take: 10,
-    }),
-    prisma.goal.findMany({
-      where: { userId, status: "ACTIVE" },
-      orderBy: { createdAt: "desc" },
-      take: 5,
-    }),
-  ]);
+  let entries: Awaited<ReturnType<typeof prisma.entry.findMany>> = [];
+  let tasks: Awaited<ReturnType<typeof prisma.task.findMany>> = [];
+  let goals: Awaited<ReturnType<typeof prisma.goal.findMany>> = [];
+
+  try {
+    [entries, tasks, goals] = await Promise.all([
+      prisma.entry.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        take: 7,
+      }),
+      prisma.task.findMany({
+        where: { userId, status: { in: ["TODO", "IN_PROGRESS"] } },
+        orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
+        take: 10,
+      }),
+      prisma.goal.findMany({
+        where: { userId, status: "ACTIVE" },
+        orderBy: { createdAt: "desc" },
+        take: 5,
+      }),
+    ]);
+  } catch (err) {
+    console.error("[dashboard] Failed to load data:", err);
+  }
 
   const greeting = getGreeting(session.user.name);
 
