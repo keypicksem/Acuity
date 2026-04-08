@@ -19,7 +19,6 @@ import { getServerSession } from "next-auth";
 import { NextRequest, NextResponse } from "next/server";
 
 import { getAuthOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { extractFromTranscript, transcribeAudio } from "@/lib/pipeline";
 import {
   MAX_AUDIO_BYTES,
@@ -121,6 +120,7 @@ export async function POST(req: NextRequest) {
   }
 
   // ── 6. Persist ─────────────────────────────────────────────────────────────
+  const { prisma } = await import("@/lib/prisma");
   const { entryId, tasksCreated } = await prisma.$transaction(async (tx) => {
     // Create the Entry
     const entry = await tx.entry.create({

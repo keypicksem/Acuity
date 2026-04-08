@@ -4,6 +4,14 @@ import { getAuthOptions } from "@/lib/auth";
 
 export const dynamic = "force-dynamic";
 
-const handler = NextAuth(getAuthOptions());
+// Lazily create the handler so getAuthOptions() (and prisma) are never
+// instantiated at module load time during the Next.js build phase.
+let _handler: ReturnType<typeof NextAuth> | undefined;
+function getHandler() {
+  return (_handler ??= NextAuth(getAuthOptions()));
+}
 
-export { handler as GET, handler as POST };
+export function GET(...args: Parameters<ReturnType<typeof NextAuth>>) {
+  return getHandler()(...args);
+}
+export const POST = GET;
