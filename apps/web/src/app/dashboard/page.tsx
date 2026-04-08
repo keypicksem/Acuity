@@ -1,8 +1,8 @@
+import type { Entry, Task, Goal } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
 import { authOptions } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
 import { RecordButton } from "./record-button";
 import { EntryCard } from "./entry-card";
 
@@ -14,11 +14,12 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  let entries: Awaited<ReturnType<typeof prisma.entry.findMany>> = [];
-  let tasks: Awaited<ReturnType<typeof prisma.task.findMany>> = [];
-  let goals: Awaited<ReturnType<typeof prisma.goal.findMany>> = [];
+  let entries: Entry[] = [];
+  let tasks: Task[] = [];
+  let goals: Goal[] = [];
 
   try {
+    const { prisma } = await import("@/lib/prisma");
     [entries, tasks, goals] = await Promise.all([
       prisma.entry.findMany({
         where: { userId },
@@ -122,7 +123,7 @@ export default async function DashboardPage() {
                       className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3"
                     >
                       <p className="text-sm text-zinc-100 leading-snug">
-                        {t.title}
+                        {t.title ?? t.text}
                       </p>
                       <p className="mt-1 text-xs text-zinc-500">
                         {t.priority} · {t.status.replace("_", " ")}

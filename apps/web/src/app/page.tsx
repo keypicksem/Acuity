@@ -2,10 +2,10 @@ import Link from "next/link";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic";
-
 import { authOptions } from "@/lib/auth";
 import { APP_NAME, APP_TAGLINE } from "@acuity/shared";
+
+export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
   const session = await getServerSession(authOptions);
