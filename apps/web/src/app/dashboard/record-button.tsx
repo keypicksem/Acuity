@@ -3,114 +3,342 @@
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 
-type RecordState = "idle" | "recording" | "processing" | "done" | "error";
+import {
+  MOOD_EMOJI,
+  MOOD_LABELS,
+  PRIORITY_COLOR,
+  type ExtractionResult,
+  type RecordResponse,
+} from "@acuity/shared";
+
+type Phase =
+  | "idle"
+  | "recording"
+  | "uploading"
+  | "transcribing"
+  | "extracting"
+  | "done"
+  | "error";
+
+const MAX_SECONDS = 120;
+
+const PHASE_LABEL: Partial<Record<Phase, string>> = {
+  uploading: "Uploading audio…",
+  transcribing: "Transcribing with Whisper…",
+  extracting: "Extracting insights with Claude…",
+};
 
 export function RecordButton() {
   const router = useRouter();
-  const [state, setState] = useState<RecordState>("idle");
+  const [phase, setPhase] = useState<Phase>("idle");
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [result, setResult] = useState<RecordResponse | null>(null);
 
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const startTimeRef = useRef<number>(0);
+  const startTimeRef = useRef(0);
+
+  // ── Start / Stop ─────────────────────────────────────────────────────────
 
   const startRecording = async () => {
     setError(null);
+    setResult(null);
     setElapsed(0);
     chunksRef.current = [];
 
-    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    const mr = new MediaRecorder(stream, { mimeType: bestMimeType() });
-    mediaRecorderRef.current = mr;
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mr = new MediaRecorder(stream, { mimeType: bestMimeType() });
+      mediaRecorderRef.current = mr;
 
-    mr.ondataavailable = (e) => {
-      if (e.data.size > 0) chunksRef.current.push(e.data);
-    };
+      mr.ondataavailable = (e) => {
+        if (e.data.size > 0) chunksRef.current.push(e.data);
+      };
 
-    mr.onstop = async () => {
-      stream.getTracks().forEach((t) => t.stop());
-      if (timerRef.current) clearInterval(timerRef.current);
+      mr.onstop = () => {
+        stream.getTracks().forEach((t) => t.stop());
+        if (timerRef.current) clearInterval(timerRef.current);
+        const blob = new Blob(chunksRef.current, { type: mr.mimeType });
+        const duration = Math.round((Date.now() - startTimeRef.current) / 1000);
+        upload(blob, duration, mr.mimeType);
+      };
 
-      const blob = new Blob(chunksRef.current, { type: mr.mimeType });
-      const duration = Math.round((Date.now() - startTimeRef.current) / 1000);
+      mr.start(1000);
+      startTimeRef.current = Date.now();
+      setPhase("recording");
 
-      setState("processing");
-
-      const fd = new FormData();
-      fd.append("audio", blob, `recording.${extFromMime(mr.mimeType)}`);
-      fd.append("durationSeconds", String(duration));
-
-      try {
-        const res = await fetch("/api/record", { method: "POST", body: fd });
-        if (!res.ok) {
-          const body = await res.json().catch(() => ({}));
-          throw new Error(body.error ?? `HTTP ${res.status}`);
-        }
-        setState("done");
-        router.refresh();
-      } catch (err) {
-        setError(err instanceof Error ? err.message : "Upload failed");
-        setState("error");
-      }
-    };
-
-    mr.start(1000); // collect every second
-    startTimeRef.current = Date.now();
-    setState("recording");
-
-    timerRef.current = setInterval(() => {
-      setElapsed(Math.round((Date.now() - startTimeRef.current) / 1000));
-    }, 1000);
+      timerRef.current = setInterval(() => {
+        const secs = Math.round((Date.now() - startTimeRef.current) / 1000);
+        setElapsed(secs);
+        if (secs >= MAX_SECONDS) stopRecording();
+      }, 500);
+    } catch {
+      setError("Microphone access denied. Check your browser permissions.");
+      setPhase("error");
+    }
   };
 
   const stopRecording = () => {
     mediaRecorderRef.current?.stop();
   };
 
-  const handleClick = async () => {
-    if (state === "recording") {
-      stopRecording();
-    } else if (state === "idle" || state === "done" || state === "error") {
-      await startRecording();
+  // ── Upload + process ─────────────────────────────────────────────────────
+
+  const upload = async (blob: Blob, duration: number, mime: string) => {
+    setPhase("uploading");
+
+    const fd = new FormData();
+    fd.append("audio", blob, `recording.${extFromMime(mime)}`);
+    fd.append("durationSeconds", String(duration));
+
+    // Simulate phased progress — the server does upload+transcribe+extract
+    // sequentially, so we advance the label on timers as a best-effort UX.
+    const t1 = setTimeout(() => setPhase("transcribing"), 2000);
+    const t2 = setTimeout(() => setPhase("extracting"), 8000);
+
+    try {
+      const res = await fetch("/api/record", { method: "POST", body: fd });
+      clearTimeout(t1);
+      clearTimeout(t2);
+
+      const body = await res.json();
+
+      if (!res.ok) {
+        throw new Error(body.error ?? `HTTP ${res.status}`);
+      }
+
+      setResult(body as RecordResponse);
+      setPhase("done");
+      router.refresh(); // refresh server components to show the new entry
+    } catch (err) {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      setError(err instanceof Error ? err.message : "Upload failed");
+      setPhase("error");
     }
   };
 
-  const label = {
-    idle: "Start recording",
-    recording: `Stop  ${formatTime(elapsed)}`,
-    processing: "Processing…",
-    done: "Record again",
-    error: "Try again",
-  }[state];
+  // ── Click handler ────────────────────────────────────────────────────────
 
-  const isDisabled = state === "processing";
+  const handleClick = async () => {
+    if (phase === "recording") return stopRecording();
+    if (["idle", "done", "error"].includes(phase)) return startRecording();
+  };
+
+  const isProcessing = ["uploading", "transcribing", "extracting"].includes(
+    phase
+  );
+  const progressPercent =
+    phase === "uploading" ? 20 : phase === "transcribing" ? 55 : phase === "extracting" ? 85 : 0;
+
+  // ── Render ───────────────────────────────────────────────────────────────
 
   return (
-    <div className="flex flex-col items-end gap-2">
-      <button
-        onClick={handleClick}
-        disabled={isDisabled}
-        className={`flex items-center gap-2.5 rounded-xl px-5 py-3 text-sm font-semibold transition ${
-          state === "recording"
-            ? "bg-red-600 hover:bg-red-500 text-white recording-indicator"
-            : "bg-gradient-to-r from-violet-600 to-indigo-600 text-white hover:opacity-90"
-        } disabled:opacity-50`}
-      >
-        {state === "recording" ? (
-          <span className="h-2 w-2 rounded-full bg-white" />
-        ) : (
-          <MicIcon />
-        )}
-        {label}
-      </button>
-      {error && (
-        <p className="text-xs text-red-400">{error}</p>
+    <div className="w-full">
+      {/* ── Record / Processing UI ──────────────────────────────────── */}
+      <div className="flex flex-col items-center gap-5 rounded-2xl border border-zinc-800 bg-zinc-900/60 px-6 py-8 backdrop-blur">
+        {/* Mic button */}
+        <button
+          onClick={handleClick}
+          disabled={isProcessing}
+          aria-label={phase === "recording" ? "Stop recording" : "Start recording"}
+          className={`relative flex h-20 w-20 items-center justify-center rounded-full transition-all
+            ${phase === "recording"
+              ? "bg-red-600 hover:bg-red-500 scale-110"
+              : isProcessing
+                ? "bg-zinc-700 cursor-wait"
+                : "bg-gradient-to-br from-violet-600 to-indigo-600 hover:scale-105 active:scale-95"
+            }
+          `}
+        >
+          {/* Pulsing ring while recording */}
+          {phase === "recording" && (
+            <>
+              <span className="absolute inset-0 rounded-full bg-red-600 animate-ping opacity-30" />
+              <span className="absolute -inset-1 rounded-full border-2 border-red-500 animate-pulse" />
+            </>
+          )}
+
+          {phase === "recording" ? (
+            <span className="h-7 w-7 rounded-md bg-white" />
+          ) : isProcessing ? (
+            <Spinner />
+          ) : (
+            <MicIcon size={32} />
+          )}
+        </button>
+
+        {/* Label / timer */}
+        {phase === "recording" ? (
+          <div className="text-center">
+            <p className="text-2xl font-mono font-semibold text-zinc-100 tabular-nums">
+              {formatTime(elapsed)}
+            </p>
+            <p className="text-xs text-zinc-500 mt-1">
+              Tap to stop · {MAX_SECONDS - elapsed}s remaining
+            </p>
+          </div>
+        ) : isProcessing ? (
+          <div className="w-full max-w-xs text-center space-y-3">
+            <p className="text-sm text-zinc-300">
+              {PHASE_LABEL[phase]}
+            </p>
+            {/* Progress bar */}
+            <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-violet-500 transition-all duration-1000 ease-out"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
+        ) : phase === "idle" ? (
+          <div className="text-center">
+            <p className="text-sm font-medium text-zinc-200">
+              Start your brain dump
+            </p>
+            <p className="text-xs text-zinc-500 mt-0.5">
+              Up to {MAX_SECONDS / 60} minutes · webm audio
+            </p>
+          </div>
+        ) : phase === "error" ? (
+          <div className="text-center">
+            <p className="text-sm text-red-400">{error}</p>
+            <p className="text-xs text-zinc-500 mt-1">Tap the mic to try again</p>
+          </div>
+        ) : null}
+      </div>
+
+      {/* ── Result card ─────────────────────────────────────────────── */}
+      {phase === "done" && result && (
+        <ResultCard
+          extraction={result.extraction}
+          tasksCreated={result.tasksCreated}
+          onRecordAgain={() => {
+            setResult(null);
+            setPhase("idle");
+          }}
+        />
       )}
     </div>
   );
 }
+
+// ─── Result card ─────────────────────────────────────────────────────────────
+
+function ResultCard({
+  extraction,
+  tasksCreated,
+  onRecordAgain,
+}: {
+  extraction: ExtractionResult;
+  tasksCreated: number;
+  onRecordAgain: () => void;
+}) {
+  const mood = extraction.mood;
+
+  return (
+    <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+      {/* Header */}
+      <div className="px-5 pt-5 pb-4 flex items-start justify-between gap-4">
+        <div className="flex-1">
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-lg">{MOOD_EMOJI[mood]}</span>
+            <span className="text-sm font-medium text-zinc-200">
+              {MOOD_LABELS[mood]}
+            </span>
+            <span className="text-xs text-zinc-500">
+              · Energy {extraction.energy}/10
+            </span>
+          </div>
+          <p className="text-sm text-zinc-300 leading-relaxed">
+            {extraction.summary}
+          </p>
+        </div>
+        <span className="shrink-0 rounded-full bg-green-900/40 border border-green-800 px-2.5 py-0.5 text-xs font-medium text-green-400">
+          Done
+        </span>
+      </div>
+
+      {/* Themes */}
+      {extraction.themes.length > 0 && (
+        <div className="px-5 pb-3 flex flex-wrap gap-1.5">
+          {extraction.themes.map((t) => (
+            <span
+              key={t}
+              className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400"
+            >
+              {t}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Tasks */}
+      {extraction.tasks.length > 0 && (
+        <div className="border-t border-zinc-800 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-2.5">
+            Extracted tasks ({tasksCreated})
+          </p>
+          <div className="space-y-2">
+            {extraction.tasks.map((t, i) => (
+              <div
+                key={i}
+                className="flex items-start gap-2.5 rounded-lg bg-zinc-800/50 px-3 py-2.5"
+              >
+                <span
+                  className="mt-0.5 h-2 w-2 shrink-0 rounded-full"
+                  style={{ backgroundColor: PRIORITY_COLOR[t.priority] }}
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm text-zinc-200">{t.title}</p>
+                  {t.description && (
+                    <p className="text-xs text-zinc-500 mt-0.5">
+                      {t.description}
+                    </p>
+                  )}
+                </div>
+                <span className="shrink-0 text-xs text-zinc-500">
+                  {t.priority}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Insights */}
+      {extraction.insights.length > 0 && (
+        <div className="border-t border-zinc-800 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-2.5">
+            Insights
+          </p>
+          <ul className="space-y-1.5">
+            {extraction.insights.map((ins, i) => (
+              <li key={i} className="text-sm text-zinc-400 flex gap-2">
+                <span className="text-violet-400 shrink-0">→</span>
+                {ins}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="border-t border-zinc-800 px-5 py-3 flex justify-end">
+        <button
+          onClick={onRecordAgain}
+          className="text-sm text-violet-400 hover:text-violet-300 transition font-medium"
+        >
+          Record another session
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── Shared helpers ──────────────────────────────────────────────────────────
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -121,7 +349,12 @@ function formatTime(seconds: number): string {
 }
 
 function bestMimeType(): string {
-  const types = ["audio/webm;codecs=opus", "audio/webm", "audio/mp4", "audio/ogg"];
+  const types = [
+    "audio/webm;codecs=opus",
+    "audio/webm",
+    "audio/mp4",
+    "audio/ogg",
+  ];
   return types.find((t) => MediaRecorder.isTypeSupported(t)) ?? "";
 }
 
@@ -131,21 +364,46 @@ function extFromMime(mime: string): string {
   return "webm";
 }
 
-function MicIcon() {
+function MicIcon({ size = 16 }: { size?: number }) {
   return (
     <svg
-      width="16"
-      height="16"
+      width={size}
+      height={size}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
       strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
+      className="text-white"
     >
       <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
       <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
       <line x1="12" x2="12" y1="19" y2="22" />
+    </svg>
+  );
+}
+
+function Spinner() {
+  return (
+    <svg
+      className="h-7 w-7 animate-spin text-zinc-300"
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <circle
+        className="opacity-25"
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="3"
+      />
+      <path
+        className="opacity-75"
+        fill="currentColor"
+        d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+      />
     </svg>
   );
 }

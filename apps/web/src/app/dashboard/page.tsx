@@ -1,4 +1,4 @@
-import type { Entry, Task, Goal } from "@prisma/client";
+import type { Task, Goal } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
@@ -14,20 +14,17 @@ export default async function DashboardPage() {
 
   const userId = session.user.id;
 
-  let entries: Entry[] = [];
+  type EntryWithCount = Awaited<ReturnType<typeof fetchEntries>>[number];
+  let entries: EntryWithCount[] = [];
   let tasks: Task[] = [];
   let goals: Goal[] = [];
 
   try {
     const { prisma } = await import("@/lib/prisma");
     [entries, tasks, goals] = await Promise.all([
-      prisma.entry.findMany({
-        where: { userId },
-        orderBy: { createdAt: "desc" },
-        take: 7,
-      }),
+      fetchEntries(userId),
       prisma.task.findMany({
-        where: { userId, status: { in: ["TODO", "IN_PROGRESS"] } },
+        where: { userId, status: { in: ["TODO", "IN_PROGRESS", "OPEN"] } },
         orderBy: [{ priority: "desc" }, { createdAt: "desc" }],
         take: 10,
       }),
@@ -67,16 +64,18 @@ export default async function DashboardPage() {
       </nav>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
-        {/* Greeting + record */}
-        <div className="mb-10 flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-zinc-50">{greeting}</h1>
-            <p className="text-zinc-400 text-sm mt-1">
-              {entries.length === 0
-                ? "Record your first brain dump to get started."
-                : `${entries.length} session${entries.length === 1 ? "" : "s"} this week.`}
-            </p>
-          </div>
+        {/* Greeting */}
+        <div className="mb-8 text-center sm:text-left">
+          <h1 className="text-2xl font-bold text-zinc-50">{greeting}</h1>
+          <p className="text-zinc-400 text-sm mt-1">
+            {entries.length === 0
+              ? "Record your first brain dump to get started."
+              : `${entries.length} session${entries.length === 1 ? "" : "s"} this week.`}
+          </p>
+        </div>
+
+        {/* Record button — prominently centered */}
+        <div className="mb-12 mx-auto max-w-lg">
           <RecordButton />
         </div>
 
@@ -95,7 +94,11 @@ export default async function DashboardPage() {
             ) : (
               <div className="space-y-3">
                 {entries.map((e) => (
-                  <EntryCard key={e.id} entry={e} />
+                  <EntryCard
+                    key={e.id}
+                    entry={e}
+                    taskCount={e._count.tasks}
+                  />
                 ))}
               </div>
             )}
@@ -174,7 +177,21 @@ export default async function DashboardPage() {
   );
 }
 
-// ─── Sub-components ───────────────────────────────────────────────────────────
+// ─── Data fetching ───────────────────────────────────────────────────────────
+
+async function fetchEntries(userId: string) {
+  const { prisma } = await import("@/lib/prisma");
+  return prisma.entry.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    take: 7,
+    include: {
+      _count: { select: { tasks: true } },
+    },
+  });
+}
+
+// ─── Sub-components ──────────────────────────────────────────────────────────
 
 function EmptyState({
   icon,
@@ -191,7 +208,9 @@ function EmptyState({
     <div
       className={`rounded-xl border border-dashed border-zinc-800 text-center ${compact ? "px-4 py-5" : "px-6 py-10"}`}
     >
-      <div className={compact ? "text-2xl mb-1.5" : "text-3xl mb-2"}>{icon}</div>
+      <div className={compact ? "text-2xl mb-1.5" : "text-3xl mb-2"}>
+        {icon}
+      </div>
       <p className="text-sm font-medium text-zinc-400">{title}</p>
       <p className="mt-1 text-xs text-zinc-600">{description}</p>
     </div>

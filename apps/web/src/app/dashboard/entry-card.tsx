@@ -16,10 +16,12 @@ type EntryCardProps = {
     | "wins"
     | "blockers"
     | "createdAt"
+    | "status"
   >;
+  taskCount?: number;
 };
 
-export function EntryCard({ entry }: EntryCardProps) {
+export function EntryCard({ entry, taskCount }: EntryCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   const date = new Date(entry.createdAt).toLocaleDateString("en-US", {
@@ -29,6 +31,8 @@ export function EntryCard({ entry }: EntryCardProps) {
   });
 
   const moodKey = entry.mood as Mood | null;
+  const isFailed = entry.status === "FAILED";
+  const isProcessing = entry.status === "PROCESSING" || entry.status === "PENDING";
 
   return (
     <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden transition hover:border-zinc-700">
@@ -37,21 +41,36 @@ export function EntryCard({ entry }: EntryCardProps) {
         className="w-full text-left px-5 py-4 flex items-start justify-between gap-4"
       >
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 mb-1.5">
+          <div className="flex items-center gap-2 mb-1.5 flex-wrap">
             <span className="text-xs font-medium text-zinc-500">{date}</span>
             {moodKey && (
               <span className="text-xs text-zinc-400">
                 {MOOD_EMOJI[moodKey]} {MOOD_LABELS[moodKey]}
               </span>
             )}
-            {entry.energy !== null && (
+            {entry.energy !== null && entry.energy !== undefined && (
               <span className="text-xs text-zinc-500">
                 · Energy {entry.energy}/10
               </span>
             )}
+            {taskCount != null && taskCount > 0 && (
+              <span className="text-xs text-zinc-500">
+                · {taskCount} task{taskCount === 1 ? "" : "s"}
+              </span>
+            )}
+            {isFailed && (
+              <span className="rounded-full bg-red-900/40 border border-red-800 px-2 py-0.5 text-xs text-red-400">
+                Failed
+              </span>
+            )}
+            {isProcessing && (
+              <span className="rounded-full bg-yellow-900/30 border border-yellow-800/50 px-2 py-0.5 text-xs text-yellow-500">
+                Processing…
+              </span>
+            )}
           </div>
           <p className="text-sm text-zinc-200 leading-snug line-clamp-2">
-            {entry.summary ?? "No summary generated."}
+            {entry.summary ?? (isProcessing ? "Processing your brain dump…" : "No summary generated.")}
           </p>
           {entry.themes.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">
@@ -86,7 +105,9 @@ export function EntryCard({ entry }: EntryCardProps) {
           )}
           {entry.blockers.length > 0 && (
             <div>
-              <p className="text-xs font-medium text-red-400 mb-1.5">Blockers</p>
+              <p className="text-xs font-medium text-red-400 mb-1.5">
+                Blockers
+              </p>
               <ul className="space-y-1">
                 {entry.blockers.map((b, i) => (
                   <li key={i} className="text-sm text-zinc-300 flex gap-2">
