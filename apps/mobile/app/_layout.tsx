@@ -6,17 +6,30 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <StatusBar style="light" />
-      <Stack
-        screenOptions={{
-          headerStyle: { backgroundColor: "#09090B" },
-          headerTintColor: "#FAFAFA",
-          headerTitleStyle: { fontWeight: "600" },
-          contentStyle: { backgroundColor: "#09090B" },
-        }}
-      >
-        <Stack.Screen name="index" options={{ title: "Acuity" }} />
-        <Stack.Screen name="record" options={{ title: "Brain dump" }} />
-        <Stack.Screen name="entry/[id]" options={{ title: "Entry" }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="(auth)" />
+        <Stack.Screen
+          name="entry/[id]"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#09090B" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontWeight: "600" },
+            title: "Entry",
+          }}
+        />
+        <Stack.Screen
+          name="record"
+          options={{
+            headerShown: true,
+            headerStyle: { backgroundColor: "#09090B" },
+            headerTintColor: "#FAFAFA",
+            headerTitleStyle: { fontWeight: "600" },
+            title: "Brain dump",
+            presentation: "modal",
+          }}
+        />
       </Stack>
     </SafeAreaProvider>
   );
