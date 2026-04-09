@@ -60,9 +60,11 @@ export function RecordButton() {
       mr.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
         if (timerRef.current) clearInterval(timerRef.current);
-        const blob = new Blob(chunksRef.current, { type: mr.mimeType });
+        // Strip codec params (e.g. "audio/webm;codecs=opus" → "audio/webm")
+        const baseMime = mr.mimeType.split(";")[0] || "audio/webm";
+        const blob = new Blob(chunksRef.current, { type: baseMime });
         const duration = Math.round((Date.now() - startTimeRef.current) / 1000);
-        upload(blob, duration, mr.mimeType);
+        upload(blob, duration, baseMime);
       };
 
       mr.start(1000);

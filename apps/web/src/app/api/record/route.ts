@@ -55,14 +55,12 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const mimeType = audioFile.type || "audio/webm";
-  if (
-    !SUPPORTED_AUDIO_TYPES.includes(
-      mimeType as (typeof SUPPORTED_AUDIO_TYPES)[number]
-    )
-  ) {
+  // Strip codec params (e.g. "audio/webm;codecs=opus" → "audio/webm")
+  const rawMime = audioFile.type || "audio/webm";
+  const mimeType = rawMime.split(";")[0];
+  if (!mimeType.startsWith("audio/")) {
     return NextResponse.json(
-      { error: `Unsupported audio type: ${mimeType}` },
+      { error: `Unsupported audio type: ${rawMime}` },
       { status: 415 }
     );
   }
