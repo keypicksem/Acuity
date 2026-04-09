@@ -1,26 +1,342 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Text, View } from "react-native";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Pressable,
+  RefreshControl,
+  Text,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { PRIORITY_COLOR } from "@acuity/shared";
+import { api } from "@/lib/api";
+
+type Task = {
+  id: string;
+  title: string | null;
+  text: string | null;
+  description: string | null;
+  status: string;
+  priority: string;
+  dueDate: string | null;
+  snoozedUntil: string | null;
+  createdAt: string;
+  entry?: { entryDate: string } | null;
+};
+
+type Tab = "open" | "snoozed" | "completed";
+
 export default function TasksTab() {
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState<Tab>("open");
+  const [acting, setActing] = useState<Set<string>>(new Set());
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      const data = await api.get<{ tasks: Task[] }>("/api/tasks?all=1");
+      setTasks(data.tasks ?? []);
+    } catch {
+      // silent
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const act = useCallback(
+    async (id: string, action: string) => {
+      setActing((prev) => new Set(prev).add(id));
+      try {
+        await api.patch("/api/tasks", { id, action });
+        await fetchTasks();
+      } finally {
+        setActing((prev) => {
+          const next = new Set(prev);
+          next.delete(id);
+          return next;
+        });
+      }
+    },
+    [fetchTasks]
+  );
+
+  const now = Date.now();
+  const grouped = useMemo(() => {
+    const open: Task[] = [];
+    const snoozed: Task[] = [];
+    const completed: Task[] = [];
+    for (const t of tasks) {
+      if (t.status === "DONE") {
+        completed.push(t);
+      } else if (
+        t.status === "SNOOZED" &&
+        t.snoozedUntil &&
+        new Date(t.snoozedUntil).getTime() > now
+      ) {
+        snoozed.push(t);
+      } else {
+        open.push(t);
+      }
+    }
+    return { open, snoozed, completed };
+  }, [tasks, now]);
+
+  const current = grouped[activeTab];
+
+  const tabs: { key: Tab; label: string; count: number }[] = [
+    { key: "open", label: "Open", count: grouped.open.length },
+    { key: "snoozed", label: "Snoozed", count: grouped.snoozed.length },
+    { key: "completed", label: "Done", count: grouped.completed.length },
+  ];
+
+  if (loading) {
+    return (
+      <SafeAreaView className="flex-1 bg-zinc-950 items-center justify-center" edges={["top"]}>
+        <ActivityIndicator color="#7C3AED" />
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-zinc-950" edges={["top"]}>
+      {/* Header */}
       <View className="px-5 pt-4 pb-2">
-        <Text className="text-2xl font-bold text-zinc-50">Tasks</Text>
+        <View className="flex-row items-baseline gap-2">
+          <Text className="text-2xl font-bold text-zinc-50">Tasks</Text>
+          {grouped.open.length > 0 && (
+            <Text className="text-sm text-zinc-500">
+              {grouped.open.length} open
+            </Text>
+          )}
+        </View>
         <Text className="text-sm text-zinc-400 mt-1">
           Actions extracted from your sessions
         </Text>
       </View>
 
-      <View className="flex-1 items-center justify-center gap-3">
-        <Ionicons name="checkmark-done-outline" size={48} color="#52525B" />
-        <Text className="text-base font-semibold text-zinc-300">
-          No open tasks
-        </Text>
-        <Text className="text-sm text-zinc-500 text-center px-10">
-          Record a brain dump to extract tasks automatically.
-        </Text>
+      {/* Tabs */}
+      <View className="flex-row mx-5 mt-2 mb-3 rounded-xl bg-zinc-900 p-1">
+        {tabs.map((tab) => (
+          <Pressable
+            key={tab.key}
+            onPress={() => setActiveTab(tab.key)}
+            className={`flex-1 rounded-lg py-2 items-center ${
+              activeTab === tab.key ? "bg-zinc-800" : ""
+            }`}
+          >
+            <Text
+              className={`text-sm font-medium ${
+                activeTab === tab.key ? "text-zinc-50" : "text-zinc-500"
+              }`}
+            >
+              {tab.label}
+              {tab.count > 0 ? ` ${tab.count}` : ""}
+            </Text>
+          </Pressable>
+        ))}
       </View>
+
+      {/* Task list */}
+      <FlatList
+        data={current}
+        keyExtractor={(t) => t.id}
+        contentContainerStyle={{ padding: 20, paddingTop: 0, gap: 10 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#7C3AED"
+          />
+        }
+        ListEmptyComponent={
+          <EmptyState tab={activeTab} />
+        }
+        renderItem={({ item }) => (
+          <TaskCard
+            task={item}
+            tab={activeTab}
+            busy={acting.has(item.id)}
+            onAction={act}
+          />
+        )}
+      />
     </SafeAreaView>
+  );
+}
+
+function TaskCard({
+  task,
+  tab,
+  busy,
+  onAction,
+}: {
+  task: Task;
+  tab: Tab;
+  busy: boolean;
+  onAction: (id: string, action: string) => void;
+}) {
+  const label = task.title ?? task.text ?? "Untitled task";
+  const color = PRIORITY_COLOR[task.priority] ?? "#71717A";
+  const dueDate = task.dueDate
+    ? new Date(task.dueDate).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      })
+    : null;
+
+  return (
+    <View className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4">
+      <View className="flex-row items-start gap-3">
+        <View
+          className="mt-1.5 h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: color }}
+        />
+        <View className="flex-1">
+          <Text
+            className={`text-sm leading-snug ${
+              tab === "completed"
+                ? "text-zinc-500 line-through"
+                : "text-zinc-200"
+            }`}
+          >
+            {label}
+          </Text>
+          <View className="flex-row items-center gap-2 mt-1.5">
+            <View
+              className="rounded-full px-2 py-0.5"
+              style={{ backgroundColor: color + "20" }}
+            >
+              <Text style={{ color, fontSize: 11, fontWeight: "600" }}>
+                {task.priority}
+              </Text>
+            </View>
+            {dueDate && (
+              <Text className="text-xs text-amber-500">Due {dueDate}</Text>
+            )}
+          </View>
+        </View>
+      </View>
+
+      {/* Actions */}
+      <View className="flex-row justify-end gap-2 mt-3 pt-3 border-t border-zinc-800">
+        {tab === "open" && (
+          <>
+            <ActionButton
+              label="Complete"
+              icon="checkmark"
+              color="#22C55E"
+              busy={busy}
+              onPress={() => onAction(task.id, "complete")}
+            />
+            <ActionButton
+              label="Snooze"
+              icon="time-outline"
+              color="#60A5FA"
+              busy={busy}
+              onPress={() => onAction(task.id, "snooze")}
+            />
+            <ActionButton
+              label="Dismiss"
+              icon="close"
+              color="#71717A"
+              busy={busy}
+              onPress={() => onAction(task.id, "dismiss")}
+            />
+          </>
+        )}
+        {tab === "snoozed" && (
+          <ActionButton
+            label="Reopen"
+            icon="arrow-undo"
+            color="#7C3AED"
+            busy={busy}
+            onPress={() => onAction(task.id, "reopen")}
+          />
+        )}
+        {tab === "completed" && (
+          <ActionButton
+            label="Reopen"
+            icon="arrow-undo"
+            color="#7C3AED"
+            busy={busy}
+            onPress={() => onAction(task.id, "reopen")}
+          />
+        )}
+      </View>
+    </View>
+  );
+}
+
+function ActionButton({
+  label,
+  icon,
+  color,
+  busy,
+  onPress,
+}: {
+  label: string;
+  icon: React.ComponentProps<typeof Ionicons>["name"];
+  color: string;
+  busy: boolean;
+  onPress: () => void;
+}) {
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={busy}
+      className="flex-row items-center gap-1.5 rounded-lg px-3 py-1.5"
+      style={({ pressed }) => ({
+        backgroundColor: color + "15",
+        opacity: pressed || busy ? 0.5 : 1,
+      })}
+    >
+      <Ionicons name={icon} size={14} color={color} />
+      <Text style={{ color, fontSize: 12, fontWeight: "600" }}>{label}</Text>
+    </Pressable>
+  );
+}
+
+function EmptyState({ tab }: { tab: Tab }) {
+  const config = {
+    open: {
+      icon: "checkmark-done-outline" as const,
+      title: "No open tasks",
+      desc: "Record a brain dump to extract tasks automatically.",
+    },
+    snoozed: {
+      icon: "time-outline" as const,
+      title: "No snoozed tasks",
+      desc: "Snoozed tasks will appear here.",
+    },
+    completed: {
+      icon: "trophy-outline" as const,
+      title: "No completed tasks yet",
+      desc: "Complete a task and it will show up here.",
+    },
+  }[tab];
+
+  return (
+    <View className="mt-20 items-center">
+      <Ionicons name={config.icon} size={48} color="#52525B" />
+      <Text className="text-base font-semibold text-zinc-300 mt-3">
+        {config.title}
+      </Text>
+      <Text className="text-sm text-zinc-500 mt-1 text-center px-8">
+        {config.desc}
+      </Text>
+    </View>
   );
 }

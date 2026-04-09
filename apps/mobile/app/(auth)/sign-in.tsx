@@ -13,9 +13,11 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { api } from "@/lib/api";
+import { useAuth } from "@/contexts/auth-context";
 
 export default function SignInScreen() {
   const router = useRouter();
+  const { refresh } = useAuth();
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState<"google" | "email" | null>(null);
   const [emailSent, setEmailSent] = useState(false);
@@ -24,7 +26,11 @@ export default function SignInScreen() {
     setLoading("google");
     const webUrl = `${process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000"}/api/auth/signin/google`;
     await Linking.openURL(webUrl);
-    setLoading(null);
+    // After returning from browser, try to refresh session
+    setTimeout(async () => {
+      await refresh();
+      setLoading(null);
+    }, 2000);
   };
 
   const handleEmail = async () => {
@@ -91,7 +97,7 @@ export default function SignInScreen() {
           <Ionicons name="logo-google" size={18} color="#FAFAFA" />
         )}
         <Text className="text-sm font-medium text-zinc-100">
-          {loading === "google" ? "Opening…" : "Continue with Google"}
+          {loading === "google" ? "Opening..." : "Continue with Google"}
         </Text>
       </Pressable>
 
