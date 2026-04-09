@@ -30,6 +30,9 @@ export async function POST() {
         quantity: 1,
       },
     ],
+    subscription_data: {
+      trial_period_days: 7,
+    },
     success_url: `${process.env.NEXTAUTH_URL}/dashboard?upgraded=1`,
     cancel_url: `${process.env.NEXTAUTH_URL}/upgrade`,
     metadata: { userId: session.user.id },

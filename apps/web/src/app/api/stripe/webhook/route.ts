@@ -41,8 +41,45 @@ export async function POST(req: NextRequest) {
         where: { id: userId },
         data: {
           stripeCustomerId: session.customer as string,
+          stripeSubscriptionId: session.subscription as string,
           subscriptionStatus: "PRO",
         },
+      });
+      break;
+    }
+
+    case "invoice.payment_succeeded": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+      if (!customerId) break;
+
+      const sub = invoice.subscription as string | null;
+
+      await prisma.user.updateMany({
+        where: { stripeCustomerId: customerId },
+        data: {
+          subscriptionStatus: "PRO",
+          ...(sub ? { stripeSubscriptionId: sub } : {}),
+          ...(invoice.lines.data[0]?.period?.end
+            ? {
+                stripeCurrentPeriodEnd: new Date(
+                  invoice.lines.data[0].period.end * 1000
+                ),
+              }
+            : {}),
+        },
+      });
+      break;
+    }
+
+    case "invoice.payment_failed": {
+      const invoice = event.data.object as Stripe.Invoice;
+      const customerId = invoice.customer as string;
+      if (!customerId) break;
+
+      await prisma.user.updateMany({
+        where: { stripeCustomerId: customerId },
+        data: { subscriptionStatus: "PAST_DUE" },
       });
       break;
     }
@@ -51,13 +88,16 @@ export async function POST(req: NextRequest) {
       const sub = event.data.object as Stripe.Subscription;
       await prisma.user.updateMany({
         where: { stripeCustomerId: sub.customer as string },
-        data: { subscriptionStatus: "FREE" },
+        data: {
+          subscriptionStatus: "FREE",
+          stripeSubscriptionId: null,
+          stripeCurrentPeriodEnd: null,
+        },
       });
       break;
     }
 
     default:
-      // Unhandled event — return 200 so Stripe doesn't retry
       break;
   }
 

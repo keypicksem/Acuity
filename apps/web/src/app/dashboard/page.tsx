@@ -42,27 +42,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-zinc-950">
-      {/* Top nav */}
-      <nav className="border-b border-zinc-800 px-6 py-4">
-        <div className="mx-auto flex max-w-5xl items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-sm">
-              ✦
-            </div>
-            <span className="font-semibold text-zinc-100">Acuity</span>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="text-sm text-zinc-400">{session.user.email}</span>
-            <a
-              href="/api/auth/signout"
-              className="text-sm text-zinc-500 hover:text-zinc-300 transition"
-            >
-              Sign out
-            </a>
-          </div>
-        </div>
-      </nav>
-
       <main className="mx-auto max-w-5xl px-6 py-10">
         {/* Greeting */}
         <div className="mb-8 text-center sm:text-left">
