@@ -746,8 +746,7 @@ export function LandingPage() {
 
               <Reveal delay={2}>
                 <p className="mt-6 text-lg text-zinc-500 leading-relaxed max-w-md">
-                  Speak for 60 seconds. AI extracts your tasks, goals, mood, and
-                  weekly insights — automatically.
+                  The daily debrief that turns chaos into clarity. Decode your mental patterns.
                 </p>
               </Reveal>
 
@@ -904,74 +903,6 @@ export function LandingPage() {
                 <div className="mt-1 text-sm text-zinc-500">{stat.label}</div>
               </Reveal>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ───── COMPARISON TABLE + ANIMATED COST LINES ───── */}
-      <section className="px-6 py-24 sm:py-32">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
-            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-5xl">
-              Why $19/month is a no-brainer
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-center text-zinc-500 text-lg">
-              Compare Acuity to the alternatives.
-            </p>
-          </Reveal>
-
-          <Reveal delay={1}>
-            <div className="mt-16 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
-              {/* Table header */}
-              <div className="grid grid-cols-12 gap-4 border-b border-zinc-100 bg-zinc-50 px-6 py-4">
-                <div className="col-span-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                  Alternative
-                </div>
-                <div className="col-span-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                  Cost
-                </div>
-                <div className="col-span-6 text-xs font-semibold uppercase tracking-widest text-zinc-400">
-                  What&apos;s missing
-                </div>
-              </div>
-
-              {/* Rows */}
-              {comparisons.map((row, i) => (
-                <Reveal key={row.alt} delay={Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}>
-                  <div className="grid grid-cols-12 gap-4 border-b border-zinc-100 px-6 py-5 transition-colors duration-200 hover:bg-zinc-50 last:border-b-0">
-                    <div className="col-span-3 text-sm font-medium text-zinc-900">
-                      {row.alt}
-                    </div>
-                    <div className="col-span-3 text-sm text-zinc-500">
-                      {row.cost}
-                    </div>
-                    <div className="col-span-6 text-sm text-zinc-500">
-                      {row.missing}
-                    </div>
-                  </div>
-                </Reveal>
-              ))}
-
-              {/* Acuity row — highlighted */}
-              <Reveal delay={5}>
-                <div className="grid grid-cols-12 gap-4 bg-zinc-900 px-6 py-5">
-                  <div className="col-span-3 text-sm font-semibold text-white flex items-center gap-2">
-                    <span>✦</span> Acuity
-                  </div>
-                  <div className="col-span-3 text-sm font-semibold text-white">
-                    $19/month
-                  </div>
-                  <div className="col-span-6 text-sm text-zinc-300">
-                    Nothing. Voice in, tasks + goals + mood + insights out.
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-          </Reveal>
-
-          {/* Animated cost comparison lines */}
-          <div className="mt-16 space-y-6">
-            <CostComparison />
           </div>
         </div>
       </section>
