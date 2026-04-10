@@ -8,6 +8,7 @@ import {
   Reveal,
   PulsingCTA,
   UrgencyBadge,
+  MidPageCTA,
   HowItWorksSection,
   ReportPreview,
   RevealCards,
@@ -54,7 +55,7 @@ export default function WeeklyReportPage() {
           </Reveal>
           <Reveal delay={3}>
             <div className="mt-6">
-              <UrgencyBadge />
+              <UrgencyBadge text="What would you learn about yourself from 4 weekly reports?" />
             </div>
           </Reveal>
         </div>
@@ -203,6 +204,13 @@ export default function WeeklyReportPage() {
           />
         </div>
       </section>
+
+      {/* ───── MID-PAGE CTA ───── */}
+      <MidPageCTA
+        headline="What story will your first weekly report tell about you?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
 
       {/* ───── COMPOUNDING VALUE ───── */}
       <section className="px-6 py-24 sm:py-32">

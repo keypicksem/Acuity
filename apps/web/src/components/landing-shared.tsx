@@ -1208,12 +1208,54 @@ export function SolutionSection({
    Urgency badge
    ═══════════════════════════════════════════ */
 
-export function UrgencyBadge() {
+export function UrgencyBadge({ text }: { text: string }) {
   return (
     <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-700">
       <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-      Sign up for the waitlist &mdash; get your first month free
+      {text}
     </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Mid-page CTA section
+   ═══════════════════════════════════════════ */
+
+export function MidPageCTA({
+  headline,
+  subheadline,
+  utmCampaign,
+}: {
+  headline: string;
+  subheadline?: string;
+  utmCampaign: string;
+}) {
+  const signinUrl = `/auth/signin?utm_source=paid&utm_campaign=${utmCampaign}`;
+
+  return (
+    <section className="px-6 py-16">
+      <Reveal>
+        <div className="mx-auto max-w-xl text-center">
+          {headline && (
+            <p className="text-lg sm:text-xl font-semibold text-zinc-700 mb-6">
+              {headline}
+            </p>
+          )}
+          <Link
+            href={signinUrl}
+            className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
+          >
+            Sign Up for the Waitlist &mdash; Get Your First Month Free
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+          {subheadline && (
+            <p className="mt-3 text-sm text-zinc-400">{subheadline}</p>
+          )}
+        </div>
+      </Reveal>
+    </section>
   );
 }
 

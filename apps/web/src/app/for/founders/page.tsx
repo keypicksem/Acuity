@@ -8,6 +8,7 @@ import {
   Reveal,
   PulsingCTA,
   UrgencyBadge,
+  MidPageCTA,
   PainSection,
   HowItWorksSection,
   ComparisonTable,
@@ -55,7 +56,7 @@ export default function FoundersPage() {
           </Reveal>
           <Reveal delay={3}>
             <div className="mt-6">
-              <UrgencyBadge />
+              <UrgencyBadge text="What decisions are you avoiding that a debrief would surface?" />
             </div>
           </Reveal>
         </div>
@@ -165,6 +166,13 @@ export default function FoundersPage() {
         extractMood="Focused but running on fumes"
         reflectPattern="Decision quality drops on days with 5+ meetings. Best calls happen on mornings with deep work blocks."
         reflectActions={["Cap meetings at 4/day", "Protect Monday mornings", "Delegate investor updates"]}
+      />
+
+      {/* ───── MID-PAGE CTA ───── */}
+      <MidPageCTA
+        headline="What would your performance look like if you debriefed every night?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
       />
 
       {/* ───── WEEKLY PERFORMANCE REPORT ───── */}

@@ -8,6 +8,7 @@ import {
   Reveal,
   PulsingCTA,
   UrgencyBadge,
+  MidPageCTA,
   HowItWorksSection,
   RevealCards,
   LifeMatrixShowcase,
@@ -53,7 +54,7 @@ export default function DecodedPage() {
           </Reveal>
           <Reveal delay={3}>
             <div className="mt-6">
-              <UrgencyBadge />
+              <UrgencyBadge text="What pattern has been running your life without you knowing?" />
             </div>
           </Reveal>
         </div>
@@ -189,6 +190,13 @@ export default function DecodedPage() {
           />
         </div>
       </section>
+
+      {/* ───── MID-PAGE CTA ───── */}
+      <MidPageCTA
+        headline="What would you do differently if you could finally see your blind spots?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
 
       {/* ───── THE MOMENT ───── */}
       <section className="px-6 py-24 sm:py-32">

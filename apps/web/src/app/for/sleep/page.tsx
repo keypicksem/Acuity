@@ -8,6 +8,7 @@ import {
   Reveal,
   PulsingCTA,
   UrgencyBadge,
+  MidPageCTA,
   HowItWorksSection,
   BeforeAfterSection,
   StatsSection,
@@ -53,7 +54,7 @@ export default function SleepPage() {
           </Reveal>
           <Reveal delay={3}>
             <div className="mt-6">
-              <UrgencyBadge />
+              <UrgencyBadge text="What if falling asleep only took 60 seconds of talking?" />
             </div>
           </Reveal>
         </div>
@@ -131,6 +132,13 @@ export default function SleepPage() {
         extractMood="Tired but relieved after talking it out"
         reflectPattern="Sleep quality improves on nights you debrief before 10:30pm."
         reflectActions={["Debrief before 10:30pm", "Limit screen time after 9pm", "Morning walk on low-sleep days"]}
+      />
+
+      {/* ───── MID-PAGE CTA ───── */}
+      <MidPageCTA
+        headline="What if tonight was the last night you stared at the ceiling?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
       />
 
       {/* ───── BEFORE / AFTER ───── */}

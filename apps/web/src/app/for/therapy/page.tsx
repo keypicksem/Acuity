@@ -8,6 +8,7 @@ import {
   Reveal,
   PulsingCTA,
   UrgencyBadge,
+  MidPageCTA,
   PainSection,
   SolutionSection,
   HowItWorksSection,
@@ -55,7 +56,7 @@ export default function TherapyPage() {
           </Reveal>
           <Reveal delay={3}>
             <div className="mt-6">
-              <UrgencyBadge />
+              <UrgencyBadge text="What would change if you had emotional support every single night?" />
             </div>
           </Reveal>
         </div>
@@ -107,6 +108,13 @@ export default function TherapyPage() {
         extractMood="Anxious but hopeful"
         reflectPattern="Anxiety spikes on Sundays. Calm returns after Monday therapy sessions."
         reflectActions={["Discuss Sunday anxiety pattern", "Add wind-down ritual", "Track sleep vs mood"]}
+      />
+
+      {/* ───── MID-PAGE CTA ───── */}
+      <MidPageCTA
+        headline="What if your therapist could see your emotional data from the last 7 days?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
       />
 
       {/* ───── COMPARISON TABLE ───── */}
