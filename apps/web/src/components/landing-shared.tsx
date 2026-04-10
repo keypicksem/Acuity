@@ -1,0 +1,1113 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useRef, useState, useCallback } from "react";
+
+/* ═══════════════════════════════════════════
+   Scroll-reveal hook & component
+   ═══════════════════════════════════════════ */
+
+function useReveal() {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.classList.add("visible");
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.15 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+export function Reveal({
+  children,
+  className = "",
+  delay = 0,
+}: {
+  children: React.ReactNode;
+  className?: string;
+  delay?: number;
+}) {
+  const ref = useReveal();
+  return (
+    <div
+      ref={ref}
+      className={`reveal ${delay ? `reveal-delay-${delay}` : ""} ${className}`}
+    >
+      {children}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Animated counter
+   ═══════════════════════════════════════════ */
+
+export function AnimatedCounter({
+  target,
+  suffix = "",
+  prefix = "",
+  duration = 2000,
+}: {
+  target: number;
+  suffix?: string;
+  prefix?: string;
+  duration?: number;
+}) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStarted(true);
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  useEffect(() => {
+    if (!started) return;
+    const startTime = performance.now();
+    function step(now: number) {
+      const progress = Math.min((now - startTime) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }, [started, target, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}
+      {count.toLocaleString()}
+      {suffix}
+    </span>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Hero word-by-word fade in
+   ═══════════════════════════════════════════ */
+
+export function HeroHeadline({ text }: { text: string }) {
+  const words = text.split(" ");
+  const [visibleCount, setVisibleCount] = useState(0);
+  const ref = useRef<HTMLHeadingElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          words.forEach((_, i) => {
+            setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), i * 80);
+          });
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [words.length]);
+
+  return (
+    <h1
+      ref={ref}
+      className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl leading-[1.08]"
+    >
+      {words.map((word, i) => (
+        <span
+          key={i}
+          className="inline-block mr-[0.3em] transition-all duration-500"
+          style={{
+            opacity: i < visibleCount ? 1 : 0,
+            transform: i < visibleCount ? "translateY(0)" : "translateY(20px)",
+            transitionDelay: `${i * 60}ms`,
+          }}
+        >
+          {word}
+        </span>
+      ))}
+    </h1>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Parallax floating orbs (dark theme)
+   ═══════════════════════════════════════════ */
+
+export function ParallaxOrbs() {
+  const [mouse, setMouse] = useState({ x: 0, y: 0 });
+
+  const handleMove = useCallback((e: MouseEvent) => {
+    setMouse({
+      x: (e.clientX / window.innerWidth - 0.5) * 2,
+      y: (e.clientY / window.innerHeight - 0.5) * 2,
+    });
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, [handleMove]);
+
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+      <div
+        className="absolute top-20 left-[15%] h-[400px] w-[400px] rounded-full bg-violet-600/10 blur-[120px] animate-blob-drift"
+        style={{
+          transform: `translate(${mouse.x * 15}px, ${mouse.y * 15}px)`,
+          transition: "transform 0.3s ease-out",
+        }}
+      />
+      <div
+        className="absolute top-40 right-[10%] h-[350px] w-[350px] rounded-full bg-indigo-500/10 blur-[120px] animate-blob-drift-2"
+        style={{
+          transform: `translate(${mouse.x * -20}px, ${mouse.y * -20}px)`,
+          transition: "transform 0.3s ease-out",
+        }}
+      />
+      <div
+        className="absolute bottom-0 left-[40%] h-[300px] w-[300px] rounded-full bg-purple-500/8 blur-[120px] animate-blob-drift"
+        style={{
+          transform: `translate(${mouse.x * 10}px, ${mouse.y * -10}px)`,
+          transition: "transform 0.3s ease-out",
+        }}
+      />
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Pulsing CTA button
+   ═══════════════════════════════════════════ */
+
+export function PulsingCTA({
+  href,
+  children,
+  className = "",
+}: {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={`relative inline-flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-violet-500 hover:shadow-xl hover:shadow-violet-600/25 hover:-translate-y-0.5 active:scale-95 ${className}`}
+    >
+      <span className="absolute inset-0 rounded-xl bg-violet-500/50 animate-pulse-ring" />
+      <span className="relative z-10 flex items-center gap-2">{children}</span>
+    </Link>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Landing nav bar
+   ═══════════════════════════════════════════ */
+
+export function LandingNav() {
+  return (
+    <nav className="fixed top-0 inset-x-0 z-50 bg-[#FAFAF7]/80 backdrop-blur-md border-b border-zinc-200/60">
+      <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
+        <div className="flex items-center gap-8">
+          <Link href="/" className="flex items-center gap-2 group">
+            <span className="text-xl transition-transform duration-300 group-hover:rotate-90">
+              ✦
+            </span>
+            <span className="text-lg font-bold tracking-tight">Acuity</span>
+          </Link>
+          <div className="hidden sm:flex items-center gap-6 text-sm text-zinc-500">
+            <a
+              href="#how-it-works"
+              className="transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+            >
+              How it Works
+            </a>
+            <a
+              href="#pricing"
+              className="transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+            >
+              Pricing
+            </a>
+          </div>
+        </div>
+        <Link
+          href="/auth/signin"
+          className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 hover:shadow-lg hover:shadow-zinc-900/20 active:scale-95"
+        >
+          Sign In
+        </Link>
+      </div>
+    </nav>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Footer
+   ═══════════════════════════════════════════ */
+
+export function Footer() {
+  return (
+    <footer className="border-t border-zinc-200 px-6 py-12 bg-[#FAFAF7]">
+      <div className="mx-auto max-w-5xl">
+        <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xl">✦</span>
+              <span className="text-lg font-bold tracking-tight">Acuity</span>
+            </div>
+            <p className="mt-2 text-sm text-zinc-400 max-w-xs">
+              The daily debrief that turns chaos into clarity.
+            </p>
+          </div>
+          <div className="flex items-center gap-6 text-sm text-zinc-500">
+            <a href="#" className="transition hover:text-zinc-900">Terms</a>
+            <a href="#" className="transition hover:text-zinc-900">Privacy</a>
+            <a href="#" className="transition hover:text-zinc-900">Contact</a>
+          </div>
+          <div className="flex items-center gap-4 text-sm text-zinc-500">
+            <a href="#" className="transition hover:text-zinc-900">Twitter/X</a>
+            <a href="#" className="transition hover:text-zinc-900">Instagram</a>
+            <a href="#" className="transition hover:text-zinc-900">TikTok</a>
+          </div>
+        </div>
+        <div className="mt-8 pt-6 border-t border-zinc-200 text-center">
+          <p className="text-xs text-zinc-400">
+            Built with <span className="font-medium text-zinc-600">Claude</span>
+          </p>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Pricing section
+   ═══════════════════════════════════════════ */
+
+const pricingFeatures = [
+  "Unlimited voice entries",
+  "AI task & goal extraction",
+  "Mood tracking & analytics",
+  "Weekly insight reports",
+  "Life Matrix dashboard",
+  "Data export anytime",
+];
+
+export function PricingSection({
+  headline = "Simple pricing",
+  subheadline = "One plan. Everything included. Cancel anytime.",
+  utmCampaign,
+}: {
+  headline?: string;
+  subheadline?: string;
+  utmCampaign: string;
+}) {
+  const signinUrl = `/auth/signin?utm_source=paid&utm_campaign=${utmCampaign}`;
+
+  return (
+    <section id="pricing" className="px-6 py-24 sm:py-32 bg-white">
+      <div className="mx-auto max-w-md text-center">
+        <Reveal>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
+            {headline}
+          </h2>
+          <p className="mt-4 text-zinc-500 text-lg">{subheadline}</p>
+        </Reveal>
+
+        <Reveal delay={1}>
+          <div className="mt-12 relative group">
+            <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-violet-400 via-indigo-400 to-violet-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer blur-[1px]" />
+            <div className="relative rounded-2xl border border-zinc-200 bg-[#FAFAF7] p-8 text-left shadow-sm">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold uppercase tracking-wider text-violet-600">
+                  Pro
+                </p>
+                <span className="rounded-full bg-emerald-50 border border-emerald-200 px-3 py-1 text-xs font-semibold text-emerald-600">
+                  First month free
+                </span>
+              </div>
+              <p className="mt-4 flex items-baseline gap-1">
+                <span className="text-5xl font-extrabold">
+                  <AnimatedCounter prefix="$" target={19} duration={1500} />
+                </span>
+                <span className="text-zinc-400">/month</span>
+              </p>
+              <p className="mt-2 text-sm text-zinc-400">
+                First month completely free &middot; no card required
+              </p>
+
+              <ul className="mt-8 space-y-3 text-sm text-zinc-600">
+                {pricingFeatures.map((f) => (
+                  <li key={f} className="flex items-start gap-2.5">
+                    <svg
+                      className="mt-0.5 h-4 w-4 shrink-0 text-violet-600"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={3}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    {f}
+                  </li>
+                ))}
+              </ul>
+
+              <Link
+                href={signinUrl}
+                className="mt-8 block w-full rounded-xl bg-zinc-900 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/20 active:scale-95"
+              >
+                Start Free — Get Your First Month Free
+              </Link>
+            </div>
+          </div>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   How It Works section
+   ═══════════════════════════════════════════ */
+
+export interface HowItWorksStep {
+  label: string;
+  title: string;
+  description: string;
+}
+
+export function HowItWorksSection({ steps }: { steps: HowItWorksStep[] }) {
+  return (
+    <section id="how-it-works" className="px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-5xl">
+        <Reveal>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
+              How it works
+            </h2>
+            <p className="mt-4 text-zinc-500 text-lg">
+              Three steps. Sixty seconds. Zero effort.
+            </p>
+          </div>
+        </Reveal>
+
+        <div className="grid gap-8 sm:grid-cols-3">
+          {steps.map((step, i) => (
+            <Reveal key={step.label} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+              <div className="group rounded-2xl border border-zinc-100 bg-white p-8 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-violet-100 text-violet-600 font-bold text-lg mb-5 transition-transform duration-300 group-hover:scale-110">
+                  {i + 1}
+                </div>
+                <h3 className="text-xl font-bold mb-3">{step.title}</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed">
+                  {step.description}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Final CTA Banner
+   ═══════════════════════════════════════════ */
+
+export function CTABanner({
+  headline,
+  subheadline,
+  buttonText = "Start Free — Get Your First Month Free",
+  utmCampaign,
+}: {
+  headline: string;
+  subheadline?: string;
+  buttonText?: string;
+  utmCampaign: string;
+}) {
+  const signinUrl = `/auth/signin?utm_source=paid&utm_campaign=${utmCampaign}`;
+
+  return (
+    <section className="px-6 py-24 sm:py-32">
+      <Reveal>
+        <div className="mx-auto max-w-4xl rounded-3xl bg-zinc-900 p-12 sm:p-16 text-center text-white relative overflow-hidden">
+          <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-violet-600/20 -translate-y-1/3 translate-x-1/4 blur-3xl animate-blob-drift" />
+          <div className="absolute bottom-0 left-0 h-56 w-56 rounded-full bg-indigo-600/20 translate-y-1/3 -translate-x-1/4 blur-3xl animate-blob-drift-2" />
+
+          <div className="relative">
+            <p className="text-sm font-medium text-violet-400 mb-4 uppercase tracking-wider">
+              Limited time offer &mdash; first month completely free
+            </p>
+            <h2 className="text-3xl font-bold sm:text-5xl tracking-tight">
+              {headline}
+            </h2>
+            {subheadline && (
+              <p className="mt-5 text-zinc-400 text-lg max-w-md mx-auto">
+                {subheadline}
+              </p>
+            )}
+            <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link
+                href={signinUrl}
+                className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
+              >
+                {buttonText}
+              </Link>
+              <span className="text-sm text-zinc-500">
+                Then $19/month &middot; cancel anytime
+              </span>
+            </div>
+          </div>
+        </div>
+      </Reveal>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Testimonial card grid
+   ═══════════════════════════════════════════ */
+
+export interface Testimonial {
+  quote: string;
+  name: string;
+  role: string;
+}
+
+export function TestimonialsSection({
+  testimonials,
+  headline = "People are loving it",
+}: {
+  testimonials: Testimonial[];
+  headline?: string;
+}) {
+  return (
+    <section className="px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-5xl">
+        <Reveal>
+          <h2 className="text-center text-3xl font-bold tracking-tight sm:text-5xl">
+            {headline}
+          </h2>
+        </Reveal>
+
+        <div className="mt-16 grid gap-8 sm:grid-cols-3">
+          {testimonials.map((t, i) => (
+            <Reveal key={t.name} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+              <figure className="group rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, j) => (
+                    <svg
+                      key={j}
+                      className="h-4 w-4 text-amber-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                  ))}
+                </div>
+                <blockquote className="text-sm leading-relaxed text-zinc-600">
+                  &ldquo;{t.quote}&rdquo;
+                </blockquote>
+                <figcaption className="mt-5 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-sm font-bold text-zinc-500 transition-colors group-hover:bg-violet-100 group-hover:text-violet-600">
+                    {t.name[0]}
+                  </div>
+                  <div>
+                    <div className="text-sm font-semibold">{t.name}</div>
+                    <div className="text-xs text-zinc-400">{t.role}</div>
+                  </div>
+                </figcaption>
+              </figure>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Comparison table
+   ═══════════════════════════════════════════ */
+
+export interface ComparisonRow {
+  feature: string;
+  values: string[];
+}
+
+export function ComparisonTable({
+  headers,
+  rows,
+  note,
+}: {
+  headers: string[];
+  rows: ComparisonRow[];
+  note?: string;
+}) {
+  return (
+    <Reveal>
+      <div className="overflow-x-auto rounded-2xl border border-zinc-200 bg-white shadow-sm">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-zinc-100">
+              <th className="py-4 px-6 text-left text-zinc-400 font-medium" />
+              {headers.map((h, i) => (
+                <th
+                  key={h}
+                  className={`py-4 px-6 text-left font-semibold ${
+                    i === headers.length - 1
+                      ? "text-violet-600 bg-violet-50/50"
+                      : "text-zinc-900"
+                  }`}
+                >
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((row) => (
+              <tr key={row.feature} className="border-b border-zinc-50">
+                <td className="py-4 px-6 font-medium text-zinc-500">
+                  {row.feature}
+                </td>
+                {row.values.map((val, i) => (
+                  <td
+                    key={i}
+                    className={`py-4 px-6 ${
+                      i === row.values.length - 1
+                        ? "text-violet-600 font-semibold bg-violet-50/50"
+                        : "text-zinc-600"
+                    }`}
+                  >
+                    {val}
+                  </td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {note && (
+        <p className="mt-4 text-center text-sm text-zinc-400 italic">{note}</p>
+      )}
+    </Reveal>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Feature grid (6 cards)
+   ═══════════════════════════════════════════ */
+
+export interface FeatureCard {
+  icon: string;
+  title: string;
+  description: string;
+}
+
+const iconMap: Record<string, { bg: string; color: string; path: string }> = {
+  moon: {
+    bg: "bg-indigo-100",
+    color: "text-indigo-600",
+    path: "M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z",
+  },
+  brain: {
+    bg: "bg-violet-100",
+    color: "text-violet-600",
+    path: "M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z",
+  },
+  chart: {
+    bg: "bg-amber-100",
+    color: "text-amber-600",
+    path: "M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z",
+  },
+  heart: {
+    bg: "bg-rose-100",
+    color: "text-rose-600",
+    path: "M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z",
+  },
+  mic: {
+    bg: "bg-violet-100",
+    color: "text-violet-600",
+    path: "M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z",
+  },
+  shield: {
+    bg: "bg-emerald-100",
+    color: "text-emerald-600",
+    path: "M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z",
+  },
+  map: {
+    bg: "bg-indigo-100",
+    color: "text-indigo-600",
+    path: "M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z",
+  },
+  target: {
+    bg: "bg-emerald-100",
+    color: "text-emerald-600",
+    path: "M15 10.5a3 3 0 11-6 0 3 3 0 016 0z",
+  },
+  tasks: {
+    bg: "bg-blue-100",
+    color: "text-blue-600",
+    path: "M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+  },
+  doc: {
+    bg: "bg-amber-100",
+    color: "text-amber-600",
+    path: "M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z",
+  },
+  eye: {
+    bg: "bg-teal-100",
+    color: "text-teal-600",
+    path: "M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z",
+  },
+  clock: {
+    bg: "bg-blue-100",
+    color: "text-blue-600",
+    path: "M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z",
+  },
+  bolt: {
+    bg: "bg-yellow-100",
+    color: "text-yellow-600",
+    path: "M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z",
+  },
+  repeat: {
+    bg: "bg-purple-100",
+    color: "text-purple-600",
+    path: "M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3",
+  },
+  lock: {
+    bg: "bg-zinc-100",
+    color: "text-zinc-600",
+    path: "M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z",
+  },
+  star: {
+    bg: "bg-amber-100",
+    color: "text-amber-600",
+    path: "M11.48 3.499a.562.562 0 011.04 0l2.125 5.111a.563.563 0 00.475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 00-.182.557l1.285 5.385a.562.562 0 01-.84.61l-4.725-2.885a.563.563 0 00-.586 0L6.982 20.54a.562.562 0 01-.84-.61l1.285-5.386a.562.562 0 00-.182-.557l-4.204-3.602a.563.563 0 01.321-.988l5.518-.442a.563.563 0 00.475-.345L11.48 3.5z",
+  },
+  users: {
+    bg: "bg-rose-100",
+    color: "text-rose-600",
+    path: "M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z",
+  },
+};
+
+export function FeatureGrid({ features }: { features: FeatureCard[] }) {
+  return (
+    <section className="px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-5xl">
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {features.map((f, i) => {
+            const icon = iconMap[f.icon] || iconMap["brain"];
+            return (
+              <Reveal
+                key={f.title}
+                delay={Math.min((i % 3) + 1, 3) as 1 | 2 | 3}
+              >
+                <div className="group rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                  <div
+                    className={`h-10 w-10 rounded-xl ${icon.bg} flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110`}
+                  >
+                    <svg
+                      className={`h-5 w-5 ${icon.color}`}
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      strokeWidth={1.5}
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d={icon.path}
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-base font-semibold mb-2">{f.title}</h3>
+                  <p className="text-sm text-zinc-500 leading-relaxed">
+                    {f.description}
+                  </p>
+                </div>
+              </Reveal>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Pain points section (3 dark cards)
+   ═══════════════════════════════════════════ */
+
+export function PainSection({ points }: { points: string[] }) {
+  return (
+    <section className="px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-5xl">
+        <div className="grid gap-6 sm:grid-cols-3">
+          {points.map((point, i) => (
+            <Reveal key={i} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+              <div className="group rounded-2xl bg-zinc-900 p-8 text-white transition-all duration-300 hover:shadow-xl hover:-translate-y-1 hover:shadow-zinc-900/20">
+                <div className="h-10 w-10 rounded-xl bg-violet-600/20 flex items-center justify-center mb-5">
+                  <svg
+                    className="h-5 w-5 text-violet-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+                    />
+                  </svg>
+                </div>
+                <p className="text-sm leading-relaxed text-zinc-300">
+                  {point}
+                </p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Solution section
+   ═══════════════════════════════════════════ */
+
+export function SolutionSection({
+  headline,
+  body,
+}: {
+  headline: string;
+  body: string;
+}) {
+  return (
+    <section className="px-6 py-24 sm:py-32 bg-white">
+      <div className="mx-auto max-w-3xl text-center">
+        <Reveal>
+          <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
+            {headline}
+          </h2>
+          <p className="mt-6 text-lg text-zinc-500 leading-relaxed">{body}</p>
+        </Reveal>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Urgency badge
+   ═══════════════════════════════════════════ */
+
+export function UrgencyBadge() {
+  return (
+    <div className="inline-flex items-center gap-2 rounded-full bg-emerald-50 border border-emerald-200 px-4 py-2 text-sm font-medium text-emerald-700">
+      <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+      Limited time offer &mdash; first month completely free
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Animated progress bars (Life Matrix style)
+   ═══════════════════════════════════════════ */
+
+export interface MatrixArea {
+  label: string;
+  score: number;
+  color: string;
+  insight: string;
+}
+
+export function LifeMatrixShowcase({ areas }: { areas: MatrixArea[] }) {
+  const [visible, setVisible] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setVisible(true);
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      {areas.map((area, i) => (
+        <div
+          key={area.label}
+          className="group rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm transition-all duration-500 hover:shadow-lg hover:-translate-y-1"
+          style={{
+            opacity: visible ? 1 : 0,
+            transform: visible ? "translateY(0)" : "translateY(20px)",
+            transitionDelay: `${i * 100}ms`,
+          }}
+        >
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="text-sm font-semibold">{area.label}</h4>
+            <span
+              className="text-lg font-bold"
+              style={{ color: area.color }}
+            >
+              {visible ? area.score : 0}
+            </span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden mb-4">
+            <div
+              className="h-full rounded-full transition-all duration-1000 ease-out"
+              style={{
+                width: visible ? `${area.score}%` : "0%",
+                backgroundColor: area.color,
+                transitionDelay: `${i * 100 + 200}ms`,
+              }}
+            />
+          </div>
+          <p className="text-xs text-zinc-500 leading-relaxed">
+            {area.insight}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Before / After section
+   ═══════════════════════════════════════════ */
+
+export function BeforeAfterSection({
+  before,
+  after,
+}: {
+  before: string[];
+  after: string[];
+}) {
+  return (
+    <section className="px-6 py-24 sm:py-32">
+      <div className="mx-auto max-w-4xl">
+        <div className="grid gap-8 sm:grid-cols-2">
+          <Reveal>
+            <div className="rounded-2xl bg-zinc-100 p-8">
+              <h3 className="text-lg font-bold text-zinc-400 mb-6 uppercase tracking-wider text-sm">
+                Before Acuity
+              </h3>
+              <ul className="space-y-4">
+                {before.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm text-zinc-500">
+                    <svg className="mt-0.5 h-4 w-4 shrink-0 text-zinc-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+
+          <Reveal delay={1}>
+            <div className="rounded-2xl bg-violet-50 border border-violet-100 p-8">
+              <h3 className="text-lg font-bold text-violet-600 mb-6 uppercase tracking-wider text-sm">
+                After Acuity
+              </h3>
+              <ul className="space-y-4">
+                {after.map((item, i) => (
+                  <li key={i} className="flex items-start gap-3 text-sm text-zinc-700">
+                    <svg className="mt-0.5 h-4 w-4 shrink-0 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Stats section with animated counters
+   ═══════════════════════════════════════════ */
+
+export interface Stat {
+  value: number;
+  suffix?: string;
+  prefix?: string;
+  label: string;
+}
+
+export function StatsSection({ stats }: { stats: Stat[] }) {
+  return (
+    <section className="py-12 px-6 border-y border-zinc-200/60 bg-white/50 backdrop-blur">
+      <div className="mx-auto max-w-5xl">
+        <div className={`grid grid-cols-2 sm:grid-cols-${Math.min(stats.length, 4)} gap-8 text-center`}>
+          {stats.map((stat, i) => (
+            <Reveal key={stat.label} delay={Math.min(i + 1, 4) as 1 | 2 | 3 | 4}>
+              <div className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                <AnimatedCounter
+                  target={stat.value}
+                  suffix={stat.suffix || ""}
+                  prefix={stat.prefix || ""}
+                />
+              </div>
+              <div className="mt-1 text-sm text-zinc-500">{stat.label}</div>
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Animated reveal cards (staggered appearance)
+   ═══════════════════════════════════════════ */
+
+export function RevealCards({ items }: { items: string[] }) {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          items.forEach((_, i) => {
+            setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), i * 200);
+          });
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.2 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [items.length]);
+
+  return (
+    <div ref={ref} className="grid gap-4 sm:grid-cols-2">
+      {items.map((item, i) => (
+        <div
+          key={i}
+          className="group rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm transition-all duration-500 hover:shadow-lg hover:-translate-y-1"
+          style={{
+            opacity: i < visibleCount ? 1 : 0,
+            transform: i < visibleCount ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          <div className="flex items-start gap-3">
+            <div className="mt-1 h-2 w-2 rounded-full bg-violet-500 shrink-0" />
+            <p className="text-sm text-zinc-600 leading-relaxed">{item}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
+   Report preview card
+   ═══════════════════════════════════════════ */
+
+export function ReportPreview({
+  title,
+  moodArc,
+  narrative,
+  insightBullets,
+}: {
+  title: string;
+  moodArc: string;
+  narrative: string;
+  insightBullets: string[];
+}) {
+  return (
+    <Reveal>
+      <div className="mx-auto max-w-2xl rounded-2xl border border-zinc-200 bg-white p-8 shadow-lg relative overflow-hidden">
+        <div className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-2">
+          Weekly Report
+        </div>
+        <h3 className="text-xl font-bold mb-4">{title}</h3>
+
+        <div className="rounded-xl bg-zinc-50 p-4 mb-4">
+          <div className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-2">
+            Mood Arc
+          </div>
+          <p className="text-sm text-zinc-600 leading-relaxed">{moodArc}</p>
+        </div>
+
+        <div className="mb-4">
+          <p className="text-sm text-zinc-600 italic leading-relaxed">
+            &ldquo;{narrative}&rdquo;
+          </p>
+        </div>
+
+        <div className="relative">
+          {insightBullets.map((bullet, i) => (
+            <div
+              key={i}
+              className="flex items-start gap-2 mb-2"
+              style={{
+                filter: i >= 1 ? `blur(${i * 2}px)` : "none",
+                opacity: i >= 1 ? 0.5 : 1,
+              }}
+            >
+              <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-violet-500 shrink-0" />
+              <p className="text-sm text-zinc-600">{bullet}</p>
+            </div>
+          ))}
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-white to-transparent flex items-end justify-center pb-2">
+            <span className="text-xs font-medium text-violet-600">
+              Unlock your full report
+            </span>
+          </div>
+        </div>
+      </div>
+    </Reveal>
+  );
+}
