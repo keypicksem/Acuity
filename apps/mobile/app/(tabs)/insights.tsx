@@ -158,11 +158,11 @@ export default function InsightsTab() {
           </View>
         )}
 
-        {/* Life Map area cards — 2 column grid */}
+        {/* Life Matrix area cards — 2 column grid */}
         {areas.length > 0 && (
           <View className="mb-6">
             <Text className="text-xs font-semibold text-zinc-400 uppercase tracking-wider mb-3">
-              Life Map
+              Life Matrix
             </Text>
             <View className="flex-row flex-wrap gap-3">
               {areas.map((area) => {

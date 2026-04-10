@@ -1,7 +1,7 @@
 /**
  * Acuity Memory Architecture
  *
- * Manages the compressed longitudinal memory store that powers the Life Map.
+ * Manages the compressed longitudinal memory store that powers the Life Matrix.
  * Each user has a UserMemory record that accumulates with every debrief,
  * giving Claude full context about the user's life patterns over time.
  */
@@ -270,7 +270,7 @@ export async function buildMemoryContext(userId: string): Promise<string> {
     .join("\n");
 }
 
-// ─── Update Life Map Areas ───────────────────────────────────────────────────
+// ─── Update Life Matrix Areas ───────────────────────────────────────────────────
 
 export async function updateLifeMap(
   userId: string,
@@ -333,7 +333,7 @@ export async function updateLifeMap(
   }
 }
 
-// ─── Generate Life Map Insights ──────────────────────────────────────────────
+// ─── Generate Life Matrix Insights ──────────────────────────────────────────────
 
 export async function generateLifeMapInsights(
   userId: string

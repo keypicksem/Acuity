@@ -14,9 +14,9 @@ export default async function InsightsPage() {
   return (
     <div className="min-h-screen">
       <main className="mx-auto max-w-4xl px-6 py-10 animate-fade-in">
-        {/* Life Map */}
+        {/* Life Matrix */}
         <section className="mb-12">
-          <h1 className="text-2xl font-bold text-zinc-900 mb-1">Life Map</h1>
+          <h1 className="text-2xl font-bold text-zinc-900 mb-1">Life Matrix</h1>
           <p className="text-sm text-zinc-500 mb-6">
             Your mind, mapped — across every area of life.
           </p>

@@ -1,7 +1,7 @@
 /**
  * The Acuity extraction pipeline:
  *   Audio → Supabase Storage → Whisper (transcription) → Claude (extraction) → Prisma
- *   + Memory update → Life Map update
+ *   + Memory update → Life Matrix update
  */
 
 import Anthropic from "@anthropic-ai/sdk";

@@ -40,7 +40,7 @@ export async function POST() {
   } catch (err) {
     console.error("[lifemap/refresh] Failed:", err);
     return NextResponse.json(
-      { error: "Failed to refresh Life Map" },
+      { error: "Failed to refresh Life Matrix" },
       { status: 500 }
     );
   }

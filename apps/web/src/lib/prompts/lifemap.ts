@@ -1,5 +1,5 @@
 /**
- * Claude prompts for Life Map memory compression, insight generation,
+ * Claude prompts for Life Matrix memory compression, insight generation,
  * and life area extraction.
  */
 

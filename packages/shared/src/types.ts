@@ -65,7 +65,7 @@ export interface ExtractionResult {
   insights: string[];
   tasks: ExtractedTask[];
   goals: ExtractedGoal[];
-  /** Life area analysis for Life Map (may be absent for old entries) */
+  /** Life area analysis for Life Matrix (may be absent for old entries) */
   lifeAreaMentions?: LifeAreaMentions;
 }
 

@@ -17,7 +17,7 @@ export const SUPPORTED_AUDIO_TYPES = [
   "audio/ogg",
 ] as const;
 
-// ─── Life Map defaults ────────────────────────────────────────────────────────
+// ─── Life Matrix defaults ────────────────────────────────────────────────────────
 
 export const DEFAULT_LIFE_AREAS = [
   { name: "Health", key: "health", color: "#14B8A6", icon: "heart-pulse" },

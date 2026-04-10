@@ -136,7 +136,7 @@ export function LifeMap() {
             <div className="rounded-2xl border border-zinc-200 bg-white px-8 py-6 text-center shadow-lg">
               <div className="text-3xl mb-3">🗺️</div>
               <p className="text-sm font-semibold text-zinc-900 mb-1">
-                Record {3 - (memory?.totalEntries ?? 0)} more debrief{3 - (memory?.totalEntries ?? 0) === 1 ? "" : "s"} to unlock your Life Map
+                Record {3 - (memory?.totalEntries ?? 0)} more debrief{3 - (memory?.totalEntries ?? 0) === 1 ? "" : "s"} to unlock your Life Matrix
               </p>
               <p className="text-xs text-zinc-400">
                 We need at least 3 sessions to map your life areas.

@@ -420,33 +420,25 @@ function ParallaxOrbs() {
 }
 
 /* ═══════════════════════════════════════════
-   Animated brain visualization
+   Animated Life Matrix radar chart
    ═══════════════════════════════════════════ */
 
-const BRAIN_REGIONS = [
-  { cx: 50, cy: 28, label: "Goals", color: "#7C3AED" },
-  { cx: 30, cy: 42, label: "Mood", color: "#F43F5E" },
-  { cx: 70, cy: 42, label: "Tasks", color: "#3B82F6" },
-  { cx: 22, cy: 60, label: "Health", color: "#22C55E" },
-  { cx: 50, cy: 55, label: "Themes", color: "#F59E0B" },
-  { cx: 78, cy: 60, label: "Work", color: "#6366F1" },
-  { cx: 35, cy: 75, label: "Growth", color: "#8B5CF6" },
-  { cx: 65, cy: 75, label: "Relationships", color: "#EC4899" },
+const MATRIX_AREAS = [
+  { label: "Health", color: "#14B8A6" },
+  { label: "Wealth", color: "#F59E0B" },
+  { label: "Relationships", color: "#F43F5E" },
+  { label: "Spirituality", color: "#A855F7" },
+  { label: "Career", color: "#3B82F6" },
+  { label: "Growth", color: "#22C55E" },
 ];
 
-const BRAIN_CONNECTIONS = [
-  [0, 1], [0, 2], [0, 4],
-  [1, 3], [1, 4],
-  [2, 4], [2, 5],
-  [3, 6], [4, 6], [4, 7],
-  [5, 7],
-];
-
-function AnimatedBrain() {
+function AnimatedMatrix() {
+  const [scores, setScores] = useState([0, 0, 0, 0, 0, 0]);
+  const [targetScores] = useState([75, 60, 85, 45, 90, 70]);
   const [litCount, setLitCount] = useState(0);
-  const [cycle, setCycle] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
+  const animFrameRef = useRef(0);
 
   useEffect(() => {
     const el = ref.current;
@@ -455,128 +447,208 @@ function AnimatedBrain() {
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true;
-          runCycle();
+          startAnimation();
           obs.unobserve(el);
         }
       },
       { threshold: 0.3 }
     );
     obs.observe(el);
-    return () => obs.disconnect();
+    return () => {
+      obs.disconnect();
+      cancelAnimationFrame(animFrameRef.current);
+    };
   }, []);
 
-  function runCycle() {
-    setLitCount(0);
-    let i = 0;
-    const iv = setInterval(() => {
-      i++;
-      setLitCount(i);
-      if (i >= BRAIN_REGIONS.length) {
-        clearInterval(iv);
-        // Hold fully lit for a moment, then restart
-        setTimeout(() => {
-          setCycle((c) => c + 1);
-          setLitCount(0);
-          let j = 0;
-          const iv2 = setInterval(() => {
-            j++;
-            setLitCount(j);
-            if (j >= BRAIN_REGIONS.length) {
-              clearInterval(iv2);
-              setTimeout(() => {
-                setCycle((c) => c + 1);
-                runCycle();
-              }, 2000);
+  function startAnimation() {
+    // Light up nodes one by one
+    MATRIX_AREAS.forEach((_, i) => {
+      setTimeout(() => setLitCount(i + 1), i * 300);
+    });
+
+    // After nodes are lit, animate scores growing
+    setTimeout(() => {
+      const startTime = performance.now();
+      const duration = 1500;
+
+      function tick(now: number) {
+        const progress = Math.min((now - startTime) / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        setScores(targetScores.map((t) => Math.round(eased * t)));
+        if (progress < 1) {
+          animFrameRef.current = requestAnimationFrame(tick);
+        } else {
+          // Hold, then cycle: shrink and regrow
+          setTimeout(() => {
+            const shrinkStart = performance.now();
+            function shrinkTick(now2: number) {
+              const p = Math.min((now2 - shrinkStart) / 800, 1);
+              setScores(targetScores.map((t) => Math.round(t * (1 - p))));
+              if (p < 1) {
+                animFrameRef.current = requestAnimationFrame(shrinkTick);
+              } else {
+                setLitCount(0);
+                setTimeout(() => startAnimation(), 400);
+              }
             }
-          }, 400);
-        }, 2000);
+            animFrameRef.current = requestAnimationFrame(shrinkTick);
+          }, 3000);
+        }
       }
-    }, 400);
+      animFrameRef.current = requestAnimationFrame(tick);
+    }, MATRIX_AREAS.length * 300 + 200);
   }
 
+  const cx = 150;
+  const cy = 150;
+  const maxR = 110;
+  const levels = 5;
+  const angleStep = (2 * Math.PI) / 6;
+  const startAngle = -Math.PI / 2;
+
+  const getPoint = (i: number, r: number) => ({
+    x: cx + r * Math.cos(startAngle + i * angleStep),
+    y: cy + r * Math.sin(startAngle + i * angleStep),
+  });
+
+  const polyPoints = scores
+    .map((s, i) => {
+      const r = (s / 100) * maxR;
+      const p = getPoint(i, r);
+      return `${p.x},${p.y}`;
+    })
+    .join(" ");
+
   return (
-    <div ref={ref} className="relative w-[320px] h-[360px] sm:w-[380px] sm:h-[420px]">
-      {/* Glow backdrop */}
+    <div ref={ref} className="relative w-[320px] h-[340px] sm:w-[380px] sm:h-[380px]">
+      {/* Glow */}
       <div
         className="absolute inset-0 rounded-full blur-[80px] transition-opacity duration-1000"
-        style={{ opacity: litCount / BRAIN_REGIONS.length * 0.3, backgroundColor: "#7C3AED" }}
+        style={{ opacity: litCount / 6 * 0.25, backgroundColor: "#7C3AED" }}
       />
 
-      <svg viewBox="0 0 100 100" className="relative w-full h-full" key={cycle}>
-        {/* Brain outline */}
-        <ellipse cx="50" cy="52" rx="38" ry="40" fill="none" stroke="#E4E4E7" strokeWidth="0.5" />
-        {/* Hemisphere line */}
-        <path d="M50 12 Q50 52 50 92" fill="none" stroke="#E4E4E7" strokeWidth="0.3" />
-
-        {/* Connections */}
-        {BRAIN_CONNECTIONS.map(([a, b], i) => {
-          const from = BRAIN_REGIONS[a];
-          const to = BRAIN_REGIONS[b];
-          const isLit = a < litCount && b < litCount;
+      <svg viewBox="0 0 300 300" className="relative w-full h-full">
+        {/* Grid rings */}
+        {Array.from({ length: levels }).map((_, lvl) => {
+          const r = ((lvl + 1) / levels) * maxR;
+          const pts = Array.from({ length: 6 })
+            .map((_, j) => {
+              const p = getPoint(j, r);
+              return `${p.x},${p.y}`;
+            })
+            .join(" ");
           return (
-            <line
-              key={i}
-              x1={from.cx}
-              y1={from.cy}
-              x2={to.cx}
-              y2={to.cy}
-              stroke={isLit ? "#A78BFA" : "#E4E4E7"}
-              strokeWidth={isLit ? "0.6" : "0.3"}
-              className="transition-all duration-700"
-              strokeOpacity={isLit ? 0.6 : 0.2}
+            <polygon
+              key={lvl}
+              points={pts}
+              fill="none"
+              stroke="#E4E4E7"
+              strokeWidth="0.5"
+              opacity={0.6}
             />
           );
         })}
 
-        {/* Nodes */}
-        {BRAIN_REGIONS.map((region, i) => {
-          const isLit = i < litCount;
+        {/* Spokes */}
+        {MATRIX_AREAS.map((_, i) => {
+          const p = getPoint(i, maxR);
           return (
-            <g key={i}>
-              {/* Pulse ring when lighting up */}
-              {isLit && (
+            <line
+              key={i}
+              x1={cx}
+              y1={cy}
+              x2={p.x}
+              y2={p.y}
+              stroke="#E4E4E7"
+              strokeWidth="0.5"
+              opacity={0.6}
+            />
+          );
+        })}
+
+        {/* Data polygon — fills as scores animate */}
+        {scores.some((s) => s > 0) && (
+          <polygon
+            points={polyPoints}
+            fill="#7C3AED"
+            fillOpacity="0.12"
+            stroke="#7C3AED"
+            strokeWidth="2"
+            strokeLinejoin="round"
+          />
+        )}
+
+        {/* Nodes + labels */}
+        {MATRIX_AREAS.map((area, i) => {
+          const isLit = i < litCount;
+          const scoreR = (scores[i] / 100) * maxR;
+          const nodeP = getPoint(i, Math.max(scoreR, 4));
+          const labelP = getPoint(i, maxR + 20);
+
+          return (
+            <g key={area.label}>
+              {/* Pulse on activation */}
+              {isLit && scores[i] > 0 && (
                 <circle
-                  cx={region.cx}
-                  cy={region.cy}
-                  r="5"
+                  cx={nodeP.x}
+                  cy={nodeP.y}
+                  r="10"
                   fill="none"
-                  stroke={region.color}
-                  strokeWidth="0.3"
-                  opacity="0"
-                  className="animate-pulse-ring"
+                  stroke={area.color}
+                  strokeWidth="1"
+                  className="animate-pulse"
+                  opacity="0.3"
                 />
               )}
-              {/* Node circle */}
+              {/* Node */}
               <circle
-                cx={region.cx}
-                cy={region.cy}
-                r={isLit ? "3.5" : "2.5"}
-                fill={isLit ? region.color : "#D4D4D8"}
+                cx={nodeP.x}
+                cy={nodeP.y}
+                r={isLit ? "5" : "3"}
+                fill={isLit ? area.color : "#D4D4D8"}
+                stroke="white"
+                strokeWidth="2"
                 className="transition-all duration-500"
-                opacity={isLit ? 1 : 0.4}
+                opacity={isLit ? 1 : 0.3}
               />
               {/* Label */}
               <text
-                x={region.cx}
-                y={region.cy - 5.5}
+                x={labelP.x}
+                y={labelP.y}
                 textAnchor="middle"
-                className="transition-opacity duration-500"
-                fill={isLit ? "#18181B" : "#A1A1AA"}
-                fontSize="2.8"
+                dominantBaseline="middle"
+                fontSize="11"
                 fontWeight={isLit ? "600" : "400"}
-                opacity={isLit ? 1 : 0.4}
+                fill={isLit ? "#18181B" : "#A1A1AA"}
+                className="transition-all duration-500"
+                opacity={isLit ? 1 : 0.3}
               >
-                {region.label}
+                {area.label}
               </text>
+              {/* Score number */}
+              {isLit && scores[i] > 0 && (
+                <text
+                  x={labelP.x}
+                  y={labelP.y + 14}
+                  textAnchor="middle"
+                  fontSize="9"
+                  fill="#A1A1AA"
+                >
+                  {scores[i]}
+                </text>
+              )}
             </g>
           );
         })}
+
+        {/* Center dot */}
+        <circle cx={cx} cy={cy} r="3" fill="#18181B" />
       </svg>
     </div>
   );
 }
 
-const brainFeatures = [
+const matrixFeatures = [
   {
     title: "Week 1 — Surface level",
     desc: "Acuity learns your recurring tasks, basic mood patterns, and top-of-mind goals.",
@@ -1173,20 +1245,20 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ───── MIND MAP / BRAIN VISUALIZATION ───── */}
+      {/* ───── LIFE MATRIX VISUALIZATION ───── */}
       <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl">
           <div className="flex flex-col lg:flex-row lg:items-center lg:gap-20">
-            {/* Left: Animated brain */}
+            {/* Left: Animated radar chart */}
             <div className="flex-1 flex justify-center mb-12 lg:mb-0">
-              <AnimatedBrain />
+              <AnimatedMatrix />
             </div>
 
             {/* Right: Copy */}
             <div className="flex-1 max-w-lg">
               <Reveal>
                 <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-3">
-                  Life Map
+                  Life Matrix
                 </p>
                 <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
                   The more you share,
@@ -1196,14 +1268,14 @@ export function LandingPage() {
               </Reveal>
               <Reveal delay={1}>
                 <p className="mt-6 text-lg text-zinc-500 leading-relaxed">
-                  Every debrief lights up another part of your mind map.
-                  Over weeks, Acuity builds a living picture of how you think,
+                  Every debrief maps another dimension of your life.
+                  Over weeks, Acuity builds a living matrix of how you think,
                   what drives you, and where you get stuck.
                 </p>
               </Reveal>
               <Reveal delay={2}>
                 <div className="mt-8 space-y-4">
-                  {brainFeatures.map((f, i) => (
+                  {matrixFeatures.map((f, i) => (
                     <div key={i} className="flex items-start gap-3">
                       <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100">
                         <svg className="h-3.5 w-3.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -1473,7 +1545,7 @@ const tickerItems = [
   "✦ Goal tracking",
   "✦ Mood analytics",
   "✦ Weekly insight reports",
-  "✦ Life Map dashboard",
+  "✦ Life Matrix dashboard",
   "✦ Works while you sleep",
   "✦ 60-second habit",
 ];
@@ -1506,7 +1578,7 @@ const featureData = [
   },
   {
     iconKey: "map" as const,
-    title: "Life Map",
+    title: "Life Matrix",
     desc: "A visual dashboard connecting your goals, moods, and tasks into one coherent picture of your life.",
   },
 ];
@@ -1538,6 +1610,6 @@ const pricingFeatures = [
   "AI task & goal extraction",
   "Mood tracking & analytics",
   "Weekly insight reports",
-  "Life Map dashboard",
+  "Life Matrix dashboard",
   "Data export anytime",
 ];
