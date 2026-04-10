@@ -432,40 +432,37 @@ const MATRIX_AREAS = [
   { label: "Growth", color: "#22C55E", target: 71 },
 ];
 
-/* Brain neural map nodes — positioned to form a brain silhouette shape */
-const BRAIN_NODES = [
-  // Area nodes (the 6 life areas, placed around a brain shape)
-  { id: "health", x: 200, y: 65, label: "Health", color: "#14B8A6", r: 8 },
-  { id: "wealth", x: 330, y: 120, label: "Wealth", color: "#F59E0B", r: 7 },
-  { id: "career", x: 310, y: 250, label: "Career", color: "#3B82F6", r: 8 },
-  { id: "relationships", x: 90, y: 250, label: "Relationships", color: "#F43F5E", r: 7 },
-  { id: "spirituality", x: 70, y: 120, label: "Spirituality", color: "#A855F7", r: 7 },
-  { id: "growth", x: 200, y: 310, label: "Growth", color: "#22C55E", r: 8 },
-  // Internal connection nodes (smaller, form the neural network inside)
-  { id: "n1", x: 150, y: 120, label: "", color: "#7C3AED", r: 3 },
-  { id: "n2", x: 250, y: 120, label: "", color: "#7C3AED", r: 3 },
-  { id: "n3", x: 200, y: 160, label: "", color: "#7C3AED", r: 4 },
-  { id: "n4", x: 140, y: 190, label: "", color: "#7C3AED", r: 3 },
-  { id: "n5", x: 260, y: 190, label: "", color: "#7C3AED", r: 3 },
-  { id: "n6", x: 200, y: 230, label: "", color: "#7C3AED", r: 3 },
+/* Hexagonal brain map — 6 area nodes in a hex ring + center, curved connections */
+const HEX_CENTER = { x: 200, y: 190 };
+const HEX_RADIUS = 130;
+const HEX_AREAS = MATRIX_AREAS.map((area, i) => {
+  const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 6;
+  return {
+    ...area,
+    x: HEX_CENTER.x + HEX_RADIUS * Math.cos(angle),
+    y: HEX_CENTER.y + HEX_RADIUS * Math.sin(angle),
+  };
+});
+
+/* Adjacent pairs around the hex ring + each node to center */
+const HEX_CONNECTIONS: [number, number][] = [
+  [0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 0], // ring
+  [0, 3], [1, 4], [2, 5], // cross connections
 ];
 
-const BRAIN_EDGES: [number, number][] = [
-  // Area-to-internal connections
-  [0, 6], [0, 7], [0, 8],   // Health → internal
-  [1, 7], [1, 10],           // Wealth → internal
-  [2, 10], [2, 11],          // Career → internal
-  [3, 9], [3, 11],           // Relationships → internal
-  [4, 6], [4, 9],            // Spirituality → internal
-  [5, 11], [5, 9], [5, 10],  // Growth → internal
-  // Internal mesh
-  [6, 8], [7, 8], [8, 9], [8, 10], [8, 11], [9, 11], [10, 11], [6, 9], [7, 10],
-];
+function curvedPath(x1: number, y1: number, x2: number, y2: number): string {
+  const mx = (x1 + x2) / 2;
+  const my = (y1 + y2) / 2;
+  // Offset control point toward center for a nice curve
+  const cx = mx + (HEX_CENTER.y - my) * 0.15;
+  const cy = my - (HEX_CENTER.x - mx) * 0.15;
+  return `M ${x1} ${y1} Q ${cx} ${cy} ${x2} ${y2}`;
+}
 
 function NeuralBrainMap() {
-  const [litNodes, setLitNodes] = useState<Set<number>>(new Set());
-  const [litEdges, setLitEdges] = useState<Set<number>>(new Set());
-  const [pulseNode, setPulseNode] = useState(-1);
+  const [litCount, setLitCount] = useState(0);
+  const [pulseIdx, setPulseIdx] = useState(-1);
+  const [showCross, setShowCross] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
   const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
@@ -493,156 +490,167 @@ function NeuralBrainMap() {
   function runCycle() {
     timeoutsRef.current.forEach(clearTimeout);
     timeoutsRef.current = [];
-    setLitNodes(new Set());
-    setLitEdges(new Set());
-    setPulseNode(-1);
+    setLitCount(0);
+    setPulseIdx(-1);
+    setShowCross(false);
 
-    // Light up each area node sequentially, with its connected edges
-    const areaIndices = [0, 1, 2, 3, 4, 5]; // The 6 area nodes
-    areaIndices.forEach((nodeIdx, step) => {
+    // Light up nodes one at a time around the hex
+    for (let i = 0; i < 6; i++) {
       const t = setTimeout(() => {
-        setPulseNode(nodeIdx);
-        setLitNodes((prev) => {
-          const next = new Set(prev);
-          next.add(nodeIdx);
-          // Also light connected internal nodes
-          BRAIN_EDGES.forEach(([a, b]) => {
-            if (a === nodeIdx) next.add(b);
-            if (b === nodeIdx) next.add(a);
-          });
-          return next;
-        });
-        setLitEdges((prev) => {
-          const next = new Set(prev);
-          BRAIN_EDGES.forEach(([a, b], edgeIdx) => {
-            if (a === nodeIdx || b === nodeIdx) next.add(edgeIdx);
-          });
-          return next;
-        });
-        // Clear pulse after a moment
-        const t2 = setTimeout(() => setPulseNode(-1), 400);
+        setLitCount(i + 1);
+        setPulseIdx(i);
+        const t2 = setTimeout(() => setPulseIdx(-1), 500);
         timeoutsRef.current.push(t2);
-      }, step * 600);
+      }, i * 500);
       timeoutsRef.current.push(t);
-    });
+    }
 
-    // Light remaining internal edges
-    const t = setTimeout(() => {
-      setLitEdges(new Set(BRAIN_EDGES.map((_, i) => i)));
-      setLitNodes(new Set(BRAIN_NODES.map((_, i) => i)));
-    }, areaIndices.length * 600 + 200);
-    timeoutsRef.current.push(t);
+    // After all lit, show cross connections
+    const crossT = setTimeout(() => setShowCross(true), 6 * 500 + 300);
+    timeoutsRef.current.push(crossT);
 
     // Hold, then reset
     const resetT = setTimeout(() => {
-      setLitNodes(new Set());
-      setLitEdges(new Set());
-      setPulseNode(-1);
-      setTimeout(() => runCycle(), 800);
-    }, areaIndices.length * 600 + 4000);
+      setShowCross(false);
+      setLitCount(0);
+      setPulseIdx(-1);
+      const loopT = setTimeout(() => runCycle(), 600);
+      timeoutsRef.current.push(loopT);
+    }, 6 * 500 + 4000);
     timeoutsRef.current.push(resetT);
   }
 
   return (
-    <div ref={ref} className="relative w-[360px] h-[380px] sm:w-[420px] sm:h-[420px]">
+    <div ref={ref} className="relative w-[340px] h-[380px] sm:w-[400px] sm:h-[420px]">
       <svg viewBox="0 0 400 380" className="w-full h-full">
-        <defs>
-          {MATRIX_AREAS.map((area) => (
-            <radialGradient key={area.label} id={`glow-${area.label}`}>
-              <stop offset="0%" stopColor={area.color} stopOpacity="0.3" />
-              <stop offset="100%" stopColor={area.color} stopOpacity="0" />
-            </radialGradient>
-          ))}
-        </defs>
-
-        {/* Edges / neural pathways */}
-        {BRAIN_EDGES.map(([a, b], i) => {
-          const from = BRAIN_NODES[a];
-          const to = BRAIN_NODES[b];
-          const isLit = litEdges.has(i);
-          // Use the color of whichever endpoint is an area node
-          const areaNode = a < 6 ? BRAIN_NODES[a] : b < 6 ? BRAIN_NODES[b] : null;
+        {/* Ring connections (curved) — light up as adjacent nodes appear */}
+        {HEX_CONNECTIONS.slice(0, 6).map(([a, b], i) => {
+          const from = HEX_AREAS[a];
+          const to = HEX_AREAS[b];
+          const isLit = a < litCount && b < litCount;
           return (
-            <line
-              key={i}
-              x1={from.x}
-              y1={from.y}
-              x2={to.x}
-              y2={to.y}
-              stroke={isLit && areaNode ? areaNode.color : "#D4D4D8"}
-              strokeWidth={isLit ? "1.5" : "0.5"}
-              opacity={isLit ? 0.5 : 0.15}
+            <path
+              key={`ring-${i}`}
+              d={curvedPath(from.x, from.y, to.x, to.y)}
+              fill="none"
+              stroke={isLit ? "#A78BFA" : "#E4E4E7"}
+              strokeWidth={isLit ? "2" : "0.5"}
+              opacity={isLit ? 0.5 : 0.2}
               className="transition-all duration-700"
             />
           );
         })}
 
-        {/* Nodes */}
-        {BRAIN_NODES.map((node, i) => {
-          const isLit = litNodes.has(i);
-          const isPulsing = pulseNode === i;
-          const isArea = i < 6;
+        {/* Cross connections — appear after all nodes lit */}
+        {HEX_CONNECTIONS.slice(6).map(([a, b], i) => {
+          const from = HEX_AREAS[a];
+          const to = HEX_AREAS[b];
+          return (
+            <path
+              key={`cross-${i}`}
+              d={curvedPath(from.x, from.y, to.x, to.y)}
+              fill="none"
+              stroke="#A78BFA"
+              strokeWidth="1.5"
+              strokeDasharray="6 4"
+              opacity={showCross ? 0.35 : 0}
+              className="transition-all duration-1000"
+            />
+          );
+        })}
+
+        {/* Spokes to center — appear with each node */}
+        {HEX_AREAS.map((area, i) => {
+          const isLit = i < litCount;
+          return (
+            <line
+              key={`spoke-${i}`}
+              x1={area.x}
+              y1={area.y}
+              x2={HEX_CENTER.x}
+              y2={HEX_CENTER.y}
+              stroke={isLit ? area.color : "#E4E4E7"}
+              strokeWidth={isLit ? "1" : "0.3"}
+              opacity={isLit ? 0.25 : 0.1}
+              className="transition-all duration-700"
+            />
+          );
+        })}
+
+        {/* Center node */}
+        <circle
+          cx={HEX_CENTER.x}
+          cy={HEX_CENTER.y}
+          r={litCount > 0 ? "6" : "3"}
+          fill={litCount > 0 ? "#7C3AED" : "#D4D4D8"}
+          className="transition-all duration-500"
+        />
+        {litCount > 0 && (
+          <circle
+            cx={HEX_CENTER.x}
+            cy={HEX_CENTER.y}
+            r="12"
+            fill="none"
+            stroke="#7C3AED"
+            strokeWidth="1"
+            opacity="0.3"
+            className="animate-pulse"
+          />
+        )}
+
+        {/* Area nodes */}
+        {HEX_AREAS.map((area, i) => {
+          const isLit = i < litCount;
+          const isPulsing = pulseIdx === i;
 
           return (
-            <g key={node.id}>
-              {/* Area glow */}
-              {isArea && isLit && (
+            <g key={area.label}>
+              {/* Glow */}
+              {isLit && (
                 <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r="24"
-                  fill={`url(#glow-${node.label})`}
+                  cx={area.x}
+                  cy={area.y}
+                  r="22"
+                  fill={area.color}
+                  opacity="0.1"
                   className="transition-opacity duration-700"
-                  opacity={isLit ? 1 : 0}
                 />
               )}
               {/* Pulse ring */}
-              {isPulsing && isArea && (
+              {isPulsing && (
                 <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r="16"
+                  cx={area.x}
+                  cy={area.y}
+                  r="18"
                   fill="none"
-                  stroke={node.color}
+                  stroke={area.color}
                   strokeWidth="2"
                   className="animate-pulse-ring"
                 />
               )}
-              {/* Node circle */}
+              {/* Node */}
               <circle
-                cx={node.x}
-                cy={node.y}
-                r={isLit ? node.r : isArea ? node.r * 0.5 : 1}
-                fill={isLit ? node.color : "#D4D4D8"}
+                cx={area.x}
+                cy={area.y}
+                r={isLit ? "8" : "4"}
+                fill={isLit ? area.color : "#E4E4E7"}
+                stroke="white"
+                strokeWidth={isLit ? "2.5" : "0"}
                 className="transition-all duration-500"
-                opacity={isLit ? 1 : 0.3}
               />
-              {isArea && isLit && (
-                <circle
-                  cx={node.x}
-                  cy={node.y}
-                  r={node.r}
-                  fill="none"
-                  stroke={node.color}
-                  strokeWidth="2"
-                  opacity="0.4"
-                  className="transition-all duration-500"
-                />
-              )}
               {/* Label */}
-              {isArea && (
-                <text
-                  x={node.x}
-                  y={node.y + (node.y < 200 ? -18 : 22)}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontWeight={isLit ? "600" : "400"}
-                  fill={isLit ? "#18181B" : "#A1A1AA"}
-                  className="transition-all duration-500"
-                >
-                  {node.label}
-                </text>
-              )}
+              <text
+                x={area.x}
+                y={area.y < HEX_CENTER.y - 40 ? area.y - 18 : area.y > HEX_CENTER.y + 40 ? area.y + 24 : area.x < HEX_CENTER.x ? area.x - 18 : area.x + 18}
+                textAnchor={area.x < HEX_CENTER.x - 40 ? "end" : area.x > HEX_CENTER.x + 40 ? "start" : "middle"}
+                dominantBaseline="middle"
+                fontSize="12"
+                fontWeight={isLit ? "600" : "400"}
+                fill={isLit ? "#18181B" : "#A1A1AA"}
+                className="transition-all duration-500"
+              >
+                {area.label}
+              </text>
             </g>
           );
         })}
@@ -1268,6 +1276,74 @@ export function LandingPage() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ───── TRACK PROGRESS ───── */}
+      <section className="px-6 py-24 sm:py-32 bg-white">
+        <div className="mx-auto max-w-6xl">
+          <Reveal>
+            <div className="text-center mb-16">
+              <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-4">
+                Track Progress
+              </p>
+              <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-5xl">
+                Growth you can see.
+                <br />
+                <span className="text-zinc-400">Automatically.</span>
+              </h2>
+            </div>
+          </Reveal>
+
+          <div className="grid gap-6 sm:grid-cols-3">
+            <Reveal delay={1}>
+              <div className="rounded-2xl border border-zinc-200 bg-[#FAFAF7] p-6 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="h-10 w-10 rounded-xl bg-violet-100 flex items-center justify-center mb-4">
+                  <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">Weekly score tracking</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed">
+                  Your Life Matrix scores update after every debrief. Watch your
+                  health, career, relationships, and more trend upward over weeks
+                  and months — with no manual logging.
+                </p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={2}>
+              <div className="rounded-2xl border border-zinc-200 bg-[#FAFAF7] p-6 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
+                  <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.746 3.746 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">Pattern recognition</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed">
+                  Acuity remembers everything. It notices that you sleep worse after
+                  late meetings, that your mood dips mid-week, and that exercise
+                  consistently lifts your energy by 30%.
+                </p>
+              </div>
+            </Reveal>
+
+            <Reveal delay={3}>
+              <div className="rounded-2xl border border-zinc-200 bg-[#FAFAF7] p-6 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center mb-4">
+                  <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold text-zinc-900 mb-2">Personalized coaching</h3>
+                <p className="text-sm text-zinc-500 leading-relaxed">
+                  The longer you use Acuity, the smarter it gets. By month three,
+                  your weekly reports include specific, data-backed guidance on
+                  exactly where to focus next.
+                </p>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
