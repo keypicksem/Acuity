@@ -420,6 +420,68 @@ function ParallaxOrbs() {
 }
 
 /* ═══════════════════════════════════════════
+   Feature icon SVGs (replace emojis)
+   ═══════════════════════════════════════════ */
+
+function FeatureIcon({ iconKey }: { iconKey: string }) {
+  const shared = "h-10 w-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110";
+
+  switch (iconKey) {
+    case "mic":
+      return (
+        <div className={`${shared} bg-violet-100`}>
+          <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+          </svg>
+        </div>
+      );
+    case "tasks":
+      return (
+        <div className={`${shared} bg-blue-100`}>
+          <svg className="h-5 w-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+      );
+    case "target":
+      return (
+        <div className={`${shared} bg-emerald-100`}>
+          <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" />
+          </svg>
+        </div>
+      );
+    case "heart":
+      return (
+        <div className={`${shared} bg-rose-100`}>
+          <svg className="h-5 w-5 text-rose-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+          </svg>
+        </div>
+      );
+    case "chart":
+      return (
+        <div className={`${shared} bg-amber-100`}>
+          <svg className="h-5 w-5 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+          </svg>
+        </div>
+      );
+    case "map":
+      return (
+        <div className={`${shared} bg-indigo-100`}>
+          <svg className="h-5 w-5 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+          </svg>
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+/* ═══════════════════════════════════════════
    LANDING PAGE
    ═══════════════════════════════════════════ */
 
@@ -768,7 +830,7 @@ export function LandingPage() {
           </Reveal>
         </div>
 
-        {/* Scrolling brand ticker */}
+        {/* Scrolling brand ticker — seamless infinite loop */}
         <div
           className="mt-12 relative"
           onMouseEnter={() => setTickerPaused(true)}
@@ -776,18 +838,20 @@ export function LandingPage() {
         >
           <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#FAFAF7] to-transparent z-10" />
           <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#FAFAF7] to-transparent z-10" />
-          <div
-            className="flex gap-12 animate-ticker"
-            style={{ animationPlayState: tickerPaused ? "paused" : "running" }}
-          >
-            {[...tickerItems, ...tickerItems].map((item, i) => (
-              <span
-                key={i}
-                className="shrink-0 text-sm font-medium text-zinc-400 whitespace-nowrap"
-              >
-                {item}
-              </span>
-            ))}
+          <div className="overflow-hidden">
+            <div
+              className="flex gap-12 animate-ticker w-max"
+              style={{ animationPlayState: tickerPaused ? "paused" : "running" }}
+            >
+              {[...tickerItems, ...tickerItems, ...tickerItems].map((item, i) => (
+                <span
+                  key={i}
+                  className="shrink-0 text-sm font-medium text-zinc-400 whitespace-nowrap"
+                >
+                  {item}
+                </span>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -796,7 +860,7 @@ export function LandingPage() {
       <section id="how-it-works" className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl">
           <Reveal>
-            <div className="text-center mb-20">
+            <div className="text-center mb-14">
               <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
                 How it works
               </h2>
@@ -806,9 +870,9 @@ export function LandingPage() {
             </div>
           </Reveal>
 
-          <div className="space-y-32">
+          <div className="space-y-16 sm:space-y-20">
             {/* Step 1: Record */}
-            <div className="flex flex-col gap-12 lg:items-center lg:flex-row">
+            <div className="flex flex-col gap-8 lg:items-center lg:flex-row">
               <div className="flex-1">
                 <Reveal>
                   <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
@@ -823,7 +887,7 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
+                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
                     <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
                       <div className="text-xs text-zinc-500 font-medium mb-auto">
                         Recording
@@ -858,7 +922,7 @@ export function LandingPage() {
             </div>
 
             {/* Step 2: Extract */}
-            <div className="flex flex-col gap-12 lg:items-center lg:flex-row-reverse">
+            <div className="flex flex-col gap-8 lg:items-center lg:flex-row-reverse">
               <div className="flex-1">
                 <Reveal>
                   <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
@@ -873,7 +937,7 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
+                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
                     <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
                       <div className="text-xs text-zinc-500 font-medium mb-3">
                         AI Extraction
@@ -915,7 +979,7 @@ export function LandingPage() {
             </div>
 
             {/* Step 3: Reflect */}
-            <div className="flex flex-col gap-12 lg:items-center lg:flex-row">
+            <div className="flex flex-col gap-8 lg:items-center lg:flex-row">
               <div className="flex-1">
                 <Reveal>
                   <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
@@ -930,7 +994,7 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
+                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
                     <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
                       <div className="text-xs text-zinc-500 font-medium mb-3">
                         Weekly Report
@@ -988,12 +1052,12 @@ export function LandingPage() {
             </p>
           </Reveal>
 
-          <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {features.map((f, i) => (
+          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {featureData.map((f, i) => (
               <Reveal key={f.title} delay={Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}>
                 <div className="group rounded-2xl border border-zinc-100 bg-[#FAFAF7] p-6 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/5 hover:border-violet-200 hover:-translate-y-1 cursor-default">
-                  <div className="mb-3 text-3xl transition-transform duration-300 group-hover:scale-110">
-                    {f.icon}
+                  <div className="mb-4">
+                    <FeatureIcon iconKey={f.iconKey} />
                   </div>
                   <h3 className="mb-2 text-lg font-semibold">{f.title}</h3>
                   <p className="text-sm leading-relaxed text-zinc-500">
@@ -1261,34 +1325,34 @@ const tickerItems = [
   "✦ 60-second habit",
 ];
 
-const features = [
+const featureData = [
   {
-    icon: "🎙️",
+    iconKey: "mic" as const,
     title: "Voice-first journaling",
     desc: "No typing, no prompts. Just talk. Record up to 10 minutes of unfiltered thoughts every night.",
   },
   {
-    icon: "📋",
+    iconKey: "tasks" as const,
     title: "AI task extraction",
     desc: "AI pulls actionable tasks from your ramblings and drops them into a clean to-do list.",
   },
   {
-    icon: "🎯",
+    iconKey: "target" as const,
     title: "Goal tracking",
     desc: "Surface recurring goals across entries and track your progress over time — automatically.",
   },
   {
-    icon: "😊",
+    iconKey: "heart" as const,
     title: "Mood analytics",
     desc: "See your emotional arc over days and weeks. Spot trends before they become problems.",
   },
   {
-    icon: "📊",
+    iconKey: "chart" as const,
     title: "Weekly insight reports",
     desc: "Every Monday you get a digest: patterns, progress, blockers, and the top 3 actions for the week.",
   },
   {
-    icon: "🗺️",
+    iconKey: "map" as const,
     title: "Life Map",
     desc: "A visual dashboard connecting your goals, moods, and tasks into one coherent picture of your life.",
   },
