@@ -23,10 +23,10 @@ const LIFE_AREAS: Record<string, { label: string; color: string }> = {
 };
 
 const STATUS_STYLES: Record<string, { label: string; bg: string; text: string }> = {
-  ACTIVE: { label: "Active", bg: "bg-emerald-900/40", text: "text-emerald-400" },
-  COMPLETED: { label: "Completed", bg: "bg-violet-900/40", text: "text-violet-400" },
-  PAUSED: { label: "Paused", bg: "bg-yellow-900/40", text: "text-yellow-400" },
-  ABANDONED: { label: "Archived", bg: "bg-zinc-800", text: "text-zinc-500" },
+  ACTIVE: { label: "Active", bg: "bg-emerald-50", text: "text-emerald-600" },
+  COMPLETED: { label: "Completed", bg: "bg-violet-50", text: "text-violet-600" },
+  PAUSED: { label: "Paused", bg: "bg-amber-50", text: "text-amber-600" },
+  ABANDONED: { label: "Archived", bg: "bg-zinc-100", text: "text-zinc-500" },
 };
 
 export function GoalList() {
@@ -85,7 +85,7 @@ export function GoalList() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-violet-500" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-200 border-t-violet-500" />
       </div>
     );
   }
@@ -93,24 +93,24 @@ export function GoalList() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-zinc-50 mb-1">
+        <h1 className="text-2xl font-bold text-zinc-900 mb-1">
           Goals
           {activeCount > 0 && (
-            <span className="ml-2 align-middle text-base font-normal text-zinc-500">
+            <span className="ml-2 align-middle text-base font-normal text-zinc-400">
               {activeCount} active
             </span>
           )}
         </h1>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-500">
           What you&apos;re working toward.
         </p>
       </div>
 
       {goals.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-zinc-800 px-6 py-16 text-center">
+        <div className="rounded-xl border border-dashed border-zinc-300 px-6 py-16 text-center">
           <div className="text-3xl mb-3">🎯</div>
-          <p className="text-sm font-medium text-zinc-400">No goals yet</p>
-          <p className="mt-1 text-xs text-zinc-600">
+          <p className="text-sm font-medium text-zinc-500">No goals yet</p>
+          <p className="mt-1 text-xs text-zinc-400">
             Mention a goal in your brain dump and we&apos;ll track it here.
           </p>
         </div>
@@ -128,7 +128,7 @@ export function GoalList() {
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: areaInfo.color }}
                   />
-                  <h2 className="text-sm font-semibold uppercase tracking-widest text-zinc-500">
+                  <h2 className="text-xs font-semibold uppercase tracking-widest text-zinc-400">
                     {areaInfo.label}
                   </h2>
                 </div>
@@ -141,7 +141,7 @@ export function GoalList() {
                     return (
                       <div
                         key={goal.id}
-                        className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 transition hover:border-zinc-700"
+                        className="rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex-1 min-w-0">
@@ -161,7 +161,7 @@ export function GoalList() {
                                 {areaInfo.label}
                               </span>
                               {goal.targetDate && (
-                                <span className="text-xs text-zinc-500">
+                                <span className="text-xs text-zinc-400">
                                   Target{" "}
                                   {new Date(goal.targetDate).toLocaleDateString(
                                     "en-US",
@@ -174,28 +174,28 @@ export function GoalList() {
                             <p
                               className={`text-sm leading-snug ${
                                 goal.status === "COMPLETED" || goal.status === "ABANDONED"
-                                  ? "text-zinc-500 line-through"
-                                  : "text-zinc-200"
+                                  ? "text-zinc-400 line-through"
+                                  : "text-zinc-800"
                               }`}
                             >
                               {goal.title}
                             </p>
 
                             {goal.description && (
-                              <p className="mt-1 text-xs text-zinc-500 line-clamp-2">
+                              <p className="mt-1 text-xs text-zinc-400 line-clamp-2">
                                 {goal.description}
                               </p>
                             )}
 
                             {/* Progress bar */}
                             <div className="mt-3 flex items-center gap-3">
-                              <div className="h-1.5 flex-1 rounded-full bg-zinc-800">
+                              <div className="h-1.5 flex-1 rounded-full bg-zinc-100">
                                 <div
-                                  className="h-1.5 rounded-full bg-violet-500 transition-all"
+                                  className="h-1.5 rounded-full bg-violet-500 transition-all duration-700"
                                   style={{ width: `${goal.progress}%` }}
                                 />
                               </div>
-                              <span className="text-xs font-medium text-zinc-500 w-8 text-right">
+                              <span className="text-xs font-medium text-zinc-400 w-8 text-right">
                                 {goal.progress}%
                               </span>
                             </div>
@@ -225,13 +225,13 @@ export function GoalList() {
                                     });
                                     setEditingProgress(null);
                                   }}
-                                  className="rounded-lg bg-violet-600 px-3 py-1 text-xs font-medium text-white hover:bg-violet-500 transition disabled:opacity-40"
+                                  className="rounded-lg bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-700 transition disabled:opacity-40"
                                 >
                                   Save
                                 </button>
                                 <button
                                   onClick={() => setEditingProgress(null)}
-                                  className="text-xs text-zinc-500 hover:text-zinc-300"
+                                  className="text-xs text-zinc-400 hover:text-zinc-700"
                                 >
                                   Cancel
                                 </button>
@@ -317,7 +317,7 @@ function ActionBtn({
       disabled={busy}
       title={title}
       aria-label={label}
-      className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300 disabled:opacity-40"
+      className="rounded-lg p-1.5 text-zinc-400 transition-all duration-200 hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-40"
     >
       <svg
         width="16"

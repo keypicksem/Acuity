@@ -204,7 +204,7 @@ function WaveformVisualizer() {
       {Array.from({ length: 20 }).map((_, i) => (
         <div
           key={i}
-          className="wave-bar w-[3px] rounded-full bg-red-400/80"
+          className="wave-bar w-[3px] rounded-full bg-red-400"
           style={{ animationDelay: `${i * 0.07}s` }}
         />
       ))}
@@ -247,7 +247,7 @@ function CascadingTasks({
       {tasks.map((task, i) => (
         <div
           key={task.text}
-          className="flex items-center gap-2 text-xs text-zinc-300 transition-all duration-500"
+          className="flex items-center gap-2 text-xs text-zinc-600 transition-all duration-500"
           style={{
             opacity: i < visibleCount ? 1 : 0,
             transform: i < visibleCount ? "translateX(0)" : "translateX(20px)",
@@ -257,7 +257,7 @@ function CascadingTasks({
             className={`h-3.5 w-3.5 rounded border shrink-0 flex items-center justify-center transition-colors duration-300 ${
               task.checked
                 ? "border-emerald-500 bg-emerald-500"
-                : "border-zinc-500"
+                : "border-zinc-300"
             }`}
           >
             {task.checked && (
@@ -416,10 +416,10 @@ export function LandingPage() {
                   <Typewriter text="Meet Acuity." />
                   <br />
                   <span className="block mt-1">
-                    <Typewriter text="Brain dump daily." delay={600} />
+                    <Typewriter text="Your mind," delay={600} />
                   </span>
                   <span className="block mt-1 text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-400 animate-gradient-shift">
-                    <Typewriter text="Get your life back." delay={1300} />
+                    <Typewriter text="mapped." delay={1100} />
                   </span>
                 </h1>
               </Reveal>
@@ -466,52 +466,52 @@ export function LandingPage() {
             {/* Right side: Animated phone mockups */}
             <div className="flex-1 mt-12 lg:mt-0 flex justify-center lg:justify-end">
               <div className="relative w-[320px] h-[580px] sm:w-[380px] sm:h-[640px]">
-                {/* Phone 1 (back) — floating */}
-                <div className="absolute right-0 top-8 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-zinc-900 p-2 shadow-2xl rotate-3 animate-float-delay">
-                  <div className="h-full w-full rounded-[1.5rem] bg-zinc-800 p-4 flex flex-col gap-3 overflow-hidden">
-                    <div className="text-xs text-zinc-500 font-medium">
+                {/* Phone 1 (back) — floating — light theme matching app */}
+                <div className="absolute right-0 top-8 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-zinc-200 p-2 shadow-2xl rotate-3 animate-float-delay">
+                  <div className="h-full w-full rounded-[1.5rem] bg-[#FAFAF7] p-4 flex flex-col gap-3 overflow-hidden">
+                    <div className="text-xs text-zinc-400 font-medium">
                       Weekly Report
                     </div>
-                    <div className="rounded-xl bg-zinc-700/50 p-3">
+                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                       <div className="text-xs text-zinc-400 mb-2">
                         Mood Trend
                       </div>
                       <div className="h-12">
                         <MoodBars
                           heights={[40, 55, 45, 70, 65, 80, 75]}
-                          color="bg-violet-500/60"
+                          color="bg-violet-400"
                         />
                       </div>
                     </div>
-                    <div className="rounded-xl bg-zinc-700/50 p-3">
+                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                       <div className="text-xs text-zinc-400 mb-1">
                         Top Insight
                       </div>
-                      <div className="text-xs text-zinc-300">
+                      <div className="text-xs text-zinc-600">
                         You mention &ldquo;sleep&rdquo; 4x this week. Consider a
                         wind-down routine.
                       </div>
                     </div>
-                    <div className="rounded-xl bg-zinc-700/50 p-3">
+                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                       <div className="text-xs text-zinc-400 mb-1">
                         Goals Progress
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <div className="flex justify-between text-xs text-zinc-300 mb-1">
+                          <div className="flex justify-between text-xs text-zinc-600 mb-1">
                             <span>Exercise</span>
                             <span>3/5</span>
                           </div>
-                          <div className="h-1.5 rounded-full bg-zinc-600">
-                            <div className="h-full w-3/5 rounded-full bg-green-500 transition-all duration-1000" />
+                          <div className="h-1.5 rounded-full bg-zinc-100">
+                            <div className="h-full w-3/5 rounded-full bg-emerald-500 transition-all duration-1000" />
                           </div>
                         </div>
                         <div>
-                          <div className="flex justify-between text-xs text-zinc-300 mb-1">
+                          <div className="flex justify-between text-xs text-zinc-600 mb-1">
                             <span>Reading</span>
                             <span>5/7</span>
                           </div>
-                          <div className="h-1.5 rounded-full bg-zinc-600">
+                          <div className="h-1.5 rounded-full bg-zinc-100">
                             <div className="h-full w-5/6 rounded-full bg-violet-500 transition-all duration-1000" />
                           </div>
                         </div>
@@ -520,19 +520,19 @@ export function LandingPage() {
                   </div>
                 </div>
 
-                {/* Phone 2 (front) — floating */}
-                <div className="absolute left-0 top-0 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-zinc-900 p-2 shadow-2xl -rotate-3 z-10 animate-float">
-                  <div className="h-full w-full rounded-[1.5rem] bg-zinc-800 p-4 flex flex-col gap-3 overflow-hidden">
+                {/* Phone 2 (front) — floating — light theme matching app */}
+                <div className="absolute left-0 top-0 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-zinc-200 p-2 shadow-2xl -rotate-3 z-10 animate-float">
+                  <div className="h-full w-full rounded-[1.5rem] bg-[#FAFAF7] p-4 flex flex-col gap-3 overflow-hidden">
                     <div className="flex items-center justify-between">
-                      <div className="text-xs text-zinc-500 font-medium">
+                      <div className="text-xs text-zinc-400 font-medium">
                         Today&apos;s Dump
                       </div>
-                      <div className="flex items-center gap-1 rounded-full bg-emerald-500/20 px-2 py-0.5 text-[10px] text-emerald-400">
-                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <div className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] text-emerald-600">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         Good mood
                       </div>
                     </div>
-                    <div className="rounded-xl bg-zinc-700/50 p-3">
+                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                       <div className="text-xs text-zinc-400 mb-2">
                         Extracted Tasks
                       </div>
@@ -544,19 +544,19 @@ export function LandingPage() {
                         ]}
                       />
                     </div>
-                    <div className="rounded-xl bg-zinc-700/50 p-3">
+                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                       <div className="text-xs text-zinc-400 mb-1">
                         Key Theme
                       </div>
-                      <div className="text-xs text-zinc-300">
+                      <div className="text-xs text-zinc-600">
                         Feeling productive but stretched thin on side projects.
                       </div>
                     </div>
-                    <div className="rounded-xl bg-violet-600/20 p-3">
-                      <div className="text-xs text-violet-300 mb-1">
+                    <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
+                      <div className="text-xs text-violet-600 mb-1">
                         Goal Detected
                       </div>
-                      <div className="text-xs text-zinc-300">
+                      <div className="text-xs text-zinc-600">
                         &ldquo;Launch MVP by end of month&rdquo;
                       </div>
                     </div>
@@ -669,8 +669,8 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-900 p-2 shadow-xl">
-                    <div className="h-full w-full rounded-[2rem] bg-zinc-800 p-5 flex flex-col overflow-hidden">
+                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
+                    <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
                       <div className="text-xs text-zinc-500 font-medium mb-auto">
                         Recording
                       </div>
@@ -690,7 +690,7 @@ export function LandingPage() {
                           </div>
                         </div>
                         <WaveformVisualizer />
-                        <div className="text-xl font-bold text-white font-mono">
+                        <div className="text-xl font-bold text-zinc-900 font-mono">
                           0:47
                         </div>
                         <div className="text-xs text-zinc-500">
@@ -719,13 +719,13 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-900 p-2 shadow-xl">
-                    <div className="h-full w-full rounded-[2rem] bg-zinc-800 p-5 flex flex-col overflow-hidden">
+                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
+                    <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
                       <div className="text-xs text-zinc-500 font-medium mb-3">
                         AI Extraction
                       </div>
                       <div className="space-y-2.5 flex-1">
-                        <div className="rounded-xl bg-zinc-700/50 p-3">
+                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                           <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-1.5">
                             Tasks
                           </div>
@@ -737,19 +737,19 @@ export function LandingPage() {
                             ]}
                           />
                         </div>
-                        <div className="rounded-xl bg-violet-600/20 p-3">
-                          <div className="text-[10px] text-violet-400 uppercase tracking-wider mb-1">
+                        <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
+                          <div className="text-[10px] text-violet-600 uppercase tracking-wider mb-1">
                             Goal
                           </div>
-                          <div className="text-xs text-zinc-300">
+                          <div className="text-xs text-zinc-600">
                             &ldquo;Ship the beta this week&rdquo;
                           </div>
                         </div>
-                        <div className="rounded-xl bg-emerald-600/20 p-3">
-                          <div className="text-[10px] text-emerald-400 uppercase tracking-wider mb-1">
+                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                          <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">
                             Mood
                           </div>
-                          <div className="text-xs text-zinc-300">
+                          <div className="text-xs text-zinc-600">
                             Energized but slightly anxious
                           </div>
                         </div>
@@ -776,37 +776,37 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-900 p-2 shadow-xl">
-                    <div className="h-full w-full rounded-[2rem] bg-zinc-800 p-5 flex flex-col overflow-hidden">
+                  <div className="w-[240px] h-[460px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
+                    <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
                       <div className="text-xs text-zinc-500 font-medium mb-3">
                         Weekly Report
                       </div>
                       <div className="space-y-2.5 flex-1">
-                        <div className="rounded-xl bg-zinc-700/50 p-3">
+                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                           <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-2">
                             Mood this week
                           </div>
                           <div className="h-10">
                             <MoodBars
                               heights={[50, 60, 45, 75, 70, 85, 80]}
-                              color="bg-violet-500/60"
+                              color="bg-violet-400"
                             />
                           </div>
                         </div>
-                        <div className="rounded-xl bg-zinc-700/50 p-3">
+                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                           <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-1">
                             Pattern
                           </div>
-                          <div className="text-xs text-zinc-300">
+                          <div className="text-xs text-zinc-600">
                             Best mood on days you exercised. Worst on days with
                             meetings after 6pm.
                           </div>
                         </div>
-                        <div className="rounded-xl bg-zinc-700/50 p-3">
+                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
                           <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-1">
                             Top 3 Actions
                           </div>
-                          <div className="space-y-1 text-xs text-zinc-300">
+                          <div className="space-y-1 text-xs text-zinc-600">
                             <div>1. Block mornings for deep work</div>
                             <div>2. No meetings after 5pm</div>
                             <div>3. Exercise before noon</div>
@@ -1016,7 +1016,7 @@ export function LandingPage() {
                 </span>
               </div>
               <p className="mt-2 text-sm text-zinc-400 max-w-xs">
-                Brain dump daily. Get your life back.
+                Your mind, mapped.
               </p>
             </div>
 

@@ -94,7 +94,7 @@ export function TaskList() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-violet-500" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-200 border-t-violet-500" />
       </div>
     );
   }
@@ -103,36 +103,36 @@ export function TaskList() {
     <>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-zinc-50 mb-1">
+        <h1 className="text-2xl font-bold text-zinc-900 mb-1">
           Tasks
           {grouped.open.length > 0 && (
-            <span className="ml-2 align-middle text-base font-normal text-zinc-500">
+            <span className="ml-2 align-middle text-base font-normal text-zinc-400">
               {grouped.open.length} open
             </span>
           )}
         </h1>
-        <p className="text-sm text-zinc-400">
+        <p className="text-sm text-zinc-500">
           Actions extracted from your brain dumps.
         </p>
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-1 rounded-lg bg-zinc-900 p-1 mb-6">
+      <div className="flex gap-1 rounded-xl bg-zinc-100 p-1 mb-6">
         {tabs.map((tab) => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex-1 rounded-md px-3 py-2 text-sm font-medium transition ${
+            className={`flex-1 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
               activeTab === tab.key
-                ? "bg-zinc-800 text-zinc-50"
-                : "text-zinc-500 hover:text-zinc-300"
+                ? "bg-white text-zinc-900 shadow-sm"
+                : "text-zinc-500 hover:text-zinc-700"
             }`}
           >
             {tab.label}
             {tab.count > 0 && (
               <span
                 className={`ml-1.5 text-xs ${
-                  activeTab === tab.key ? "text-zinc-400" : "text-zinc-600"
+                  activeTab === tab.key ? "text-zinc-400" : "text-zinc-400"
                 }`}
               >
                 {tab.count}
@@ -182,10 +182,10 @@ function EmptyState({ tab }: { tab: Tab }) {
   }[tab];
 
   return (
-    <div className="rounded-xl border border-dashed border-zinc-800 px-6 py-16 text-center">
+    <div className="rounded-xl border border-dashed border-zinc-300 px-6 py-16 text-center">
       <div className="text-3xl mb-3">{config.icon}</div>
-      <p className="text-sm font-medium text-zinc-400">{config.title}</p>
-      <p className="mt-1 text-xs text-zinc-600">{config.desc}</p>
+      <p className="text-sm font-medium text-zinc-500">{config.title}</p>
+      <p className="mt-1 text-xs text-zinc-400">{config.desc}</p>
     </div>
   );
 }
@@ -230,7 +230,7 @@ function TaskCard({
       : null;
 
   return (
-    <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-4 transition hover:border-zinc-700">
+    <div className="rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5">
       <div className="flex items-start gap-3">
         {/* Priority dot */}
         <span
@@ -240,19 +240,17 @@ function TaskCard({
         />
 
         <div className="flex-1 min-w-0">
-          {/* Title */}
           <p
             className={`text-sm leading-snug ${
               tab === "completed"
-                ? "text-zinc-500 line-through"
-                : "text-zinc-200"
+                ? "text-zinc-400 line-through"
+                : "text-zinc-800"
             }`}
           >
             {label}
           </p>
 
-          {/* Meta row */}
-          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-zinc-500">
+          <div className="mt-1.5 flex flex-wrap items-center gap-2 text-xs text-zinc-400">
             <span
               className="rounded-full px-2 py-0.5 font-medium"
               style={{
@@ -264,15 +262,15 @@ function TaskCard({
             </span>
             {entryDate && <span>From {entryDate}</span>}
             {dueDate && (
-              <span className="text-amber-500">Due {dueDate}</span>
+              <span className="text-amber-600">Due {dueDate}</span>
             )}
             {snoozedUntil && (
-              <span className="text-blue-400">Until {snoozedUntil}</span>
+              <span className="text-blue-500">Until {snoozedUntil}</span>
             )}
           </div>
 
           {task.description && (
-            <p className="mt-1.5 text-xs text-zinc-500 line-clamp-2">
+            <p className="mt-1.5 text-xs text-zinc-400 line-clamp-2">
               {task.description}
             </p>
           )}
@@ -356,7 +354,7 @@ function ActionBtn({
       disabled={busy}
       title={title}
       aria-label={label}
-      className="rounded-lg p-1.5 text-zinc-500 transition hover:bg-zinc-800 hover:text-zinc-300 disabled:opacity-40"
+      className="rounded-lg p-1.5 text-zinc-400 transition-all duration-200 hover:bg-zinc-100 hover:text-zinc-700 disabled:opacity-40"
     >
       <svg
         width="16"

@@ -31,11 +31,11 @@ function SignInForm() {
     return (
       <div className="text-center">
         <div className="mb-4 text-4xl">📬</div>
-        <h2 className="text-xl font-semibold text-zinc-100 mb-2">
+        <h2 className="text-xl font-semibold text-zinc-900 mb-2">
           Check your inbox
         </h2>
-        <p className="text-zinc-400 text-sm leading-relaxed">
-          We sent a sign-in link to <strong className="text-zinc-200">{email}</strong>.
+        <p className="text-zinc-500 text-sm leading-relaxed">
+          We sent a sign-in link to <strong className="text-zinc-700">{email}</strong>.
           <br />
           Click the link to continue.
         </p>
@@ -46,17 +46,17 @@ function SignInForm() {
   return (
     <>
       <div className="text-center mb-8">
-        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600">
+        <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-white">
           <span className="text-xl">✦</span>
         </div>
-        <h1 className="text-2xl font-bold text-zinc-50">Sign in to Acuity</h1>
-        <p className="mt-1.5 text-sm text-zinc-400">
-          Your nightly brain dump awaits.
+        <h1 className="text-2xl font-bold text-zinc-900">Sign in to Acuity</h1>
+        <p className="mt-1.5 text-sm text-zinc-500">
+          Your mind, mapped.
         </p>
       </div>
 
       {error && (
-        <div className="mb-5 rounded-lg border border-red-800 bg-red-950/50 px-4 py-3 text-sm text-red-300">
+        <div className="mb-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">
           {errorMessages[error] ?? "Something went wrong. Please try again."}
         </div>
       )}
@@ -65,17 +65,17 @@ function SignInForm() {
       <button
         onClick={handleGoogle}
         disabled={loading !== null}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm font-medium text-zinc-100 transition hover:border-zinc-500 hover:bg-zinc-700 disabled:opacity-50"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm font-medium text-zinc-800 transition-all duration-200 hover:border-zinc-300 hover:shadow-sm disabled:opacity-50"
       >
         <GoogleIcon />
-        {loading === "google" ? "Redirecting…" : "Continue with Google"}
+        {loading === "google" ? "Redirecting..." : "Continue with Google"}
       </button>
 
       {/* Divider */}
       <div className="my-5 flex items-center gap-3">
-        <div className="h-px flex-1 bg-zinc-800" />
-        <span className="text-xs text-zinc-500">or</span>
-        <div className="h-px flex-1 bg-zinc-800" />
+        <div className="h-px flex-1 bg-zinc-200" />
+        <span className="text-xs text-zinc-400">or</span>
+        <div className="h-px flex-1 bg-zinc-200" />
       </div>
 
       {/* Magic link */}
@@ -86,24 +86,24 @@ function SignInForm() {
           onChange={(e) => setEmail(e.target.value)}
           placeholder="you@example.com"
           required
-          className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-3 text-sm text-zinc-100 placeholder-zinc-500 outline-none focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition"
+          className="w-full rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm text-zinc-900 placeholder-zinc-400 outline-none focus:border-violet-500 focus:ring-2 focus:ring-violet-500/20 transition"
         />
         <button
           type="submit"
           disabled={loading !== null || !email.trim()}
-          className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-4 py-3 text-sm font-semibold text-white transition hover:opacity-90 disabled:opacity-50"
+          className="w-full rounded-xl bg-zinc-900 px-4 py-3 text-sm font-semibold text-white transition-all duration-200 hover:bg-zinc-700 disabled:opacity-50 active:scale-[0.98]"
         >
-          {loading === "email" ? "Sending link…" : "Send magic link"}
+          {loading === "email" ? "Sending link..." : "Send magic link"}
         </button>
       </form>
 
-      <p className="mt-6 text-center text-xs text-zinc-500">
+      <p className="mt-6 text-center text-xs text-zinc-400">
         By continuing you agree to our{" "}
-        <a href="/terms" className="underline hover:text-zinc-300">
+        <a href="/terms" className="underline hover:text-zinc-700">
           Terms
         </a>{" "}
         and{" "}
-        <a href="/privacy" className="underline hover:text-zinc-300">
+        <a href="/privacy" className="underline hover:text-zinc-700">
           Privacy Policy
         </a>
         .
@@ -115,7 +115,7 @@ function SignInForm() {
 export default function SignInPage() {
   return (
     <div className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-sm rounded-2xl border border-zinc-800 bg-zinc-900 p-8 shadow-2xl">
+      <div className="w-full max-w-sm rounded-2xl border border-zinc-200 bg-white p-8 shadow-lg animate-fade-in">
         <Suspense>
           <SignInForm />
         </Suspense>

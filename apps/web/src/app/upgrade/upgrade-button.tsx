@@ -26,7 +26,7 @@ export function UpgradeButton() {
     <button
       onClick={handleUpgrade}
       disabled={loading}
-      className="w-full rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 py-3.5 text-sm font-semibold text-white hover:opacity-90 transition disabled:opacity-50"
+      className="w-full rounded-xl bg-zinc-900 py-3.5 text-sm font-semibold text-white hover:bg-zinc-700 transition-all duration-200 disabled:opacity-50 hover:shadow-lg hover:shadow-zinc-900/10 active:scale-[0.98]"
     >
       {loading ? (
         <span className="flex items-center justify-center gap-2">

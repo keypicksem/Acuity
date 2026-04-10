@@ -11,8 +11,8 @@ export default async function InsightsPage() {
   if (!session?.user?.id) redirect("/auth/signin");
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <main className="mx-auto max-w-3xl px-6 py-10">
+    <div className="min-h-screen">
+      <main className="mx-auto max-w-3xl px-6 py-10 animate-fade-in">
         <InsightsView />
       </main>
     </div>

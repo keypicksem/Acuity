@@ -27,7 +27,7 @@ type Report = {
 const MOOD_COLORS: Record<string, string> = {
   GREAT: "#22C55E",
   GOOD: "#86EFAC",
-  NEUTRAL: "#71717A",
+  NEUTRAL: "#A1A1AA",
   LOW: "#FBBF24",
   ROUGH: "#EF4444",
 };
@@ -84,7 +84,7 @@ export function InsightsView() {
   if (loading) {
     return (
       <div className="flex justify-center py-20">
-        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-700 border-t-violet-500" />
+        <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-200 border-t-violet-500" />
       </div>
     );
   }
@@ -92,8 +92,8 @@ export function InsightsView() {
   return (
     <>
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-zinc-50 mb-1">Insights</h1>
-        <p className="text-sm text-zinc-400">
+        <h1 className="text-2xl font-bold text-zinc-900 mb-1">Insights</h1>
+        <p className="text-sm text-zinc-500">
           Patterns across your sessions.
         </p>
       </div>
@@ -101,10 +101,10 @@ export function InsightsView() {
       {/* Mood trend chart */}
       {completedEntries.length > 0 ? (
         <section className="mb-8">
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-zinc-500">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
             Mood trend — last {completedEntries.length} entries
           </h2>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-5 py-5">
+          <div className="rounded-xl border border-zinc-200 bg-white px-5 py-5 shadow-sm">
             <div className="flex items-end gap-2 h-32">
               {completedEntries.map((entry) => {
                 const score = entry.moodScore ?? 5;
@@ -121,20 +121,20 @@ export function InsightsView() {
                     key={entry.id}
                     className="flex-1 flex flex-col items-center gap-1"
                   >
-                    <span className="text-xs font-medium text-zinc-400">
+                    <span className="text-xs font-medium text-zinc-500">
                       {score}
                     </span>
                     <div className="w-full flex items-end h-20">
                       <div
-                        className="w-full rounded-t-md transition-all"
+                        className="w-full rounded-t-md transition-all duration-700"
                         style={{
                           height: `${heightPct}%`,
                           backgroundColor: color,
-                          opacity: 0.8,
+                          opacity: 0.85,
                         }}
                       />
                     </div>
-                    <span className="text-xs text-zinc-600">{date}</span>
+                    <span className="text-xs text-zinc-400">{date}</span>
                   </div>
                 );
               })}
@@ -143,12 +143,12 @@ export function InsightsView() {
         </section>
       ) : (
         <section className="mb-8">
-          <div className="rounded-xl border border-dashed border-zinc-800 px-6 py-10 text-center">
+          <div className="rounded-xl border border-dashed border-zinc-300 px-6 py-10 text-center">
             <div className="text-2xl mb-2">📊</div>
-            <p className="text-sm font-medium text-zinc-400">
+            <p className="text-sm font-medium text-zinc-500">
               No mood data yet
             </p>
-            <p className="mt-1 text-xs text-zinc-600">
+            <p className="mt-1 text-xs text-zinc-400">
               Record sessions to see your mood trend.
             </p>
           </div>
@@ -160,7 +160,7 @@ export function InsightsView() {
         <button
           onClick={generateReport}
           disabled={generating}
-          className="rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 px-5 py-2.5 text-sm font-semibold text-white hover:opacity-90 transition disabled:opacity-50"
+          className="rounded-xl bg-zinc-900 px-5 py-2.5 text-sm font-semibold text-white hover:bg-zinc-700 transition-all duration-200 disabled:opacity-50 hover:shadow-lg hover:shadow-zinc-900/10 active:scale-95"
         >
           {generating ? (
             <span className="flex items-center gap-2">
@@ -171,20 +171,20 @@ export function InsightsView() {
             "Generate Weekly Report"
           )}
         </button>
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <p className="text-sm text-red-500">{error}</p>}
       </div>
 
       {/* Latest report */}
       {latestReport ? (
         <section>
-          <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-zinc-500">
+          <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
             Latest weekly report
           </h2>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 overflow-hidden">
+          <div className="rounded-xl border border-zinc-200 bg-white overflow-hidden shadow-sm">
             {/* Report header */}
-            <div className="px-5 py-4 border-b border-zinc-800">
+            <div className="px-5 py-4 border-b border-zinc-100">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-zinc-500">
+                <span className="text-xs text-zinc-400">
                   {new Date(latestReport.weekStart).toLocaleDateString(
                     "en-US",
                     { month: "short", day: "numeric" }
@@ -195,7 +195,7 @@ export function InsightsView() {
                     day: "numeric",
                   })}
                 </span>
-                <div className="flex gap-3 text-xs text-zinc-500">
+                <div className="flex gap-3 text-xs text-zinc-400">
                   <span>{latestReport.entryCount} entries</span>
                   <span>{latestReport.tasksOpened} tasks opened</span>
                   <span>{latestReport.tasksClosed} closed</span>
@@ -205,8 +205,8 @@ export function InsightsView() {
 
             {/* Narrative */}
             {latestReport.narrative && (
-              <div className="px-5 py-4 border-b border-zinc-800">
-                <p className="text-sm text-zinc-300 leading-relaxed">
+              <div className="px-5 py-4 border-b border-zinc-100">
+                <p className="text-sm text-zinc-600 leading-relaxed">
                   {latestReport.narrative}
                 </p>
               </div>
@@ -214,11 +214,11 @@ export function InsightsView() {
 
             {/* Mood arc */}
             {latestReport.moodArc && (
-              <div className="px-5 py-4 border-b border-zinc-800">
-                <p className="text-xs font-medium text-zinc-500 mb-1">
+              <div className="px-5 py-4 border-b border-zinc-100">
+                <p className="text-xs font-medium text-zinc-400 mb-1">
                   Mood arc
                 </p>
-                <p className="text-sm text-zinc-400">
+                <p className="text-sm text-zinc-500">
                   {latestReport.moodArc}
                 </p>
               </div>
@@ -226,17 +226,17 @@ export function InsightsView() {
 
             {/* Insights */}
             {latestReport.insightBullets.length > 0 && (
-              <div className="px-5 py-4 border-b border-zinc-800">
-                <p className="text-xs font-medium text-violet-400 mb-2">
+              <div className="px-5 py-4 border-b border-zinc-100">
+                <p className="text-xs font-medium text-violet-600 mb-2">
                   Insights
                 </p>
                 <ul className="space-y-1.5">
                   {latestReport.insightBullets.map((bullet, i) => (
                     <li
                       key={i}
-                      className="text-sm text-zinc-300 flex gap-2"
+                      className="text-sm text-zinc-600 flex gap-2"
                     >
-                      <span className="text-violet-400 shrink-0">-</span>
+                      <span className="text-violet-500 shrink-0">-</span>
                       {bullet}
                     </li>
                   ))}
@@ -247,14 +247,14 @@ export function InsightsView() {
             {/* Top themes */}
             {latestReport.topThemes.length > 0 && (
               <div className="px-5 py-4">
-                <p className="text-xs font-medium text-zinc-500 mb-2">
+                <p className="text-xs font-medium text-zinc-400 mb-2">
                   Top themes
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {latestReport.topThemes.map((theme) => (
                     <span
                       key={theme}
-                      className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400"
+                      className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs text-zinc-500"
                     >
                       {theme}
                     </span>
@@ -266,12 +266,12 @@ export function InsightsView() {
         </section>
       ) : (
         <section>
-          <div className="rounded-xl border border-dashed border-zinc-800 px-6 py-16 text-center">
+          <div className="rounded-xl border border-dashed border-zinc-300 px-6 py-16 text-center">
             <div className="text-3xl mb-3">💡</div>
-            <p className="text-sm font-medium text-zinc-400">
+            <p className="text-sm font-medium text-zinc-500">
               No weekly report yet
             </p>
-            <p className="mt-1 text-xs text-zinc-600">
+            <p className="mt-1 text-xs text-zinc-400">
               Record at least 3 sessions, then hit &quot;Generate Weekly
               Report&quot;.
             </p>

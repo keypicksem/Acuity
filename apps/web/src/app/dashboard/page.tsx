@@ -41,19 +41,19 @@ export default async function DashboardPage() {
   const greeting = getGreeting(session.user.name);
 
   return (
-    <div className="min-h-screen bg-zinc-950">
-      <main className="mx-auto max-w-5xl px-6 py-10">
+    <div className="min-h-screen">
+      <main className="mx-auto max-w-5xl px-6 py-10 animate-fade-in">
         {/* Greeting */}
         <div className="mb-8 text-center sm:text-left">
-          <h1 className="text-2xl font-bold text-zinc-50">{greeting}</h1>
-          <p className="text-zinc-400 text-sm mt-1">
+          <h1 className="text-2xl font-bold text-zinc-900">{greeting}</h1>
+          <p className="text-zinc-500 text-sm mt-1">
             {entries.length === 0
               ? "Record your first brain dump to get started."
               : `${entries.length} session${entries.length === 1 ? "" : "s"} this week.`}
           </p>
         </div>
 
-        {/* Record button — prominently centered */}
+        {/* Record button */}
         <div className="mb-12 mx-auto max-w-lg">
           <RecordButton />
         </div>
@@ -61,7 +61,7 @@ export default async function DashboardPage() {
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           {/* Recent entries */}
           <section className="lg:col-span-2">
-            <h2 className="mb-4 text-sm font-semibold uppercase tracking-widest text-zinc-500">
+            <h2 className="mb-4 text-xs font-semibold uppercase tracking-widest text-zinc-400">
               Recent sessions
             </h2>
             {entries.length === 0 ? (
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
           <aside className="space-y-6">
             {/* Tasks */}
             <div>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-zinc-500">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
                 Open tasks
               </h2>
               {tasks.length === 0 ? (
@@ -102,12 +102,12 @@ export default async function DashboardPage() {
                   {tasks.map((t) => (
                     <div
                       key={t.id}
-                      className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3"
+                      className="rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
                     >
-                      <p className="text-sm text-zinc-100 leading-snug">
+                      <p className="text-sm text-zinc-800 leading-snug">
                         {t.title ?? t.text}
                       </p>
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-zinc-400">
                         {t.priority} · {t.status.replace("_", " ")}
                       </p>
                     </div>
@@ -118,7 +118,7 @@ export default async function DashboardPage() {
 
             {/* Goals */}
             <div>
-              <h2 className="mb-3 text-sm font-semibold uppercase tracking-widest text-zinc-500">
+              <h2 className="mb-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
                 Active goals
               </h2>
               {goals.length === 0 ? (
@@ -133,14 +133,14 @@ export default async function DashboardPage() {
                   {goals.map((g) => (
                     <div
                       key={g.id}
-                      className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-3"
+                      className="rounded-xl border border-zinc-200 bg-white px-4 py-3 shadow-sm transition-all duration-200 hover:shadow-md hover:-translate-y-0.5"
                     >
-                      <p className="text-sm text-zinc-100 leading-snug">
+                      <p className="text-sm text-zinc-800 leading-snug">
                         {g.title}
                       </p>
-                      <div className="mt-2 h-1.5 w-full rounded-full bg-zinc-800">
+                      <div className="mt-2 h-1.5 w-full rounded-full bg-zinc-100">
                         <div
-                          className="h-1.5 rounded-full bg-violet-500 transition-all"
+                          className="h-1.5 rounded-full bg-violet-500 transition-all duration-700"
                           style={{ width: `${g.progress}%` }}
                         />
                       </div>
@@ -185,13 +185,13 @@ function EmptyState({
 }) {
   return (
     <div
-      className={`rounded-xl border border-dashed border-zinc-800 text-center ${compact ? "px-4 py-5" : "px-6 py-10"}`}
+      className={`rounded-xl border border-dashed border-zinc-300 text-center ${compact ? "px-4 py-5" : "px-6 py-10"}`}
     >
       <div className={compact ? "text-2xl mb-1.5" : "text-3xl mb-2"}>
         {icon}
       </div>
-      <p className="text-sm font-medium text-zinc-400">{title}</p>
-      <p className="mt-1 text-xs text-zinc-600">{description}</p>
+      <p className="text-sm font-medium text-zinc-500">{title}</p>
+      <p className="mt-1 text-xs text-zinc-400">{description}</p>
     </div>
   );
 }

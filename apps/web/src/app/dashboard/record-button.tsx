@@ -23,9 +23,9 @@ type Phase =
 const MAX_SECONDS = 120;
 
 const PHASE_LABEL: Partial<Record<Phase, string>> = {
-  uploading: "Uploading audio…",
-  transcribing: "Transcribing with Whisper…",
-  extracting: "Extracting insights with Claude…",
+  uploading: "Uploading audio...",
+  transcribing: "Transcribing with Whisper...",
+  extracting: "Extracting insights with Claude...",
 };
 
 export function RecordButton() {
@@ -39,8 +39,6 @@ export function RecordButton() {
   const chunksRef = useRef<Blob[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const startTimeRef = useRef(0);
-
-  // ── Start / Stop ─────────────────────────────────────────────────────────
 
   const startRecording = async () => {
     setError(null);
@@ -59,8 +57,6 @@ export function RecordButton() {
 
       mr.onstop = () => {
         stream.getTracks().forEach((t) => t.stop());
-        if (timerRef.current) clearInterval(timerRef.current);
-        // Strip codec params (e.g. "audio/webm;codecs=opus" → "audio/webm")
         const baseMime = mr.mimeType.split(";")[0] || "audio/webm";
         const blob = new Blob(chunksRef.current, { type: baseMime });
         const duration = Math.round((Date.now() - startTimeRef.current) / 1000);
@@ -86,8 +82,6 @@ export function RecordButton() {
     mediaRecorderRef.current?.stop();
   };
 
-  // ── Upload + process ─────────────────────────────────────────────────────
-
   const upload = async (blob: Blob, duration: number, mime: string) => {
     setPhase("uploading");
 
@@ -95,8 +89,6 @@ export function RecordButton() {
     fd.append("audio", blob, `recording.${extFromMime(mime)}`);
     fd.append("durationSeconds", String(duration));
 
-    // Simulate phased progress — the server does upload+transcribe+extract
-    // sequentially, so we advance the label on timers as a best-effort UX.
     const t1 = setTimeout(() => setPhase("transcribing"), 2000);
     const t2 = setTimeout(() => setPhase("extracting"), 8000);
 
@@ -113,7 +105,7 @@ export function RecordButton() {
 
       setResult(body as RecordResponse);
       setPhase("done");
-      router.refresh(); // refresh server components to show the new entry
+      router.refresh();
     } catch (err) {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -121,8 +113,6 @@ export function RecordButton() {
       setPhase("error");
     }
   };
-
-  // ── Click handler ────────────────────────────────────────────────────────
 
   const handleClick = async () => {
     if (phase === "recording") return stopRecording();
@@ -135,31 +125,27 @@ export function RecordButton() {
   const progressPercent =
     phase === "uploading" ? 20 : phase === "transcribing" ? 55 : phase === "extracting" ? 85 : 0;
 
-  // ── Render ───────────────────────────────────────────────────────────────
-
   return (
     <div className="w-full">
-      {/* ── Record / Processing UI ──────────────────────────────────── */}
-      <div className="flex flex-col items-center gap-5 rounded-2xl border border-zinc-800 bg-zinc-900/60 px-6 py-8 backdrop-blur">
+      <div className="flex flex-col items-center gap-5 rounded-2xl border border-zinc-200 bg-white px-6 py-8 shadow-sm transition-shadow duration-300 hover:shadow-md">
         {/* Mic button */}
         <button
           onClick={handleClick}
           disabled={isProcessing}
           aria-label={phase === "recording" ? "Stop recording" : "Start recording"}
-          className={`relative flex h-20 w-20 items-center justify-center rounded-full transition-all
+          className={`relative flex h-20 w-20 items-center justify-center rounded-full transition-all duration-300
             ${phase === "recording"
-              ? "bg-red-600 hover:bg-red-500 scale-110"
+              ? "bg-red-500 hover:bg-red-400 scale-110 shadow-lg shadow-red-500/30"
               : isProcessing
-                ? "bg-zinc-700 cursor-wait"
-                : "bg-gradient-to-br from-violet-600 to-indigo-600 hover:scale-105 active:scale-95"
+                ? "bg-zinc-200 cursor-wait"
+                : "bg-zinc-900 hover:scale-105 hover:shadow-xl hover:shadow-zinc-900/20 active:scale-95"
             }
           `}
         >
-          {/* Pulsing ring while recording */}
           {phase === "recording" && (
             <>
-              <span className="absolute inset-0 rounded-full bg-red-600 animate-ping opacity-30" />
-              <span className="absolute -inset-1 rounded-full border-2 border-red-500 animate-pulse" />
+              <span className="absolute inset-0 rounded-full bg-red-500 animate-ping opacity-20" />
+              <span className="absolute -inset-1 rounded-full border-2 border-red-400 animate-pulse" />
             </>
           )}
 
@@ -175,20 +161,19 @@ export function RecordButton() {
         {/* Label / timer */}
         {phase === "recording" ? (
           <div className="text-center">
-            <p className="text-2xl font-mono font-semibold text-zinc-100 tabular-nums">
+            <p className="text-2xl font-mono font-semibold text-zinc-900 tabular-nums">
               {formatTime(elapsed)}
             </p>
-            <p className="text-xs text-zinc-500 mt-1">
+            <p className="text-xs text-zinc-400 mt-1">
               Tap to stop · {MAX_SECONDS - elapsed}s remaining
             </p>
           </div>
         ) : isProcessing ? (
           <div className="w-full max-w-xs text-center space-y-3">
-            <p className="text-sm text-zinc-300">
+            <p className="text-sm text-zinc-600">
               {PHASE_LABEL[phase]}
             </p>
-            {/* Progress bar */}
-            <div className="h-1.5 w-full rounded-full bg-zinc-800 overflow-hidden">
+            <div className="h-1.5 w-full rounded-full bg-zinc-100 overflow-hidden">
               <div
                 className="h-full rounded-full bg-violet-500 transition-all duration-1000 ease-out"
                 style={{ width: `${progressPercent}%` }}
@@ -197,22 +182,22 @@ export function RecordButton() {
           </div>
         ) : phase === "idle" ? (
           <div className="text-center">
-            <p className="text-sm font-medium text-zinc-200">
+            <p className="text-sm font-medium text-zinc-800">
               Start your brain dump
             </p>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Up to {MAX_SECONDS / 60} minutes · webm audio
+            <p className="text-xs text-zinc-400 mt-0.5">
+              Up to {MAX_SECONDS / 60} minutes
             </p>
           </div>
         ) : phase === "error" ? (
           <div className="text-center">
-            <p className="text-sm text-red-400">{error}</p>
-            <p className="text-xs text-zinc-500 mt-1">Tap the mic to try again</p>
+            <p className="text-sm text-red-500">{error}</p>
+            <p className="text-xs text-zinc-400 mt-1">Tap the mic to try again</p>
           </div>
         ) : null}
       </div>
 
-      {/* ── Result card ─────────────────────────────────────────────── */}
+      {/* Result card */}
       {phase === "done" && result && (
         <ResultCard
           extraction={result.extraction}
@@ -227,8 +212,6 @@ export function RecordButton() {
   );
 }
 
-// ─── Result card ─────────────────────────────────────────────────────────────
-
 function ResultCard({
   extraction,
   tasksCreated,
@@ -241,24 +224,24 @@ function ResultCard({
   const mood = extraction.mood;
 
   return (
-    <div className="mt-4 rounded-2xl border border-zinc-800 bg-zinc-900 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="mt-4 rounded-2xl border border-zinc-200 bg-white overflow-hidden shadow-sm animate-fade-in">
       {/* Header */}
       <div className="px-5 pt-5 pb-4 flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-lg">{MOOD_EMOJI[mood]}</span>
-            <span className="text-sm font-medium text-zinc-200">
+            <span className="text-sm font-medium text-zinc-800">
               {MOOD_LABELS[mood]}
             </span>
-            <span className="text-xs text-zinc-500">
+            <span className="text-xs text-zinc-400">
               · Energy {extraction.energy}/10
             </span>
           </div>
-          <p className="text-sm text-zinc-300 leading-relaxed">
+          <p className="text-sm text-zinc-600 leading-relaxed">
             {extraction.summary}
           </p>
         </div>
-        <span className="shrink-0 rounded-full bg-green-900/40 border border-green-800 px-2.5 py-0.5 text-xs font-medium text-green-400">
+        <span className="shrink-0 rounded-full bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 text-xs font-medium text-emerald-600">
           Done
         </span>
       </div>
@@ -269,7 +252,7 @@ function ResultCard({
           {extraction.themes.map((t) => (
             <span
               key={t}
-              className="rounded-full bg-zinc-800 px-2.5 py-0.5 text-xs text-zinc-400"
+              className="rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs text-zinc-500"
             >
               {t}
             </span>
@@ -279,29 +262,29 @@ function ResultCard({
 
       {/* Tasks */}
       {extraction.tasks.length > 0 && (
-        <div className="border-t border-zinc-800 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-2.5">
+        <div className="border-t border-zinc-100 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2.5">
             Extracted tasks ({tasksCreated})
           </p>
           <div className="space-y-2">
             {extraction.tasks.map((t, i) => (
               <div
                 key={i}
-                className="flex items-start gap-2.5 rounded-lg bg-zinc-800/50 px-3 py-2.5"
+                className="flex items-start gap-2.5 rounded-lg bg-zinc-50 px-3 py-2.5"
               >
                 <span
                   className="mt-0.5 h-2 w-2 shrink-0 rounded-full"
                   style={{ backgroundColor: PRIORITY_COLOR[t.priority] }}
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm text-zinc-200">{t.title}</p>
+                  <p className="text-sm text-zinc-700">{t.title}</p>
                   {t.description && (
-                    <p className="text-xs text-zinc-500 mt-0.5">
+                    <p className="text-xs text-zinc-400 mt-0.5">
                       {t.description}
                     </p>
                   )}
                 </div>
-                <span className="shrink-0 text-xs text-zinc-500">
+                <span className="shrink-0 text-xs text-zinc-400">
                   {t.priority}
                 </span>
               </div>
@@ -312,14 +295,14 @@ function ResultCard({
 
       {/* Insights */}
       {extraction.insights.length > 0 && (
-        <div className="border-t border-zinc-800 px-5 py-4">
-          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500 mb-2.5">
+        <div className="border-t border-zinc-100 px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-2.5">
             Insights
           </p>
           <ul className="space-y-1.5">
             {extraction.insights.map((ins, i) => (
-              <li key={i} className="text-sm text-zinc-400 flex gap-2">
-                <span className="text-violet-400 shrink-0">→</span>
+              <li key={i} className="text-sm text-zinc-500 flex gap-2">
+                <span className="text-violet-500 shrink-0">→</span>
                 {ins}
               </li>
             ))}
@@ -328,10 +311,10 @@ function ResultCard({
       )}
 
       {/* Footer */}
-      <div className="border-t border-zinc-800 px-5 py-3 flex justify-end">
+      <div className="border-t border-zinc-100 px-5 py-3 flex justify-end">
         <button
           onClick={onRecordAgain}
-          className="text-sm text-violet-400 hover:text-violet-300 transition font-medium"
+          className="text-sm text-violet-600 hover:text-violet-500 transition font-medium"
         >
           Record another session
         </button>
@@ -339,8 +322,6 @@ function ResultCard({
     </div>
   );
 }
-
-// ─── Shared helpers ──────────────────────────────────────────────────────────
 
 function formatTime(seconds: number): string {
   const m = Math.floor(seconds / 60)
@@ -389,7 +370,7 @@ function MicIcon({ size = 16 }: { size?: number }) {
 function Spinner() {
   return (
     <svg
-      className="h-7 w-7 animate-spin text-zinc-300"
+      className="h-7 w-7 animate-spin text-zinc-500"
       viewBox="0 0 24 24"
       fill="none"
     >

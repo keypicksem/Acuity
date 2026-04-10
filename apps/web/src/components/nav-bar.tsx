@@ -9,7 +9,6 @@ const NAV_LINKS = [
   { href: "/tasks", label: "Tasks" },
   { href: "/goals", label: "Goals" },
   { href: "/insights", label: "Insights" },
-  { href: "/upgrade", label: "Upgrade" },
 ];
 
 export function NavBar() {
@@ -32,15 +31,18 @@ export function NavBar() {
     : user.email?.charAt(0).toUpperCase() ?? "?";
 
   return (
-    <nav className="border-b border-zinc-800 px-6 py-3">
-      <div className="mx-auto flex max-w-5xl items-center justify-between">
+    <nav className="sticky top-0 z-50 border-b border-zinc-200/60 bg-[#FAFAF7]/80 backdrop-blur-md">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
         {/* Left: logo + links */}
         <div className="flex items-center gap-6">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-sm">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-2 group"
+          >
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-zinc-900 text-sm text-white transition-transform duration-300 group-hover:rotate-12">
               ✦
             </div>
-            <span className="font-semibold text-zinc-100 hidden sm:block">
+            <span className="font-semibold text-zinc-900 hidden sm:block tracking-tight">
               Acuity
             </span>
           </Link>
@@ -52,10 +54,10 @@ export function NavBar() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition ${
+                  className={`rounded-lg px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                     isActive
-                      ? "bg-zinc-800 text-zinc-50"
-                      : "text-zinc-500 hover:text-zinc-300 hover:bg-zinc-900"
+                      ? "bg-white text-zinc-900 shadow-sm"
+                      : "text-zinc-500 hover:text-zinc-900 hover:bg-white/60"
                   }`}
                 >
                   {link.label}
@@ -71,19 +73,19 @@ export function NavBar() {
             <img
               src={user.image}
               alt=""
-              className="h-7 w-7 rounded-full"
+              className="h-7 w-7 rounded-full ring-2 ring-white"
             />
           ) : (
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-800 text-xs font-medium text-zinc-400">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-zinc-200 text-xs font-medium text-zinc-600">
               {initials}
             </div>
           )}
-          <span className="text-sm text-zinc-400 hidden sm:block">
+          <span className="text-sm text-zinc-600 hidden sm:block">
             {user.name ?? user.email}
           </span>
           <button
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="text-sm text-zinc-600 hover:text-zinc-300 transition"
+            className="text-sm text-zinc-400 hover:text-zinc-700 transition"
           >
             Sign out
           </button>
