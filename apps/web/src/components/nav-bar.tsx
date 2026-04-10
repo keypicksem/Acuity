@@ -244,7 +244,7 @@ export function NavBar() {
             href="/dashboard"
             className="flex items-center gap-2 group"
           >
-            <img src="/apple-touch-icon.png" alt="Acuity" className="h-8 w-8 rounded-lg transition-transform duration-300 group-hover:rotate-12" />
+            <img src="/apple-touch-icon.png" alt="Acuity logo" width={32} height={32} className="h-8 w-8 rounded-lg transition-transform duration-300 group-hover:rotate-12" />
             <span className="font-semibold text-zinc-900 hidden sm:block tracking-tight">
               Acuity
             </span>

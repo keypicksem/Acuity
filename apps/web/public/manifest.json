@@ -1,21 +1,21 @@
 {
   "name": "Acuity",
   "short_name": "Acuity",
-  "description": "Brain dump daily. Get your life back.",
+  "description": "Speak for 60 seconds. AI extracts your tasks, tracks your goals, decodes your mental patterns, and writes your weekly report.",
   "start_url": "/dashboard",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#09090B",
+  "background_color": "#0a0a0a",
   "theme_color": "#7C3AED",
   "icons": [
     {
-      "src": "/icon-192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

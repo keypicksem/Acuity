@@ -18,8 +18,12 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Acuity",
-  description: "The daily debrief that turns chaos into clarity.",
+  title: "Acuity — The daily debrief that turns chaos into clarity",
+  description:
+    "Speak for 60 seconds. AI extracts your tasks, tracks your goals, decodes your mental patterns, and writes your weekly report — automatically.",
+  openGraph: {
+    images: [{ url: "/web-app-manifest-512x512.png" }],
+  },
 };
 
 export default function RootLayout({
