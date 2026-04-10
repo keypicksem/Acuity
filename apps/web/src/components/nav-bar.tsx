@@ -244,7 +244,7 @@ export function NavBar() {
             href="/dashboard"
             className="flex items-center gap-2 group"
           >
-            <img src="/acuity-logo.png" alt="Acuity logo" width={40} height={40} className="h-10 w-10" />
+            <img src="/acuity-logo.png" alt="Acuity logo" width={28} height={28} className="h-7 w-7" />
             <span className="font-semibold text-zinc-900 hidden sm:block tracking-tight">
               Acuity
             </span>
