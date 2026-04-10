@@ -62,7 +62,7 @@ export default async function UpgradePage() {
           <UpgradeButton />
 
           <p className="mt-3 text-center text-xs text-zinc-400">
-            7-day free trial. Cancel anytime.
+            14-day free trial. Cancel anytime.
           </p>
         </div>
 

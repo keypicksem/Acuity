@@ -420,25 +420,25 @@ function ParallaxOrbs() {
 }
 
 /* ═══════════════════════════════════════════
-   Animated Life Matrix radar chart
+   Animated Life Matrix — dramatic radar
    ═══════════════════════════════════════════ */
 
 const MATRIX_AREAS = [
-  { label: "Health", color: "#14B8A6" },
-  { label: "Wealth", color: "#F59E0B" },
-  { label: "Relationships", color: "#F43F5E" },
-  { label: "Spirituality", color: "#A855F7" },
-  { label: "Career", color: "#3B82F6" },
-  { label: "Growth", color: "#22C55E" },
+  { label: "Health", color: "#14B8A6", target: 78 },
+  { label: "Wealth", color: "#F59E0B", target: 62 },
+  { label: "Relationships", color: "#F43F5E", target: 88 },
+  { label: "Spirituality", color: "#A855F7", target: 45 },
+  { label: "Career", color: "#3B82F6", target: 92 },
+  { label: "Growth", color: "#22C55E", target: 71 },
 ];
 
 function AnimatedMatrix() {
   const [scores, setScores] = useState([0, 0, 0, 0, 0, 0]);
-  const [targetScores] = useState([75, 60, 85, 45, 90, 70]);
-  const [litCount, setLitCount] = useState(0);
+  const [scanAngle, setScanAngle] = useState(0);
+  const [phase, setPhase] = useState<"idle" | "scanning" | "filling" | "hold">("idle");
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
-  const animFrameRef = useRef(0);
+  const frameRef = useRef(0);
 
   useEffect(() => {
     const el = ref.current;
@@ -447,111 +447,150 @@ function AnimatedMatrix() {
       ([entry]) => {
         if (entry.isIntersecting && !started.current) {
           started.current = true;
-          startAnimation();
+          runSequence();
           obs.unobserve(el);
         }
       },
-      { threshold: 0.3 }
+      { threshold: 0.2 }
     );
     obs.observe(el);
     return () => {
       obs.disconnect();
-      cancelAnimationFrame(animFrameRef.current);
+      cancelAnimationFrame(frameRef.current);
     };
   }, []);
 
-  function startAnimation() {
-    // Light up nodes one by one
-    MATRIX_AREAS.forEach((_, i) => {
-      setTimeout(() => setLitCount(i + 1), i * 300);
-    });
+  function runSequence() {
+    // Phase 1: Radar scan sweep (1.5 rotations)
+    setPhase("scanning");
+    setScores([0, 0, 0, 0, 0, 0]);
+    const scanStart = performance.now();
+    const scanDuration = 2400;
 
-    // After nodes are lit, animate scores growing
-    setTimeout(() => {
-      const startTime = performance.now();
-      const duration = 1500;
+    function scanTick(now: number) {
+      const p = Math.min((now - scanStart) / scanDuration, 1);
+      setScanAngle(p * 540); // 1.5 rotations
+      if (p < 1) {
+        frameRef.current = requestAnimationFrame(scanTick);
+      } else {
+        setScanAngle(0);
+        // Phase 2: Scores expand outward
+        setPhase("filling");
+        const fillStart = performance.now();
+        const fillDuration = 1800;
 
-      function tick(now: number) {
-        const progress = Math.min((now - startTime) / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        setScores(targetScores.map((t) => Math.round(eased * t)));
-        if (progress < 1) {
-          animFrameRef.current = requestAnimationFrame(tick);
-        } else {
-          // Hold, then cycle: shrink and regrow
-          setTimeout(() => {
-            const shrinkStart = performance.now();
-            function shrinkTick(now2: number) {
-              const p = Math.min((now2 - shrinkStart) / 800, 1);
-              setScores(targetScores.map((t) => Math.round(t * (1 - p))));
-              if (p < 1) {
-                animFrameRef.current = requestAnimationFrame(shrinkTick);
-              } else {
-                setLitCount(0);
-                setTimeout(() => startAnimation(), 400);
+        function fillTick(now2: number) {
+          const fp = Math.min((now2 - fillStart) / fillDuration, 1);
+          // Elastic easing for dramatic overshoot
+          const eased = fp === 1 ? 1 : 1 - Math.pow(2, -10 * fp) * Math.cos((fp * 10 - 0.75) * ((2 * Math.PI) / 3));
+          setScores(MATRIX_AREAS.map((a) => Math.round(Math.min(eased, 1) * a.target)));
+          if (fp < 1) {
+            frameRef.current = requestAnimationFrame(fillTick);
+          } else {
+            // Phase 3: Hold
+            setPhase("hold");
+            setTimeout(() => {
+              // Collapse and restart
+              const collapseStart = performance.now();
+              function collapseTick(now3: number) {
+                const cp = Math.min((now3 - collapseStart) / 600, 1);
+                const ceased = cp * cp; // ease-in
+                setScores(MATRIX_AREAS.map((a) => Math.round(a.target * (1 - ceased))));
+                if (cp < 1) {
+                  frameRef.current = requestAnimationFrame(collapseTick);
+                } else {
+                  setPhase("idle");
+                  setTimeout(() => runSequence(), 500);
+                }
               }
-            }
-            animFrameRef.current = requestAnimationFrame(shrinkTick);
-          }, 3000);
+              frameRef.current = requestAnimationFrame(collapseTick);
+            }, 3500);
+          }
         }
+        frameRef.current = requestAnimationFrame(fillTick);
       }
-      animFrameRef.current = requestAnimationFrame(tick);
-    }, MATRIX_AREAS.length * 300 + 200);
+    }
+    frameRef.current = requestAnimationFrame(scanTick);
   }
 
-  const cx = 150;
-  const cy = 150;
-  const maxR = 110;
+  const cx = 200;
+  const cy = 200;
+  const maxR = 145;
   const levels = 5;
-  const angleStep = (2 * Math.PI) / 6;
+  const n = 6;
+  const angleStep = (2 * Math.PI) / n;
   const startAngle = -Math.PI / 2;
 
-  const getPoint = (i: number, r: number) => ({
+  const pt = (i: number, r: number) => ({
     x: cx + r * Math.cos(startAngle + i * angleStep),
     y: cy + r * Math.sin(startAngle + i * angleStep),
   });
 
-  const polyPoints = scores
-    .map((s, i) => {
-      const r = (s / 100) * maxR;
-      const p = getPoint(i, r);
-      return `${p.x},${p.y}`;
-    })
+  const polyPts = scores
+    .map((s, i) => { const p = pt(i, (s / 100) * maxR); return `${p.x},${p.y}`; })
     .join(" ");
 
+  const isActive = phase !== "idle";
+  const totalScore = scores.reduce((a, b) => a + b, 0);
+  const avgScore = scores.some((s) => s > 0) ? Math.round(totalScore / n) : 0;
+
   return (
-    <div ref={ref} className="relative w-[320px] h-[340px] sm:w-[380px] sm:h-[380px]">
-      {/* Glow */}
+    <div ref={ref} className="relative w-[380px] h-[420px] sm:w-[440px] sm:h-[460px]">
+      {/* Multi-layer glow */}
       <div
-        className="absolute inset-0 rounded-full blur-[80px] transition-opacity duration-1000"
-        style={{ opacity: litCount / 6 * 0.25, backgroundColor: "#7C3AED" }}
+        className="absolute inset-8 rounded-full blur-[100px] transition-all duration-1000"
+        style={{
+          opacity: isActive ? 0.35 : 0,
+          backgroundColor: "#7C3AED",
+          transform: `scale(${isActive ? 1.1 : 0.8})`,
+        }}
+      />
+      <div
+        className="absolute inset-16 rounded-full blur-[60px] transition-all duration-700"
+        style={{
+          opacity: phase === "hold" ? 0.2 : 0,
+          backgroundColor: "#3B82F6",
+        }}
       />
 
-      <svg viewBox="0 0 300 300" className="relative w-full h-full">
-        {/* Grid rings */}
+      <svg viewBox="0 0 400 400" className="relative w-full h-full">
+        <defs>
+          {/* Scan beam gradient */}
+          <linearGradient id="scanGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stopColor="#7C3AED" stopOpacity="0" />
+            <stop offset="70%" stopColor="#7C3AED" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#7C3AED" stopOpacity="0.4" />
+          </linearGradient>
+          {/* Area fill gradient */}
+          <radialGradient id="areaFill" cx="50%" cy="50%">
+            <stop offset="0%" stopColor="#7C3AED" stopOpacity="0.25" />
+            <stop offset="100%" stopColor="#7C3AED" stopOpacity="0.05" />
+          </radialGradient>
+        </defs>
+
+        {/* Grid rings with subtle glow on active */}
         {Array.from({ length: levels }).map((_, lvl) => {
           const r = ((lvl + 1) / levels) * maxR;
-          const pts = Array.from({ length: 6 })
-            .map((_, j) => {
-              const p = getPoint(j, r);
-              return `${p.x},${p.y}`;
-            })
+          const pts = Array.from({ length: n })
+            .map((_, j) => { const p = pt(j, r); return `${p.x},${p.y}`; })
             .join(" ");
           return (
             <polygon
               key={lvl}
               points={pts}
               fill="none"
-              stroke="#E4E4E7"
-              strokeWidth="0.5"
-              opacity={0.6}
+              stroke={isActive && lvl === levels - 1 ? "#A78BFA" : "#E4E4E7"}
+              strokeWidth={isActive && lvl === levels - 1 ? "0.8" : "0.5"}
+              opacity={isActive ? 0.5 + lvl * 0.1 : 0.4}
+              className="transition-all duration-500"
             />
           );
         })}
 
-        {/* Spokes */}
-        {MATRIX_AREAS.map((_, i) => {
-          const p = getPoint(i, maxR);
+        {/* Spokes with glow on active */}
+        {MATRIX_AREAS.map((area, i) => {
+          const p = pt(i, maxR);
+          const hasScore = scores[i] > 0;
           return (
             <line
               key={i}
@@ -559,57 +598,119 @@ function AnimatedMatrix() {
               y1={cy}
               x2={p.x}
               y2={p.y}
-              stroke="#E4E4E7"
-              strokeWidth="0.5"
-              opacity={0.6}
+              stroke={hasScore ? area.color : "#E4E4E7"}
+              strokeWidth={hasScore ? "1" : "0.5"}
+              opacity={hasScore ? 0.4 : 0.3}
+              className="transition-all duration-500"
             />
           );
         })}
 
-        {/* Data polygon — fills as scores animate */}
-        {scores.some((s) => s > 0) && (
-          <polygon
-            points={polyPoints}
-            fill="#7C3AED"
-            fillOpacity="0.12"
-            stroke="#7C3AED"
-            strokeWidth="2"
-            strokeLinejoin="round"
-          />
+        {/* Scanning beam */}
+        {phase === "scanning" && (
+          <g style={{ transform: `rotate(${scanAngle}deg)`, transformOrigin: `${cx}px ${cy}px` }}>
+            <line
+              x1={cx}
+              y1={cy}
+              x2={cx + maxR + 10}
+              y2={cy}
+              stroke="#7C3AED"
+              strokeWidth="2"
+              opacity="0.7"
+            />
+            {/* Sweep wedge */}
+            <path
+              d={`M ${cx} ${cy} L ${cx + maxR} ${cy - 30} A ${maxR} ${maxR} 0 0 1 ${cx + maxR} ${cy + 30} Z`}
+              fill="url(#scanGrad)"
+            />
+            {/* Scan tip glow */}
+            <circle
+              cx={cx + maxR}
+              cy={cy}
+              r="4"
+              fill="#7C3AED"
+              opacity="0.8"
+            />
+          </g>
         )}
 
-        {/* Nodes + labels */}
+        {/* Data polygon with gradient fill */}
+        {scores.some((s) => s > 0) && (
+          <>
+            <polygon
+              points={polyPts}
+              fill="url(#areaFill)"
+              stroke="#7C3AED"
+              strokeWidth="2.5"
+              strokeLinejoin="round"
+              className="transition-all duration-100"
+            />
+            {/* Inner glow line */}
+            <polygon
+              points={polyPts}
+              fill="none"
+              stroke="#A78BFA"
+              strokeWidth="1"
+              strokeLinejoin="round"
+              opacity="0.5"
+              className="transition-all duration-100"
+            />
+          </>
+        )}
+
+        {/* Area nodes + labels + score badges */}
         {MATRIX_AREAS.map((area, i) => {
-          const isLit = i < litCount;
+          const hasScore = scores[i] > 0;
           const scoreR = (scores[i] / 100) * maxR;
-          const nodeP = getPoint(i, Math.max(scoreR, 4));
-          const labelP = getPoint(i, maxR + 20);
+          const nodeP = pt(i, Math.max(scoreR, 0));
+          const labelP = pt(i, maxR + 26);
 
           return (
             <g key={area.label}>
-              {/* Pulse on activation */}
-              {isLit && scores[i] > 0 && (
-                <circle
-                  cx={nodeP.x}
-                  cy={nodeP.y}
-                  r="10"
-                  fill="none"
-                  stroke={area.color}
-                  strokeWidth="1"
-                  className="animate-pulse"
-                  opacity="0.3"
-                />
+              {/* Ripple rings on activation */}
+              {hasScore && (
+                <>
+                  <circle
+                    cx={nodeP.x}
+                    cy={nodeP.y}
+                    r="14"
+                    fill="none"
+                    stroke={area.color}
+                    strokeWidth="0.8"
+                    className="animate-pulse-ring"
+                    opacity="0.4"
+                  />
+                  <circle
+                    cx={nodeP.x}
+                    cy={nodeP.y}
+                    r="20"
+                    fill="none"
+                    stroke={area.color}
+                    strokeWidth="0.5"
+                    className="animate-pulse-ring"
+                    opacity="0.2"
+                    style={{ animationDelay: "0.3s" }}
+                  />
+                  {/* Glow behind node */}
+                  <circle
+                    cx={nodeP.x}
+                    cy={nodeP.y}
+                    r="10"
+                    fill={area.color}
+                    opacity="0.15"
+                  />
+                </>
               )}
               {/* Node */}
               <circle
-                cx={nodeP.x}
-                cy={nodeP.y}
-                r={isLit ? "5" : "3"}
-                fill={isLit ? area.color : "#D4D4D8"}
+                cx={hasScore ? nodeP.x : pt(i, 0).x}
+                cy={hasScore ? nodeP.y : pt(i, 0).y}
+                r={hasScore ? "6" : "3"}
+                fill={hasScore ? area.color : "#D4D4D8"}
                 stroke="white"
-                strokeWidth="2"
-                className="transition-all duration-500"
-                opacity={isLit ? 1 : 0.3}
+                strokeWidth="2.5"
+                className="transition-all duration-700"
+                style={{ filter: hasScore ? `drop-shadow(0 0 6px ${area.color}80)` : "none" }}
               />
               {/* Label */}
               <text
@@ -617,32 +718,74 @@ function AnimatedMatrix() {
                 y={labelP.y}
                 textAnchor="middle"
                 dominantBaseline="middle"
-                fontSize="11"
-                fontWeight={isLit ? "600" : "400"}
-                fill={isLit ? "#18181B" : "#A1A1AA"}
+                fontSize="12"
+                fontWeight={hasScore ? "700" : "400"}
+                fill={hasScore ? "#18181B" : "#A1A1AA"}
                 className="transition-all duration-500"
-                opacity={isLit ? 1 : 0.3}
               >
                 {area.label}
               </text>
-              {/* Score number */}
-              {isLit && scores[i] > 0 && (
-                <text
-                  x={labelP.x}
-                  y={labelP.y + 14}
-                  textAnchor="middle"
-                  fontSize="9"
-                  fill="#A1A1AA"
-                >
-                  {scores[i]}
-                </text>
+              {/* Score badge */}
+              {hasScore && (
+                <g>
+                  <rect
+                    x={labelP.x - 14}
+                    y={labelP.y + 7}
+                    width="28"
+                    height="16"
+                    rx="8"
+                    fill={area.color}
+                    opacity="0.15"
+                  />
+                  <text
+                    x={labelP.x}
+                    y={labelP.y + 17}
+                    textAnchor="middle"
+                    fontSize="9"
+                    fontWeight="700"
+                    fill={area.color}
+                  >
+                    {scores[i]}
+                  </text>
+                </g>
               )}
             </g>
           );
         })}
 
-        {/* Center dot */}
-        <circle cx={cx} cy={cy} r="3" fill="#18181B" />
+        {/* Center orb */}
+        <circle
+          cx={cx}
+          cy={cy}
+          r={phase === "hold" ? "8" : phase === "scanning" ? "6" : "4"}
+          fill="#18181B"
+          className="transition-all duration-500"
+        />
+        {isActive && (
+          <circle
+            cx={cx}
+            cy={cy}
+            r="14"
+            fill="none"
+            stroke="#7C3AED"
+            strokeWidth="1"
+            className="animate-pulse"
+            opacity="0.4"
+          />
+        )}
+        {/* Center score */}
+        {avgScore > 0 && (
+          <text
+            x={cx}
+            y={cy + 28}
+            textAnchor="middle"
+            fontSize="11"
+            fontWeight="700"
+            fill="#7C3AED"
+          >
+            {avgScore}
+          </text>
+        )}
       </svg>
     </div>
   );
@@ -1344,7 +1487,7 @@ export function LandingPage() {
                   <span className="text-zinc-400">/month</span>
                 </p>
                 <p className="mt-2 text-sm text-zinc-400">
-                  7-day free trial &middot; no card required
+                  14-day free trial &middot; no card required
                 </p>
 
                 <ul className="mt-8 space-y-3 text-sm text-zinc-600">
@@ -1383,37 +1526,37 @@ export function LandingPage() {
       {/* ───── CTA BANNER ───── */}
       <section className="px-6 py-24 sm:py-32">
         <Reveal>
-          <div className="mx-auto max-w-4xl rounded-3xl bg-gradient-to-r from-violet-600 to-indigo-600 p-12 sm:p-16 text-center text-white relative overflow-hidden">
-            {/* Animated background circles */}
-            <div className="absolute top-0 right-0 h-64 w-64 rounded-full bg-white/10 -translate-y-1/2 translate-x-1/3 animate-blob-drift" />
-            <div className="absolute bottom-0 left-0 h-48 w-48 rounded-full bg-white/10 translate-y-1/2 -translate-x-1/3 animate-blob-drift-2" />
+          <div className="mx-auto max-w-4xl rounded-3xl bg-zinc-900 p-12 sm:p-16 text-center text-white relative overflow-hidden">
+            {/* Subtle animated accents */}
+            <div className="absolute top-0 right-0 h-72 w-72 rounded-full bg-violet-600/20 -translate-y-1/3 translate-x-1/4 blur-3xl animate-blob-drift" />
+            <div className="absolute bottom-0 left-0 h-56 w-56 rounded-full bg-indigo-600/20 translate-y-1/3 -translate-x-1/4 blur-3xl animate-blob-drift-2" />
 
             <div className="relative">
-              <h2 className="text-3xl font-bold sm:text-4xl">
-                Start your nightly debrief tonight
-              </h2>
-              <p className="mt-4 text-white/80 text-lg max-w-lg mx-auto">
-                60 seconds is all it takes. Your future self will thank you.
+              <p className="text-sm font-medium text-violet-400 mb-4 uppercase tracking-wider">
+                14-day free trial · no card required
               </p>
-              <Link
-                href="/auth/signin"
-                className="mt-8 inline-flex items-center gap-2 rounded-xl bg-white px-8 py-3.5 text-sm font-semibold text-violet-700 shadow-lg transition hover:bg-zinc-100 active:scale-95"
-              >
-                Start Free Trial
-                <svg
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
+              <h2 className="text-3xl font-bold sm:text-5xl tracking-tight">
+                Your first debrief takes
+                <br />
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-indigo-400">
+                  60 seconds.
+                </span>
+              </h2>
+              <p className="mt-5 text-zinc-400 text-lg max-w-md mx-auto">
+                Start tonight. Wake up to extracted tasks, tracked goals, and a
+                clearer picture of your life.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <Link
+                  href="/auth/signin"
+                  className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </Link>
+                  Start Your 14-Day Free Trial
+                </Link>
+                <span className="text-sm text-zinc-500">
+                  Then $19/month · cancel anytime
+                </span>
+              </div>
             </div>
           </div>
         </Reveal>
