@@ -21,7 +21,13 @@ export const metadata: Metadata = {
   title: "Acuity — The daily debrief that turns chaos into clarity",
   description:
     "Speak for 60 seconds. AI extracts your tasks, tracks your goals, decodes your mental patterns, and writes your weekly report — automatically.",
+  metadataBase: new URL("https://getacuity.io"),
+  alternates: {
+    canonical: "https://getacuity.io",
+  },
   openGraph: {
+    url: "https://getacuity.io",
+    siteName: "Acuity",
     images: [{ url: "/web-app-manifest-512x512.png" }],
   },
 };
