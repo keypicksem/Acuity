@@ -83,6 +83,13 @@ export default function WeeklyReportPage() {
         </div>
       </section>
 
+      {/* ───── PRE-HOW-IT-WORKS CTA ───── */}
+      <MidPageCTA
+        headline="Ready to get your first weekly report this Sunday?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
+
       {/* ───── HOW IT WORKS ───── */}
       <HowItWorksSection
         steps={[

@@ -77,6 +77,13 @@ export default function TherapyPage() {
         body="Every night you speak freely for 60 seconds. Acuity tracks your mood, detects emotional patterns, flags recurring themes, and builds a mental health timeline that compounds over time. Show up to therapy with 7 days of actual data — not just how you feel in the moment."
       />
 
+      {/* ───── PRE-HOW-IT-WORKS CTA ───── */}
+      <MidPageCTA
+        headline="Ready to show up to your next session with real data?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
+
       {/* ───── HOW IT WORKS ───── */}
       <HowItWorksSection
         steps={[

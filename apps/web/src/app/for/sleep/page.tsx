@@ -101,6 +101,13 @@ export default function SleepPage() {
         </div>
       </section>
 
+      {/* ───── PRE-HOW-IT-WORKS CTA ───── */}
+      <MidPageCTA
+        headline="Ready to try the 60-second ritual that empties your head before bed?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
+
       {/* ───── HOW IT WORKS ───── */}
       <HowItWorksSection
         steps={[

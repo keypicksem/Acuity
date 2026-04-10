@@ -135,6 +135,13 @@ export default function FoundersPage() {
         </div>
       </section>
 
+      {/* ───── PRE-HOW-IT-WORKS CTA ───── */}
+      <MidPageCTA
+        headline="Ready to start capturing every idea, task, and decision automatically?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
+
       {/* ───── HOW IT WORKS ───── */}
       <HowItWorksSection
         steps={[

@@ -95,6 +95,13 @@ export default function DecodedPage() {
         </div>
       </section>
 
+      {/* ───── PRE-HOW-IT-WORKS CTA ───── */}
+      <MidPageCTA
+        headline="Ready to find out what your subconscious has been trying to tell you?"
+        subheadline="No credit card required · cancel anytime"
+        utmCampaign={UTM}
+      />
+
       {/* ───── HOW DECODING WORKS ───── */}
       <HowItWorksSection
         steps={[
