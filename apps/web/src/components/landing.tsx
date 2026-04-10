@@ -420,6 +420,178 @@ function ParallaxOrbs() {
 }
 
 /* ═══════════════════════════════════════════
+   Animated brain visualization
+   ═══════════════════════════════════════════ */
+
+const BRAIN_REGIONS = [
+  { cx: 50, cy: 28, label: "Goals", color: "#7C3AED" },
+  { cx: 30, cy: 42, label: "Mood", color: "#F43F5E" },
+  { cx: 70, cy: 42, label: "Tasks", color: "#3B82F6" },
+  { cx: 22, cy: 60, label: "Health", color: "#22C55E" },
+  { cx: 50, cy: 55, label: "Themes", color: "#F59E0B" },
+  { cx: 78, cy: 60, label: "Work", color: "#6366F1" },
+  { cx: 35, cy: 75, label: "Growth", color: "#8B5CF6" },
+  { cx: 65, cy: 75, label: "Relationships", color: "#EC4899" },
+];
+
+const BRAIN_CONNECTIONS = [
+  [0, 1], [0, 2], [0, 4],
+  [1, 3], [1, 4],
+  [2, 4], [2, 5],
+  [3, 6], [4, 6], [4, 7],
+  [5, 7],
+];
+
+function AnimatedBrain() {
+  const [litCount, setLitCount] = useState(0);
+  const [cycle, setCycle] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true;
+          runCycle();
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  function runCycle() {
+    setLitCount(0);
+    let i = 0;
+    const iv = setInterval(() => {
+      i++;
+      setLitCount(i);
+      if (i >= BRAIN_REGIONS.length) {
+        clearInterval(iv);
+        // Hold fully lit for a moment, then restart
+        setTimeout(() => {
+          setCycle((c) => c + 1);
+          setLitCount(0);
+          let j = 0;
+          const iv2 = setInterval(() => {
+            j++;
+            setLitCount(j);
+            if (j >= BRAIN_REGIONS.length) {
+              clearInterval(iv2);
+              setTimeout(() => {
+                setCycle((c) => c + 1);
+                runCycle();
+              }, 2000);
+            }
+          }, 400);
+        }, 2000);
+      }
+    }, 400);
+  }
+
+  return (
+    <div ref={ref} className="relative w-[320px] h-[360px] sm:w-[380px] sm:h-[420px]">
+      {/* Glow backdrop */}
+      <div
+        className="absolute inset-0 rounded-full blur-[80px] transition-opacity duration-1000"
+        style={{ opacity: litCount / BRAIN_REGIONS.length * 0.3, backgroundColor: "#7C3AED" }}
+      />
+
+      <svg viewBox="0 0 100 100" className="relative w-full h-full" key={cycle}>
+        {/* Brain outline */}
+        <ellipse cx="50" cy="52" rx="38" ry="40" fill="none" stroke="#E4E4E7" strokeWidth="0.5" />
+        {/* Hemisphere line */}
+        <path d="M50 12 Q50 52 50 92" fill="none" stroke="#E4E4E7" strokeWidth="0.3" />
+
+        {/* Connections */}
+        {BRAIN_CONNECTIONS.map(([a, b], i) => {
+          const from = BRAIN_REGIONS[a];
+          const to = BRAIN_REGIONS[b];
+          const isLit = a < litCount && b < litCount;
+          return (
+            <line
+              key={i}
+              x1={from.cx}
+              y1={from.cy}
+              x2={to.cx}
+              y2={to.cy}
+              stroke={isLit ? "#A78BFA" : "#E4E4E7"}
+              strokeWidth={isLit ? "0.6" : "0.3"}
+              className="transition-all duration-700"
+              strokeOpacity={isLit ? 0.6 : 0.2}
+            />
+          );
+        })}
+
+        {/* Nodes */}
+        {BRAIN_REGIONS.map((region, i) => {
+          const isLit = i < litCount;
+          return (
+            <g key={i}>
+              {/* Pulse ring when lighting up */}
+              {isLit && (
+                <circle
+                  cx={region.cx}
+                  cy={region.cy}
+                  r="5"
+                  fill="none"
+                  stroke={region.color}
+                  strokeWidth="0.3"
+                  opacity="0"
+                  className="animate-pulse-ring"
+                />
+              )}
+              {/* Node circle */}
+              <circle
+                cx={region.cx}
+                cy={region.cy}
+                r={isLit ? "3.5" : "2.5"}
+                fill={isLit ? region.color : "#D4D4D8"}
+                className="transition-all duration-500"
+                opacity={isLit ? 1 : 0.4}
+              />
+              {/* Label */}
+              <text
+                x={region.cx}
+                y={region.cy - 5.5}
+                textAnchor="middle"
+                className="transition-opacity duration-500"
+                fill={isLit ? "#18181B" : "#A1A1AA"}
+                fontSize="2.8"
+                fontWeight={isLit ? "600" : "400"}
+                opacity={isLit ? 1 : 0.4}
+              >
+                {region.label}
+              </text>
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
+const brainFeatures = [
+  {
+    title: "Week 1 — Surface level",
+    desc: "Acuity learns your recurring tasks, basic mood patterns, and top-of-mind goals.",
+  },
+  {
+    title: "Month 1 — Connections form",
+    desc: "It spots that poor sleep predicts low productivity, or that exercise boosts your mood score by 40%.",
+  },
+  {
+    title: "Month 3+ — Deep guidance",
+    desc: "Personalized coaching: when to push, when to rest, which goals are stalling, and what habits actually move the needle.",
+  },
+];
+
+/* ═══════════════════════════════════════════
    Feature icon SVGs (replace emojis)
    ═══════════════════════════════════════════ */
 
@@ -1066,6 +1238,56 @@ export function LandingPage() {
                 </div>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───── MIND MAP / BRAIN VISUALIZATION ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-6xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-20">
+            {/* Left: Animated brain */}
+            <div className="flex-1 flex justify-center mb-12 lg:mb-0">
+              <AnimatedBrain />
+            </div>
+
+            {/* Right: Copy */}
+            <div className="flex-1 max-w-lg">
+              <Reveal>
+                <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-3">
+                  Life Map
+                </p>
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                  The more you share,
+                  <br />
+                  the sharper it gets.
+                </h2>
+              </Reveal>
+              <Reveal delay={1}>
+                <p className="mt-6 text-lg text-zinc-500 leading-relaxed">
+                  Every debrief lights up another part of your mind map.
+                  Over weeks, Acuity builds a living picture of how you think,
+                  what drives you, and where you get stuck.
+                </p>
+              </Reveal>
+              <Reveal delay={2}>
+                <div className="mt-8 space-y-4">
+                  {brainFeatures.map((f, i) => (
+                    <div key={i} className="flex items-start gap-3">
+                      <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-violet-100">
+                        <svg className="h-3.5 w-3.5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-zinc-900">{f.title}</p>
+                        <p className="text-sm text-zinc-500">{f.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Reveal>
+            </div>
           </div>
         </div>
       </section>
