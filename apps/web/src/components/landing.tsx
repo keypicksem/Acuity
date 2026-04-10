@@ -1215,36 +1215,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ───── FEATURES GRID ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
-            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-5xl">
-              Everything you need to stay sharp
-            </h2>
-            <p className="mx-auto mt-4 max-w-lg text-center text-zinc-500 text-lg">
-              One nightly habit that powers your entire week.
-            </p>
-          </Reveal>
-
-          <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {featureData.map((f, i) => (
-              <Reveal key={f.title} delay={Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}>
-                <div className="group rounded-2xl border border-zinc-100 bg-[#FAFAF7] p-6 transition-all duration-300 hover:shadow-lg hover:shadow-violet-500/5 hover:border-violet-200 hover:-translate-y-1 cursor-default">
-                  <div className="mb-4">
-                    <FeatureIcon iconKey={f.iconKey} />
-                  </div>
-                  <h3 className="mb-2 text-lg font-semibold">{f.title}</h3>
-                  <p className="text-sm leading-relaxed text-zinc-500">
-                    {f.desc}
-                  </p>
-                </div>
-              </Reveal>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ───── LIFE MATRIX VISUALIZATION ───── */}
       <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-6xl">
