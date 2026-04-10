@@ -236,28 +236,28 @@ export function PulsingCTA({
 const DROPDOWN_ITEMS = [
   {
     href: "/for/therapy",
-    title: "Therapy",
-    description: "What if you had a therapist who listened every night?",
+    title: "The Overthinker",
+    description: "Quiet the mental noise. Get it out of your head and into structure.",
   },
   {
     href: "/for/decoded",
-    title: "Life decoded",
-    description: "Reveal the subconscious patterns running your life",
+    title: "The Curious One",
+    description: "Discover the hidden patterns driving your decisions and emotions.",
   },
   {
     href: "/for/sleep",
-    title: "Sleep",
-    description: "Give your racing thoughts somewhere to go",
+    title: "The Night Owl",
+    description: "Give your racing thoughts somewhere to go before bed.",
   },
   {
     href: "/for/weekly-report",
-    title: "Weekly report & Life Matrix",
-    description: "Your week, written by AI. Your life, mapped.",
+    title: "The Overachiever",
+    description: "Weekly AI reports, goal tracking, and a Life Matrix to stay sharp.",
   },
   {
     href: "/for/founders",
-    title: "Founders & executives",
-    description: "The 60-second nightly debrief for high performers",
+    title: "The Builder",
+    description: "The 60-second nightly debrief for founders and high performers.",
   },
 ];
 
