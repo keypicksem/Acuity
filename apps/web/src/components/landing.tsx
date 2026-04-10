@@ -545,31 +545,40 @@ const MATRIX_AREAS = [
 ];
 
 /* Radar matrix — nodes positioned at their score distance from center */
-const RC = { x: 200, y: 200 }; // radar center
-const R_MAX = 130; // max radius
-const R_LEVELS = 4;
+/* ── Life Matrix Radar ── */
 
-function radarPt(i: number, r: number) {
-  const angle = -Math.PI / 2 + (i * 2 * Math.PI) / 6;
-  return {
-    x: RC.x + r * Math.cos(angle),
-    y: RC.y + r * Math.sin(angle),
-  };
+const CX = 250;
+const CY = 250;
+const MAX_R = 170;
+const GRID_LEVELS = 4;
+
+function rPt(i: number, r: number) {
+  const a = -Math.PI / 2 + (i * 2 * Math.PI) / 6;
+  return { x: CX + r * Math.cos(a), y: CY + r * Math.sin(a) };
 }
 
-function NeuralBrainMap() {
+const AREA_INSIGHTS: Record<string, string> = {
+  Health: "Trending up — you mentioned exercise in 4 of your last 5 debriefs",
+  Wealth: "Stable — financial stress appears less often than last month",
+  Relationships: "Your strongest area — deep connections drive your energy",
+  Spirituality: "Blind spot — only mentioned twice in the last 3 weeks",
+  Career: "Peak performer — your top-scoring area at 92",
+  Growth: "Accelerating — you set 3 new goals this month",
+};
+
+function LifeMatrixRadar() {
   const [litCount, setLitCount] = useState(0);
-  const [pulseIdx, setPulseIdx] = useState(-1);
+  const [activeIdx, setActiveIdx] = useState(-1);
   const ref = useRef<HTMLDivElement>(null);
   const started = useRef(false);
-  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+  const tRef = useRef<ReturnType<typeof setTimeout>[]>([]);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
     const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !started.current) {
+      ([e]) => {
+        if (e.isIntersecting && !started.current) {
           started.current = true;
           runCycle();
           obs.unobserve(el);
@@ -578,237 +587,185 @@ function NeuralBrainMap() {
       { threshold: 0.15 }
     );
     obs.observe(el);
-    return () => {
-      obs.disconnect();
-      timeoutsRef.current.forEach(clearTimeout);
-    };
+    return () => { obs.disconnect(); tRef.current.forEach(clearTimeout); };
   }, []);
 
   function runCycle() {
-    timeoutsRef.current.forEach(clearTimeout);
-    timeoutsRef.current = [];
+    tRef.current.forEach(clearTimeout);
+    tRef.current = [];
     setLitCount(0);
-    setPulseIdx(-1);
+    setActiveIdx(-1);
 
     for (let i = 0; i < 6; i++) {
-      const t = setTimeout(() => {
+      tRef.current.push(setTimeout(() => {
         setLitCount(i + 1);
-        setPulseIdx(i);
-      }, i * 600);
-      timeoutsRef.current.push(t);
+        setActiveIdx(i);
+      }, i * 700));
     }
-
-    // Hold, then reset and loop
-    const resetT = setTimeout(() => {
-      setPulseIdx(-1);
+    // Clear active highlight after all revealed
+    tRef.current.push(setTimeout(() => setActiveIdx(-1), 6 * 700 + 500));
+    // Hold then reset
+    tRef.current.push(setTimeout(() => {
       setLitCount(0);
-      const loopT = setTimeout(() => runCycle(), 800);
-      timeoutsRef.current.push(loopT);
-    }, 6 * 600 + 4000);
-    timeoutsRef.current.push(resetT);
+      setActiveIdx(-1);
+      tRef.current.push(setTimeout(() => runCycle(), 600));
+    }, 6 * 700 + 5000));
   }
 
-  // Build data polygon from revealed scores
-  const polyPoints = MATRIX_AREAS.map((area, i) => {
-    if (i >= litCount) return radarPt(i, 0);
-    return radarPt(i, (area.target / 100) * R_MAX);
-  });
-  const polyStr = polyPoints.map((p) => `${p.x},${p.y}`).join(" ");
+  // Polygon
+  const polyStr = MATRIX_AREAS.map((a, i) => {
+    const r = i < litCount ? (a.target / 100) * MAX_R : 0;
+    const p = rPt(i, r);
+    return `${p.x},${p.y}`;
+  }).join(" ");
+
+  // Active insight
+  const activeArea = activeIdx >= 0 ? MATRIX_AREAS[activeIdx] : null;
 
   return (
-    <div ref={ref} className="relative w-[360px] h-[400px] sm:w-[420px] sm:h-[440px]">
-      <svg viewBox="0 0 400 400" className="w-full h-full">
-        {/* Grid rings */}
-        {Array.from({ length: R_LEVELS }).map((_, lvl) => {
-          const r = ((lvl + 1) / R_LEVELS) * R_MAX;
-          const pts = Array.from({ length: 6 })
-            .map((_, j) => { const p = radarPt(j, r); return `${p.x},${p.y}`; })
-            .join(" ");
-          return (
-            <polygon key={lvl} points={pts} fill="none" stroke="#E4E4E7" strokeWidth="0.5" />
-          );
-        })}
+    <div ref={ref} className="w-full max-w-2xl mx-auto">
+      <div className="flex flex-col lg:flex-row items-center gap-8">
+        {/* Radar */}
+        <div className="relative shrink-0">
+          <svg viewBox="0 0 500 500" className="w-[340px] h-[340px] sm:w-[420px] sm:h-[420px]">
+            {/* Grid */}
+            {Array.from({ length: GRID_LEVELS }).map((_, lvl) => {
+              const r = ((lvl + 1) / GRID_LEVELS) * MAX_R;
+              const pts = Array.from({ length: 6 }).map((_, j) => {
+                const p = rPt(j, r);
+                return `${p.x},${p.y}`;
+              }).join(" ");
+              return <polygon key={lvl} points={pts} fill="none" stroke="#E4E4E7" strokeWidth="0.8" />;
+            })}
 
-        {/* Spokes */}
-        {MATRIX_AREAS.map((_, i) => {
-          const p = radarPt(i, R_MAX);
-          return (
-            <line key={i} x1={RC.x} y1={RC.y} x2={p.x} y2={p.y} stroke="#E4E4E7" strokeWidth="0.5" />
-          );
-        })}
+            {/* Spokes */}
+            {MATRIX_AREAS.map((_, i) => {
+              const p = rPt(i, MAX_R);
+              return <line key={i} x1={CX} y1={CY} x2={p.x} y2={p.y} stroke="#E4E4E7" strokeWidth="0.8" />;
+            })}
 
-        {/* Data polygon — connects score positions */}
-        {litCount > 0 && (
-          <polygon
-            points={polyStr}
-            fill="#7C3AED"
-            fillOpacity="0.08"
-            stroke="#7C3AED"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-            className="transition-all duration-600"
-          />
-        )}
-
-        {/* Center dot */}
-        <circle cx={RC.x} cy={RC.y} r="3" fill="#D4D4D8" />
-
-        {/* Area nodes — positioned at score distance */}
-        {MATRIX_AREAS.map((area, i) => {
-          const isLit = i < litCount;
-          const isPulsing = pulseIdx === i;
-          const scoreR = (area.target / 100) * R_MAX;
-          const nodeP = isLit ? radarPt(i, scoreR) : radarPt(i, 0);
-          const labelP = radarPt(i, R_MAX + 24);
-
-          return (
-            <g key={area.label}>
-              {/* Pulsing dot on active node */}
-              {isPulsing && (
-                <>
-                  <circle
-                    cx={nodeP.x}
-                    cy={nodeP.y}
-                    r="18"
-                    fill="none"
-                    stroke={area.color}
-                    strokeWidth="2"
-                    className="animate-pulse-ring"
-                  />
-                  <circle
-                    cx={nodeP.x}
-                    cy={nodeP.y}
-                    r="12"
-                    fill={area.color}
-                    opacity="0.12"
-                  />
-                </>
-              )}
-              {/* Soft glow when revealed */}
-              {isLit && !isPulsing && (
-                <circle
-                  cx={nodeP.x}
-                  cy={nodeP.y}
-                  r="10"
-                  fill={area.color}
-                  opacity="0.08"
-                />
-              )}
-              {/* Node dot */}
-              <circle
-                cx={isLit ? nodeP.x : RC.x}
-                cy={isLit ? nodeP.y : RC.y}
-                r={isLit ? "6" : "0"}
-                fill={area.color}
-                stroke="white"
+            {/* Data polygon */}
+            {litCount > 0 && (
+              <polygon
+                points={polyStr}
+                fill="#7C3AED"
+                fillOpacity="0.1"
+                stroke="#7C3AED"
                 strokeWidth="2"
-                className="transition-all duration-600 ease-out"
+                strokeLinejoin="round"
+                className="transition-all duration-700 ease-out"
               />
-              {/* Label — always at outer edge */}
-              <text
-                x={labelP.x}
-                y={labelP.y}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                fontSize="12"
-                fontWeight={isLit ? "600" : "400"}
-                fill={isLit ? "#18181B" : "#D4D4D8"}
-                className="transition-all duration-500"
-              >
-                {area.label}
-              </text>
-              {/* Score number — appears below label */}
-              {isLit && (
-                <text
-                  x={labelP.x}
-                  y={labelP.y + 15}
-                  textAnchor="middle"
-                  fontSize="11"
-                  fontWeight="700"
-                  fill={area.color}
-                  className="transition-opacity duration-500"
-                >
-                  {area.target}
-                </text>
-              )}
-            </g>
-          );
-        })}
-      </svg>
-    </div>
-  );
-}
+            )}
 
-/* Floating insight callouts around the radar */
-function InsightCallouts() {
-  const [visibleCount, setVisibleCount] = useState(0);
-  const ref = useRef<HTMLDivElement>(null);
+            {/* Center */}
+            <circle cx={CX} cy={CY} r="4" fill="#D4D4D8" />
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          INSIGHT_CALLOUTS.forEach((_, i) => {
-            setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), 2000 + i * 800);
-          });
-          obs.unobserve(el);
-        }
-      },
-      { threshold: 0.3 }
-    );
-    obs.observe(el);
-    return () => obs.disconnect();
-  }, []);
+            {/* Nodes */}
+            {MATRIX_AREAS.map((area, i) => {
+              const isLit = i < litCount;
+              const isActive = activeIdx === i;
+              const scoreR = (area.target / 100) * MAX_R;
+              const nodeP = isLit ? rPt(i, scoreR) : { x: CX, y: CY };
+              const labelP = rPt(i, MAX_R + 30);
 
-  return (
-    <div ref={ref}>
-      {INSIGHT_CALLOUTS.map((callout, i) => (
-        <div
-          key={i}
-          className="absolute rounded-lg border border-zinc-200 bg-white px-3 py-2 shadow-md transition-all duration-700"
-          style={{
-            ...callout.position,
-            opacity: i < visibleCount ? 1 : 0,
-            transform: i < visibleCount ? "translateY(0)" : "translateY(8px)",
-          }}
-        >
-          <div className="flex items-center gap-1.5 mb-0.5">
-            <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: callout.color }} />
-            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: callout.color }}>
-              {callout.type}
-            </span>
-          </div>
-          <p className="text-xs text-zinc-600 leading-snug max-w-[160px]">
-            {callout.text}
-          </p>
+              return (
+                <g key={area.label}>
+                  {/* Active pulse */}
+                  {isActive && (
+                    <>
+                      <circle cx={nodeP.x} cy={nodeP.y} r="22" fill="none" stroke={area.color} strokeWidth="2.5" className="animate-pulse-ring" />
+                      <circle cx={nodeP.x} cy={nodeP.y} r="15" fill={area.color} opacity="0.15" />
+                    </>
+                  )}
+                  {/* Revealed glow */}
+                  {isLit && !isActive && (
+                    <circle cx={nodeP.x} cy={nodeP.y} r="12" fill={area.color} opacity="0.08" />
+                  )}
+                  {/* Node */}
+                  <circle
+                    cx={nodeP.x}
+                    cy={nodeP.y}
+                    r={isLit ? "8" : "0"}
+                    fill={isLit ? area.color : "#E4E4E7"}
+                    stroke="white"
+                    strokeWidth="3"
+                    className="transition-all duration-700 ease-out"
+                    style={isLit ? { filter: `drop-shadow(0 0 4px ${area.color}60)` } : {}}
+                  />
+                  {/* Label */}
+                  <text
+                    x={labelP.x}
+                    y={labelP.y}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    fontSize="14"
+                    fontWeight={isLit ? "700" : "400"}
+                    fill={isLit ? "#18181B" : "#D4D4D8"}
+                    className="transition-all duration-500"
+                  >
+                    {area.label}
+                  </text>
+                  {/* Score */}
+                  {isLit && (
+                    <text
+                      x={labelP.x}
+                      y={labelP.y + 18}
+                      textAnchor="middle"
+                      fontSize="16"
+                      fontWeight="800"
+                      fill={area.color}
+                    >
+                      {area.target}
+                    </text>
+                  )}
+                </g>
+              );
+            })}
+          </svg>
         </div>
-      ))}
+
+        {/* Insight panel — shows context for active/last area */}
+        <div className="flex-1 min-w-0 max-w-xs">
+          {activeArea ? (
+            <div
+              className="rounded-xl border-l-4 bg-white p-5 shadow-sm transition-all duration-500 animate-fade-in"
+              style={{ borderColor: activeArea.color }}
+              key={activeArea.label}
+            >
+              <div className="flex items-center gap-2 mb-2">
+                <div className="h-3 w-3 rounded-full" style={{ backgroundColor: activeArea.color }} />
+                <span className="text-sm font-bold text-zinc-900">{activeArea.label}</span>
+                <span className="text-sm font-bold" style={{ color: activeArea.color }}>
+                  {activeArea.target}/100
+                </span>
+              </div>
+              <p className="text-sm text-zinc-500 leading-relaxed">
+                {AREA_INSIGHTS[activeArea.label]}
+              </p>
+            </div>
+          ) : litCount === 6 ? (
+            <div className="space-y-2">
+              {MATRIX_AREAS.map((area) => (
+                <div key={area.label} className="flex items-center gap-3">
+                  <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: area.color }} />
+                  <span className="text-sm font-medium text-zinc-700 w-28">{area.label}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-zinc-100 overflow-hidden">
+                    <div className="h-full rounded-full transition-all duration-1000" style={{ backgroundColor: area.color, width: `${area.target}%` }} />
+                  </div>
+                  <span className="text-sm font-bold w-8 text-right" style={{ color: area.color }}>{area.target}</span>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-zinc-400 italic">
+              Mapping your life areas...
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-const INSIGHT_CALLOUTS = [
-  {
-    type: "Strength",
-    text: "Career is your top area — 92/100 and rising.",
-    color: "#3B82F6",
-    position: { top: "5%", right: "-40%", },
-  },
-  {
-    type: "Blind spot",
-    text: "Spirituality has been neglected for 3 weeks.",
-    color: "#A855F7",
-    position: { bottom: "15%", left: "-35%", },
-  },
-  {
-    type: "Insight",
-    text: "Exercise days boost your mood score by 40%.",
-    color: "#22C55E",
-    position: { top: "30%", left: "-40%", },
-  },
-];
 
 const matrixFeatures = [
   {
@@ -1530,19 +1487,9 @@ export function LandingPage() {
             </div>
           </Reveal>
 
-          {/* Radar + insight callouts */}
+          {/* Radar + live insight panel */}
           <Reveal delay={1}>
-            <div className="relative flex justify-center">
-              {/* Pulsing purple glow */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-violet-400/12 blur-[80px] animate-pulse-slow" />
-
-              <div className="relative">
-                <NeuralBrainMap />
-
-                {/* Floating insight callouts — positioned around the radar */}
-                <InsightCallouts />
-              </div>
-            </div>
+            <LifeMatrixRadar />
           </Reveal>
         </div>
       </section>
