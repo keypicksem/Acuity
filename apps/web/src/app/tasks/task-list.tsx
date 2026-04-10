@@ -112,7 +112,7 @@ export function TaskList() {
           )}
         </h1>
         <p className="text-sm text-zinc-500">
-          Actions extracted from your brain dumps.
+          Actions extracted from your daily debriefs.
         </p>
       </div>
 

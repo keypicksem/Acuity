@@ -20,7 +20,7 @@ export default async function UpgradePage() {
             Upgrade to {PLAN_PRO_NAME}
           </h1>
           <p className="text-sm text-zinc-500 leading-relaxed">
-            Unlock the full power of your nightly brain dumps.
+            Unlock the full power of your daily debriefs.
           </p>
         </div>
 

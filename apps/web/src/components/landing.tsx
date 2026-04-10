@@ -284,6 +284,92 @@ function CascadingTasks({
 }
 
 /* ═══════════════════════════════════════════
+   Animated cost comparison
+   ═══════════════════════════════════════════ */
+
+const costLines = [
+  { fraction: "1/8th", label: "the cost of a single therapy session", pct: 12.5 },
+  { fraction: "1/26th", label: "the cost of a life coach", pct: 3.8 },
+  {
+    fraction: "The only option",
+    label: "that requires zero effort and produces structured output",
+    pct: 100,
+    highlight: true,
+  },
+];
+
+function CostComparison() {
+  const [visibleIdx, setVisibleIdx] = useState(-1);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          costLines.forEach((_, i) => {
+            setTimeout(() => setVisibleIdx(i), i * 600);
+          });
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref} className="space-y-5">
+      {costLines.map((line, i) => (
+        <div
+          key={i}
+          className="transition-all duration-700"
+          style={{
+            opacity: i <= visibleIdx ? 1 : 0,
+            transform: i <= visibleIdx ? "translateY(0)" : "translateY(20px)",
+          }}
+        >
+          <div className="flex items-baseline gap-2 mb-2">
+            <span
+              className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${
+                line.highlight ? "text-zinc-900" : "text-zinc-900"
+              }`}
+            >
+              {line.fraction}
+            </span>
+            <span className="text-lg text-zinc-500">{line.label}</span>
+          </div>
+          {!line.highlight && (
+            <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-zinc-900 transition-all duration-1000 ease-out"
+                style={{
+                  width: i <= visibleIdx ? `${line.pct}%` : "0%",
+                  transitionDelay: `${200}ms`,
+                }}
+              />
+            </div>
+          )}
+          {line.highlight && (
+            <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-400 transition-all duration-1500 ease-out"
+                style={{
+                  width: i <= visibleIdx ? "100%" : "0%",
+                  transitionDelay: `${200}ms`,
+                }}
+              />
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+/* ═══════════════════════════════════════════
    Mouse-tracking parallax orbs
    ═══════════════════════════════════════════ */
 
@@ -525,7 +611,7 @@ export function LandingPage() {
                   <div className="h-full w-full rounded-[1.5rem] bg-[#FAFAF7] p-4 flex flex-col gap-3 overflow-hidden">
                     <div className="flex items-center justify-between">
                       <div className="text-xs text-zinc-400 font-medium">
-                        Today&apos;s Dump
+                        Today&apos;s Debrief
                       </div>
                       <div className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] text-emerald-600">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -568,63 +654,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* ───── COMPARISON ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
-        <div className="mx-auto max-w-5xl">
-          <Reveal>
-            <p className="text-center text-xs font-semibold uppercase tracking-widest text-zinc-400 mb-3">
-              Why $19/month is a no-brainer
-            </p>
-          </Reveal>
-
-          <Reveal delay={1}>
-            <div className="mt-10 overflow-x-auto rounded-2xl border border-zinc-200 shadow-sm">
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className="border-b border-zinc-100 bg-zinc-50">
-                    <th className="px-5 py-3 font-semibold text-zinc-900">Alternative</th>
-                    <th className="px-5 py-3 font-semibold text-zinc-900">Cost</th>
-                    <th className="px-5 py-3 font-semibold text-zinc-900">What&apos;s missing</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100">
-                  {comparisons.map((row) => (
-                    <tr
-                      key={row.alt}
-                      className="transition-colors duration-200 hover:bg-zinc-50"
-                    >
-                      <td className="px-5 py-3.5 font-medium text-zinc-800 whitespace-nowrap">
-                        {row.alt}
-                      </td>
-                      <td className="px-5 py-3.5 text-zinc-500 whitespace-nowrap">
-                        {row.cost}
-                      </td>
-                      <td className="px-5 py-3.5 text-zinc-500">
-                        {row.missing}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Reveal>
-
-          <Reveal delay={2}>
-            <div className="mt-10 flex flex-col items-center gap-3 text-center">
-              <p className="text-sm font-bold text-zinc-900">
-                1/8th the cost of a single therapy session
-              </p>
-              <p className="text-sm font-bold text-zinc-900">
-                1/26th the cost of a life coach
-              </p>
-              <p className="text-sm font-bold text-zinc-900">
-                The only option that requires zero effort and produces structured output
-              </p>
-            </div>
-          </Reveal>
-        </div>
-      </section>
-
       {/* ───── STATS TICKER ───── */}
       <section className="py-12 px-6 border-y border-zinc-200/60 bg-white/50 backdrop-blur">
         <div className="mx-auto max-w-5xl">
@@ -641,6 +670,74 @@ export function LandingPage() {
                 <div className="mt-1 text-sm text-zinc-500">{stat.label}</div>
               </Reveal>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ───── COMPARISON TABLE + ANIMATED COST LINES ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-5xl">
+          <Reveal>
+            <h2 className="text-center text-3xl font-bold tracking-tight sm:text-5xl">
+              Why $19/month is a no-brainer
+            </h2>
+            <p className="mx-auto mt-4 max-w-lg text-center text-zinc-500 text-lg">
+              Compare Acuity to the alternatives.
+            </p>
+          </Reveal>
+
+          <Reveal delay={1}>
+            <div className="mt-16 overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm">
+              {/* Table header */}
+              <div className="grid grid-cols-12 gap-4 border-b border-zinc-100 bg-zinc-50 px-6 py-4">
+                <div className="col-span-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                  Alternative
+                </div>
+                <div className="col-span-3 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                  Cost
+                </div>
+                <div className="col-span-6 text-xs font-semibold uppercase tracking-widest text-zinc-400">
+                  What&apos;s missing
+                </div>
+              </div>
+
+              {/* Rows */}
+              {comparisons.map((row, i) => (
+                <Reveal key={row.alt} delay={Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}>
+                  <div className="grid grid-cols-12 gap-4 border-b border-zinc-100 px-6 py-5 transition-colors duration-200 hover:bg-zinc-50 last:border-b-0">
+                    <div className="col-span-3 text-sm font-medium text-zinc-900">
+                      {row.alt}
+                    </div>
+                    <div className="col-span-3 text-sm text-zinc-500">
+                      {row.cost}
+                    </div>
+                    <div className="col-span-6 text-sm text-zinc-500">
+                      {row.missing}
+                    </div>
+                  </div>
+                </Reveal>
+              ))}
+
+              {/* Acuity row — highlighted */}
+              <Reveal delay={5}>
+                <div className="grid grid-cols-12 gap-4 bg-zinc-900 px-6 py-5">
+                  <div className="col-span-3 text-sm font-semibold text-white flex items-center gap-2">
+                    <span>✦</span> Acuity
+                  </div>
+                  <div className="col-span-3 text-sm font-semibold text-white">
+                    $19/month
+                  </div>
+                  <div className="col-span-6 text-sm text-zinc-300">
+                    Nothing. Voice in, tasks + goals + mood + insights out.
+                  </div>
+                </div>
+              </Reveal>
+            </div>
+          </Reveal>
+
+          {/* Animated cost comparison lines */}
+          <div className="mt-16 space-y-6">
+            <CostComparison />
           </div>
         </div>
       </section>
@@ -1032,7 +1129,7 @@ export function LandingPage() {
 
             <div className="relative">
               <h2 className="text-3xl font-bold sm:text-4xl">
-                Start your nightly brain dump tonight
+                Start your nightly debrief tonight
               </h2>
               <p className="mt-4 text-white/80 text-lg max-w-lg mx-auto">
                 60 seconds is all it takes. Your future self will thank you.
@@ -1147,10 +1244,10 @@ const comparisons = [
 ];
 
 const stats = [
-  { value: 2847, suffix: "+", prefix: "", label: "Brain dumps recorded" },
+  { value: 2847, suffix: "+", prefix: "", label: "Daily debriefs recorded" },
   { value: 12, suffix: "k", prefix: "", label: "Tasks extracted" },
   { value: 98, suffix: "%", prefix: "", label: "Said they sleep better" },
-  { value: 60, suffix: "s", prefix: "", label: "Average dump time" },
+  { value: 60, suffix: "s", prefix: "", label: "Average debrief time" },
 ];
 
 const tickerItems = [
@@ -1203,7 +1300,7 @@ const testimonials = [
     name: "Sarah K.",
     role: "Product Manager",
     quote:
-      "I used to let tasks pile up in my head until 2 AM. Now I dump everything into Acuity in 60 seconds and actually sleep.",
+      "I used to let tasks pile up in my head until 2 AM. Now I debrief into Acuity in 60 seconds and actually sleep.",
   },
   {
     name: "Marcus T.",

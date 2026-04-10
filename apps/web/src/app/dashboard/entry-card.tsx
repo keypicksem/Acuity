@@ -70,7 +70,7 @@ export function EntryCard({ entry, taskCount }: EntryCardProps) {
             )}
           </div>
           <p className="text-sm text-zinc-700 leading-snug line-clamp-2">
-            {entry.summary ?? (isProcessing ? "Processing your brain dump..." : "No summary generated.")}
+            {entry.summary ?? (isProcessing ? "Processing your debrief..." : "No summary generated.")}
           </p>
           {entry.themes.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1.5">

@@ -48,7 +48,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold text-zinc-900">{greeting}</h1>
           <p className="text-zinc-500 text-sm mt-1">
             {entries.length === 0
-              ? "Record your first brain dump to get started."
+              ? "Record your first daily debrief to get started."
               : `${entries.length} session${entries.length === 1 ? "" : "s"} this week.`}
           </p>
         </div>
@@ -125,7 +125,7 @@ export default async function DashboardPage() {
                 <EmptyState
                   icon="🎯"
                   title="No goals"
-                  description="Mention a goal in your brain dump and we'll track it."
+                  description="Mention a goal in your daily debrief and we'll track it."
                   compact
                 />
               ) : (

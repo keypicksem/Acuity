@@ -183,7 +183,7 @@ export function RecordButton() {
         ) : phase === "idle" ? (
           <div className="text-center">
             <p className="text-sm font-medium text-zinc-800">
-              Start your brain dump
+              Start your daily debrief
             </p>
             <p className="text-xs text-zinc-400 mt-0.5">
               Up to {MAX_SECONDS / 60} minutes
