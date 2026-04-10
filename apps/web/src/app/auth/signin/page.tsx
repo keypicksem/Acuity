@@ -15,6 +15,9 @@ function SignInForm() {
 
   const handleGoogle = async () => {
     setLoading("google");
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "Lead");
+    }
     await signIn("google", { callbackUrl });
   };
 
@@ -22,6 +25,9 @@ function SignInForm() {
     e.preventDefault();
     if (!email.trim()) return;
     setLoading("email");
+    if (typeof window !== "undefined" && window.fbq) {
+      window.fbq("track", "Lead");
+    }
     await signIn("email", { email, callbackUrl, redirect: false });
     setLoading(null);
     setEmailSent(true);

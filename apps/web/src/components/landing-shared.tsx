@@ -202,6 +202,12 @@ export function ParallaxOrbs() {
    Pulsing CTA button
    ═══════════════════════════════════════════ */
 
+function trackInitiateCheckout() {
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("track", "InitiateCheckout");
+  }
+}
+
 export function PulsingCTA({
   href,
   children,
@@ -214,6 +220,7 @@ export function PulsingCTA({
   return (
     <Link
       href={href}
+      onClick={trackInitiateCheckout}
       className={`relative inline-flex items-center gap-2 rounded-xl bg-violet-600 px-8 py-4 text-sm font-semibold text-white transition-all duration-300 hover:bg-violet-500 hover:shadow-xl hover:shadow-violet-600/25 hover:-translate-y-0.5 active:scale-95 ${className}`}
     >
       <span className="absolute inset-0 rounded-xl bg-violet-500/50 animate-pulse-ring" />
@@ -849,6 +856,7 @@ export function CTABanner({
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
                 href={signinUrl}
+                onClick={trackInitiateCheckout}
                 className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
               >
                 {buttonText}
@@ -1241,6 +1249,7 @@ export function MidPageCTA({
           )}
           <Link
             href={signinUrl}
+            onClick={trackInitiateCheckout}
             className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
           >
             Sign Up for the Waitlist &mdash; Get Your First Month Free

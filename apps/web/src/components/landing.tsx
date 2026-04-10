@@ -1003,6 +1003,12 @@ function FeatureIcon({ iconKey }: { iconKey: string }) {
    LANDING PAGE
    ═══════════════════════════════════════════ */
 
+function trackInitiateCheckout() {
+  if (typeof window !== "undefined" && window.fbq) {
+    window.fbq("track", "InitiateCheckout");
+  }
+}
+
 export function LandingPage() {
   const [tickerPaused, setTickerPaused] = useState(false);
 
@@ -1046,6 +1052,7 @@ export function LandingPage() {
           </div>
           <Link
             href="/auth/signin"
+            onClick={trackInitiateCheckout}
             className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 hover:shadow-lg hover:shadow-zinc-900/20 active:scale-95"
           >
             Join the Waitlist
@@ -1086,6 +1093,7 @@ export function LandingPage() {
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
                   <Link
                     href="/auth/signin"
+                    onClick={trackInitiateCheckout}
                     className="rounded-xl bg-zinc-900 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
                   >
                     Sign Up for the Waitlist
@@ -1500,6 +1508,7 @@ export function LandingPage() {
           <div className="mx-auto max-w-xl text-center">
             <Link
               href="/auth/signin"
+              onClick={trackInitiateCheckout}
               className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
             >
               Sign Up for the Waitlist — Get Your First Month Free
@@ -1642,6 +1651,7 @@ export function LandingPage() {
 
                 <Link
                   href="/auth/signin"
+                  onClick={trackInitiateCheckout}
                   className="mt-8 block w-full rounded-xl bg-zinc-900 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/20 active:scale-95"
                 >
                   Sign Up for the Waitlist — Get Your First Month Free
@@ -1678,6 +1688,7 @@ export function LandingPage() {
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
                   href="/auth/signin"
+                  onClick={trackInitiateCheckout}
                   className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
                 >
                   Sign Up for the Waitlist — Get Your First Month Free
