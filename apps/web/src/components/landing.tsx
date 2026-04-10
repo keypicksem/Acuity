@@ -808,8 +808,7 @@ export function LandingPage() {
 
               <Reveal delay={2}>
                 <p className="mt-5 text-base text-zinc-400 leading-relaxed max-w-sm">
-                  Speak for 60 seconds before bed. Wake up to your tasks extracted,
-                  goals tracked, and patterns decoded — automatically.
+                  The daily debrief that decodes your mental patterns.
                 </p>
               </Reveal>
 
