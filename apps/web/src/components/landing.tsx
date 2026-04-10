@@ -627,6 +627,77 @@ function NeuralBrainMap() {
   );
 }
 
+/* Floating insight callouts around the radar */
+function InsightCallouts() {
+  const [visibleCount, setVisibleCount] = useState(0);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          INSIGHT_CALLOUTS.forEach((_, i) => {
+            setTimeout(() => setVisibleCount((c) => Math.max(c, i + 1)), 2000 + i * 800);
+          });
+          obs.unobserve(el);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  return (
+    <div ref={ref}>
+      {INSIGHT_CALLOUTS.map((callout, i) => (
+        <div
+          key={i}
+          className="absolute rounded-lg border border-zinc-200 bg-white px-3 py-2 shadow-md transition-all duration-700"
+          style={{
+            ...callout.position,
+            opacity: i < visibleCount ? 1 : 0,
+            transform: i < visibleCount ? "translateY(0)" : "translateY(8px)",
+          }}
+        >
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <div className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: callout.color }} />
+            <span className="text-[10px] font-semibold uppercase tracking-wider" style={{ color: callout.color }}>
+              {callout.type}
+            </span>
+          </div>
+          <p className="text-xs text-zinc-600 leading-snug max-w-[160px]">
+            {callout.text}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const INSIGHT_CALLOUTS = [
+  {
+    type: "Strength",
+    text: "Career is your top area — 92/100 and rising.",
+    color: "#3B82F6",
+    position: { top: "5%", right: "-40%", },
+  },
+  {
+    type: "Blind spot",
+    text: "Spirituality has been neglected for 3 weeks.",
+    color: "#A855F7",
+    position: { bottom: "15%", left: "-35%", },
+  },
+  {
+    type: "Insight",
+    text: "Exercise days boost your mood score by 40%.",
+    color: "#22C55E",
+    position: { top: "30%", left: "-40%", },
+  },
+];
+
 const matrixFeatures = [
   {
     title: "Week 1 — Surface level",
@@ -1327,7 +1398,7 @@ export function LandingPage() {
 
       {/* ───── LIFE MATRIX ───── */}
       <section className="relative px-6 py-24 sm:py-32 overflow-hidden">
-        <div className="relative mx-auto max-w-6xl">
+        <div className="relative mx-auto max-w-5xl">
           {/* Header */}
           <Reveal>
             <div className="text-center mb-16">
@@ -1341,66 +1412,48 @@ export function LandingPage() {
                   We decode them.
                 </span>
               </h2>
+              <p className="mt-4 text-zinc-500 text-base max-w-xl mx-auto">
+                Every debrief maps your strengths, surfaces your blind spots,
+                and shows you exactly where to focus next.
+              </p>
             </div>
           </Reveal>
 
-          {/* Brain visualization + area cards */}
-          <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16">
-            {/* Left: Neural brain map with pulsing purple backdrop */}
-            <div className="flex-1 flex justify-center mb-12 lg:mb-0">
+          {/* Radar + insight callouts */}
+          <Reveal delay={1}>
+            <div className="relative flex justify-center">
+              {/* Pulsing purple glow */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-violet-400/12 blur-[80px] animate-pulse-slow" />
+
               <div className="relative">
-                {/* Pulsing purple glow behind animation */}
-                <div className="absolute inset-0 -inset-x-8 -inset-y-8 rounded-full bg-violet-400/15 blur-[80px] animate-pulse-slow" />
-                <div className="absolute inset-4 rounded-full bg-violet-500/10 blur-[50px] animate-pulse" />
-                <div className="relative">
-                  <NeuralBrainMap />
-                </div>
+                <NeuralBrainMap />
+
+                {/* Floating insight callouts — positioned around the radar */}
+                <InsightCallouts />
               </div>
             </div>
-
-            {/* Right: Copy + area cards */}
-            <div className="flex-1 max-w-md">
-              <Reveal delay={1}>
-                <p className="text-zinc-500 text-base leading-relaxed mb-8">
-                  Every nightly debrief illuminates another region of your mental map.
-                  Over weeks, Acuity connects the dots you can&apos;t see — revealing how
-                  your health affects your career, how relationships shape your mood,
-                  and what actually drives your growth.
-                </p>
-              </Reveal>
-
-              <div className="grid grid-cols-2 gap-3">
-                {MATRIX_AREAS.map((area, i) => (
-                  <Reveal key={area.label} delay={Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}>
-                    <div className="group rounded-xl border border-zinc-200 bg-white p-4 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                      <div className="flex items-center gap-2.5 mb-2">
-                        <div
-                          className="h-2.5 w-2.5 rounded-full"
-                          style={{ backgroundColor: area.color }}
-                        />
-                        <span className="text-sm font-semibold text-zinc-900">
-                          {area.label}
-                        </span>
-                      </div>
-                      <div className="h-1 w-full rounded-full bg-zinc-100 overflow-hidden">
-                        <div
-                          className="h-full rounded-full transition-all duration-1000"
-                          style={{
-                            backgroundColor: area.color,
-                            width: `${area.target}%`,
-                          }}
-                        />
-                      </div>
-                      <p className="mt-2 text-xs text-zinc-400">
-                        {area.target}/100
-                      </p>
-                    </div>
-                  </Reveal>
-                ))}
-              </div>
-            </div>
-          </div>
+          </Reveal>
         </div>
+      </section>
+
+      {/* ───── MID-PAGE CTA ───── */}
+      <section className="px-6 py-16">
+        <Reveal>
+          <div className="mx-auto max-w-xl text-center">
+            <Link
+              href="/auth/signin"
+              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
+            >
+              Start Your 14-Day Free Trial
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </Link>
+            <p className="mt-3 text-sm text-zinc-400">
+              No card required · Cancel anytime
+            </p>
+          </div>
+        </Reveal>
       </section>
 
       {/* ───── TRACK PROGRESS — ANIMATED GROWTH CHART ───── */}
@@ -1426,26 +1479,6 @@ export function LandingPage() {
             <GrowthChart />
           </Reveal>
         </div>
-      </section>
-
-      {/* ───── MID-PAGE CTA ───── */}
-      <section className="px-6 py-16">
-        <Reveal>
-          <div className="mx-auto max-w-xl text-center">
-            <Link
-              href="/auth/signin"
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
-            >
-              Start Your 14-Day Free Trial
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </Link>
-            <p className="mt-3 text-sm text-zinc-400">
-              No card required · Cancel anytime
-            </p>
-          </div>
-        </Reveal>
       </section>
 
       {/* ───── TESTIMONIALS ───── */}
