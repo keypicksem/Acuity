@@ -1,21 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import nodemailer from "nodemailer";
+import { resend } from "@/lib/resend";
 
 export const dynamic = "force-dynamic";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function getTransporter() {
-  return nodemailer.createTransport({
-    host: process.env.EMAIL_SERVER_HOST,
-    port: Number(process.env.EMAIL_SERVER_PORT) || 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_SERVER_USER,
-      pass: process.env.EMAIL_SERVER_PASSWORD,
-    },
-  });
-}
 
 export async function POST(req: NextRequest) {
   try {
@@ -55,22 +43,20 @@ export async function POST(req: NextRequest) {
     });
 
     // Send emails in parallel (non-blocking — don't fail the request if email fails)
-    const transporter = getTransporter();
-
-    const notificationEmail = transporter.sendMail({
+    const notificationEmail = resend.emails.send({
       from: "Acuity <noreply@getacuity.io>",
       to: "keenan@heelerdigital.com",
       subject: `New Acuity waitlist signup — ${email}`,
-      text: [
-        `Name: ${name || "Not provided"}`,
-        `Email: ${email}`,
-        `Source: ${source || "Direct"}`,
-        `Time: ${timestamp}`,
-        `Total waitlist count: ${totalCount}`,
+      html: [
+        `<p><strong>Name:</strong> ${name || "Not provided"}</p>`,
+        `<p><strong>Email:</strong> ${email}</p>`,
+        `<p><strong>Source:</strong> ${source || "Direct"}</p>`,
+        `<p><strong>Time:</strong> ${timestamp}</p>`,
+        `<p><strong>Total waitlist count:</strong> ${totalCount}</p>`,
       ].join("\n"),
     });
 
-    const welcomeEmail = transporter.sendMail({
+    const welcomeEmail = resend.emails.send({
       from: "Acuity <noreply@getacuity.io>",
       to: email,
       subject: "You're on the Acuity waitlist — here's what's coming",

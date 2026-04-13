@@ -31,32 +31,29 @@ export function getAuthOptions(): NextAuthOptions {
         },
       }),
 
-      // Only register the email provider when SMTP is fully configured —
-      // missing vars would crash NextAuth init and block Google sign-in too.
-      ...(process.env.EMAIL_SERVER_HOST
+      // Only register the email provider when the Resend API key is configured —
+      // missing key would crash NextAuth init and block Google sign-in too.
+      ...(process.env.RESEND_API_KEY
         ? [
             EmailProvider({
               server: {
-                host: process.env.EMAIL_SERVER_HOST,
-                port: Number(process.env.EMAIL_SERVER_PORT ?? 587),
+                host: "smtp.resend.com",
+                port: 465,
                 auth: {
-                  user: process.env.EMAIL_SERVER_USER ?? "",
-                  pass: process.env.EMAIL_SERVER_PASSWORD ?? "",
+                  user: "resend",
+                  pass: process.env.RESEND_API_KEY ?? "",
                 },
               },
-              from: process.env.EMAIL_FROM ?? "noreply@acuity.app",
+              from: process.env.EMAIL_FROM ?? "Acuity <noreply@getacuity.io>",
               sendVerificationRequest: async ({
                 identifier: email,
                 url,
-                provider,
               }) => {
-                const { createTransport } = await import("nodemailer");
-                const transport = createTransport(provider.server);
-                await transport.sendMail({
+                const { resend } = await import("@/lib/resend");
+                await resend.emails.send({
+                  from: process.env.EMAIL_FROM ?? "Acuity <noreply@getacuity.io>",
                   to: email,
-                  from: provider.from,
                   subject: "Sign in to Acuity",
-                  text: `Sign in to Acuity\n\nClick the link below to sign in:\n${url}\n\nThis link expires in 24 hours.\n\nIf you didn't request this, you can safely ignore this email.`,
                   html: magicLinkHtml(url),
                 });
               },
