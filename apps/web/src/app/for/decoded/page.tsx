@@ -18,7 +18,7 @@ import {
 } from "@/components/landing-shared";
 
 const UTM = "decoded";
-const SIGNIN = `/auth/signin?utm_source=paid&utm_campaign=${UTM}`;
+const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function DecodedPage() {
   return (
@@ -41,8 +41,8 @@ export default function DecodedPage() {
           </Reveal>
           <Reveal delay={2}>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <PulsingCTA href={SIGNIN}>
-                Sign Up for the Waitlist &mdash; Get Your First Month Free
+              <PulsingCTA href={WAITLIST}>
+                Join the waitlist &mdash; first month free
               </PulsingCTA>
               <a
                 href="#how-it-works"
@@ -257,7 +257,7 @@ export default function DecodedPage() {
       {/* ───── FINAL CTA ───── */}
       <CTABanner
         headline="Your patterns are already running. Start seeing them tonight."
-        buttonText="Sign Up for the Waitlist — Get Your First Month Free"
+        buttonText="Join the waitlist — first month free"
         utmCampaign={UTM}
       />
 

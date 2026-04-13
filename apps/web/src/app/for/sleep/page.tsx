@@ -19,7 +19,7 @@ import {
 } from "@/components/landing-shared";
 
 const UTM = "sleep";
-const SIGNIN = `/auth/signin?utm_source=paid&utm_campaign=${UTM}`;
+const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function SleepPage() {
   return (
@@ -41,8 +41,8 @@ export default function SleepPage() {
           </Reveal>
           <Reveal delay={2}>
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-              <PulsingCTA href={SIGNIN}>
-                Sign Up for the Waitlist &mdash; Get Your First Month Free
+              <PulsingCTA href={WAITLIST}>
+                Join the waitlist &mdash; first month free
               </PulsingCTA>
               <a
                 href="#how-it-works"
@@ -257,7 +257,7 @@ export default function SleepPage() {
       <CTABanner
         headline="Your brain has been waiting for somewhere to put all of this."
         subheadline="Tonight. 60 seconds. See what happens."
-        buttonText="Sign Up for the Waitlist — Get Your First Month Free"
+        buttonText="Join the waitlist — first month free"
         utmCampaign={UTM}
       />
 

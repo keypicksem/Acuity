@@ -1051,7 +1051,7 @@ export function LandingPage() {
             </div>
           </div>
           <Link
-            href="/auth/signin"
+            href="/waitlist"
             onClick={trackInitiateCheckout}
             className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 hover:shadow-lg hover:shadow-zinc-900/20 active:scale-95"
           >
@@ -1092,11 +1092,11 @@ export function LandingPage() {
               <Reveal delay={3}>
                 <div className="mt-8 flex flex-col sm:flex-row gap-3">
                   <Link
-                    href="/auth/signin"
+                    href="/waitlist"
                     onClick={trackInitiateCheckout}
                     className="rounded-xl bg-zinc-900 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
                   >
-                    Sign Up for the Waitlist
+                    Join the waitlist — first month free
                   </Link>
                   <a
                     href="#how-it-works"
@@ -1507,11 +1507,11 @@ export function LandingPage() {
         <Reveal>
           <div className="mx-auto max-w-xl text-center">
             <Link
-              href="/auth/signin"
+              href="/waitlist"
               onClick={trackInitiateCheckout}
               className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
             >
-              Sign Up for the Waitlist — Get Your First Month Free
+              Join the waitlist — first month free
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
@@ -1650,11 +1650,11 @@ export function LandingPage() {
                 </ul>
 
                 <Link
-                  href="/auth/signin"
+                  href="/waitlist"
                   onClick={trackInitiateCheckout}
                   className="mt-8 block w-full rounded-xl bg-zinc-900 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/20 active:scale-95"
                 >
-                  Sign Up for the Waitlist — Get Your First Month Free
+                  Join the waitlist — first month free
                 </Link>
               </div>
             </div>
@@ -1687,11 +1687,11 @@ export function LandingPage() {
               </p>
               <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
                 <Link
-                  href="/auth/signin"
+                  href="/waitlist"
                   onClick={trackInitiateCheckout}
                   className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
                 >
-                  Sign Up for the Waitlist — Get Your First Month Free
+                  Join the waitlist — first month free
                 </Link>
                 <span className="text-sm text-zinc-500">
                   Then $19/month · cancel anytime

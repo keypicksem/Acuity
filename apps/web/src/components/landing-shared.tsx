@@ -371,10 +371,10 @@ export function LandingNav() {
           </div>
         </div>
         <Link
-          href="/auth/signin"
+          href="/waitlist"
           className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 hover:shadow-lg hover:shadow-zinc-900/20 active:scale-95"
         >
-          Join the Waitlist
+          Join the waitlist &mdash; first month free
         </Link>
       </div>
     </nav>
@@ -442,7 +442,7 @@ export function PricingSection({
   subheadline?: string;
   utmCampaign: string;
 }) {
-  const signinUrl = `/auth/signin?utm_source=paid&utm_campaign=${utmCampaign}`;
+  const waitlistUrl = `/waitlist?utm_campaign=${utmCampaign}`;
 
   return (
     <section id="pricing" className="px-6 py-24 sm:py-32 bg-white">
@@ -498,10 +498,10 @@ export function PricingSection({
               </ul>
 
               <Link
-                href={signinUrl}
+                href={waitlistUrl}
                 className="mt-8 block w-full rounded-xl bg-zinc-900 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/20 active:scale-95"
               >
-                Sign Up for the Waitlist — Get Your First Month Free
+                Join the waitlist &mdash; first month free
               </Link>
             </div>
           </div>
@@ -824,7 +824,7 @@ export function HowItWorksSection({ steps, ...phoneProps }: HowItWorksConfig) {
 export function CTABanner({
   headline,
   subheadline,
-  buttonText = "Sign Up for the Waitlist — Get Your First Month Free",
+  buttonText = "Join the waitlist — first month free",
   utmCampaign,
 }: {
   headline: string;
@@ -832,8 +832,6 @@ export function CTABanner({
   buttonText?: string;
   utmCampaign: string;
 }) {
-  const signinUrl = `/auth/signin?utm_source=paid&utm_campaign=${utmCampaign}`;
-
   return (
     <section className="px-6 py-24 sm:py-32">
       <Reveal>
@@ -855,7 +853,7 @@ export function CTABanner({
             )}
             <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link
-                href={signinUrl}
+                href={`/waitlist?utm_campaign=${utmCampaign}`}
                 onClick={trackInitiateCheckout}
                 className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
               >
@@ -1236,8 +1234,6 @@ export function MidPageCTA({
   subheadline?: string;
   utmCampaign: string;
 }) {
-  const signinUrl = `/auth/signin?utm_source=paid&utm_campaign=${utmCampaign}`;
-
   return (
     <section className="px-6 py-16">
       <Reveal>
@@ -1248,11 +1244,11 @@ export function MidPageCTA({
             </p>
           )}
           <Link
-            href={signinUrl}
+            href={`/waitlist?utm_campaign=${utmCampaign}`}
             onClick={trackInitiateCheckout}
             className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
           >
-            Sign Up for the Waitlist &mdash; Get Your First Month Free
+            Join the waitlist &mdash; first month free
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
             </svg>

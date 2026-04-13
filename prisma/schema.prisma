@@ -208,3 +208,11 @@ model UserMemory {
   lastCompressed DateTime?
   lastUpdated    DateTime  @updatedAt
 }
+
+model Waitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  source    String?
+  createdAt DateTime @default(now())
+}
