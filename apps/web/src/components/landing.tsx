@@ -76,7 +76,7 @@ function WhoItsForDropdown() {
     >
       <button
         onClick={() => setOpen((o) => !o)}
-        className="flex items-center gap-1 transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+        className="flex items-center gap-1 transition hover:text-white relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
       >
         Who it&apos;s for
         <svg
@@ -91,7 +91,7 @@ function WhoItsForDropdown() {
       </button>
 
       <div
-        className={`absolute left-0 top-full mt-2 w-72 rounded-lg border border-zinc-200/60 bg-[#FAFAF7] shadow-lg transition-all duration-200 origin-top ${
+        className={`absolute left-0 top-full mt-2 w-72 rounded-lg border border-white/10 bg-[#13131F] shadow-lg transition-all duration-200 origin-top ${
           open
             ? "opacity-100 scale-y-100 translate-y-0"
             : "opacity-0 scale-y-95 -translate-y-1 pointer-events-none"
@@ -103,10 +103,10 @@ function WhoItsForDropdown() {
               key={item.href}
               href={item.href}
               onClick={close}
-              className="block px-4 py-3 transition-all duration-150 border-l-2 border-transparent hover:border-violet-500 hover:bg-white/60"
+              className="block px-4 py-3 transition-all duration-150 border-l-2 border-transparent hover:border-violet-500 hover:bg-white/5"
             >
-              <div className="text-sm font-medium text-zinc-700">{item.title}</div>
-              <div className="text-xs text-zinc-400 mt-0.5 leading-snug">{item.description}</div>
+              <div className="text-sm font-medium text-white">{item.title}</div>
+              <div className="text-xs text-[#A0A0B8] mt-0.5 leading-snug">{item.description}</div>
             </Link>
           ))}
         </div>
@@ -359,7 +359,7 @@ function CascadingTasks({
       {tasks.map((task, i) => (
         <div
           key={task.text}
-          className="flex items-center gap-2 text-xs text-zinc-600 transition-all duration-500"
+          className="flex items-center gap-2 text-xs text-[#A0A0B8] transition-all duration-500"
           style={{
             opacity: i < visibleCount ? 1 : 0,
             transform: i < visibleCount ? "translateX(0)" : "translateX(20px)",
@@ -369,7 +369,7 @@ function CascadingTasks({
             className={`h-3.5 w-3.5 rounded border shrink-0 flex items-center justify-center transition-colors duration-300 ${
               task.checked
                 ? "border-emerald-500 bg-emerald-500"
-                : "border-zinc-300"
+                : "border-white/20"
             }`}
           >
             {task.checked && (
@@ -446,17 +446,17 @@ function CostComparison() {
           <div className="flex items-baseline gap-2 mb-2">
             <span
               className={`text-2xl sm:text-3xl font-extrabold tracking-tight ${
-                line.highlight ? "text-zinc-900" : "text-zinc-900"
+                line.highlight ? "text-white" : "text-white"
               }`}
             >
               {line.fraction}
             </span>
-            <span className="text-lg text-zinc-500">{line.label}</span>
+            <span className="text-lg text-[#A0A0B8]">{line.label}</span>
           </div>
           {!line.highlight && (
-            <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+            <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
               <div
-                className="h-full rounded-full bg-zinc-900 transition-all duration-1000 ease-out"
+                className="h-full rounded-full bg-white transition-all duration-1000 ease-out"
                 style={{
                   width: i <= visibleIdx ? `${line.pct}%` : "0%",
                   transitionDelay: `${200}ms`,
@@ -465,7 +465,7 @@ function CostComparison() {
             </div>
           )}
           {line.highlight && (
-            <div className="h-2 w-full rounded-full bg-zinc-100 overflow-hidden">
+            <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
               <div
                 className="h-full rounded-full bg-gradient-to-r from-violet-500 to-indigo-400 transition-all duration-1500 ease-out"
                 style={{
@@ -502,26 +502,23 @@ function ParallaxOrbs() {
 
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
-      {/* Main gradient wash */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FAFAF7] via-[#F0EEFF] to-[#E8F4FD]" />
-
       {/* Floating orbs that respond to mouse */}
       <div
-        className="absolute top-20 left-[15%] h-[400px] w-[400px] rounded-full bg-violet-300/20 blur-[100px] animate-blob-drift"
+        className="absolute top-20 left-[15%] h-[400px] w-[400px] rounded-full bg-violet-600/10 blur-[100px] animate-blob-drift"
         style={{
           transform: `translate(${mouse.x * 15}px, ${mouse.y * 15}px)`,
           transition: "transform 0.3s ease-out",
         }}
       />
       <div
-        className="absolute top-40 right-[10%] h-[350px] w-[350px] rounded-full bg-blue-300/20 blur-[100px] animate-blob-drift-2"
+        className="absolute top-40 right-[10%] h-[350px] w-[350px] rounded-full bg-indigo-500/10 blur-[100px] animate-blob-drift-2"
         style={{
           transform: `translate(${mouse.x * -20}px, ${mouse.y * -20}px)`,
           transition: "transform 0.3s ease-out",
         }}
       />
       <div
-        className="absolute bottom-0 left-[40%] h-[300px] w-[300px] rounded-full bg-pink-200/15 blur-[100px] animate-blob-drift"
+        className="absolute bottom-0 left-[40%] h-[300px] w-[300px] rounded-full bg-purple-500/[0.08] blur-[100px] animate-blob-drift"
         style={{
           transform: `translate(${mouse.x * 10}px, ${mouse.y * -10}px)`,
           transition: "transform 0.3s ease-out",
@@ -635,13 +632,13 @@ function LifeMatrixRadar() {
                 const p = rPt(j, r);
                 return `${p.x},${p.y}`;
               }).join(" ");
-              return <polygon key={lvl} points={pts} fill="none" stroke="#E4E4E7" strokeWidth="0.8" />;
+              return <polygon key={lvl} points={pts} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />;
             })}
 
             {/* Spokes */}
             {MATRIX_AREAS.map((_, i) => {
               const p = rPt(i, MAX_R);
-              return <line key={i} x1={CX} y1={CY} x2={p.x} y2={p.y} stroke="#E4E4E7" strokeWidth="0.8" />;
+              return <line key={i} x1={CX} y1={CY} x2={p.x} y2={p.y} stroke="rgba(255,255,255,0.08)" strokeWidth="0.8" />;
             })}
 
             {/* Data polygon */}
@@ -658,7 +655,7 @@ function LifeMatrixRadar() {
             )}
 
             {/* Center */}
-            <circle cx={CX} cy={CY} r="4" fill="#D4D4D8" />
+            <circle cx={CX} cy={CY} r="4" fill="rgba(255,255,255,0.15)" />
 
             {/* Nodes */}
             {MATRIX_AREAS.map((area, i) => {
@@ -686,7 +683,7 @@ function LifeMatrixRadar() {
                     cx={nodeP.x}
                     cy={nodeP.y}
                     r={isLit ? "8" : "0"}
-                    fill={isLit ? area.color : "#E4E4E7"}
+                    fill={isLit ? area.color : "rgba(255,255,255,0.1)"}
                     stroke="white"
                     strokeWidth="3"
                     className="transition-all duration-700 ease-out"
@@ -700,7 +697,7 @@ function LifeMatrixRadar() {
                     dominantBaseline="middle"
                     fontSize="14"
                     fontWeight={isLit ? "700" : "400"}
-                    fill={isLit ? "#18181B" : "#D4D4D8"}
+                    fill={isLit ? "#FFFFFF" : "rgba(255,255,255,0.2)"}
                     className="transition-all duration-500"
                   >
                     {area.label}
@@ -728,18 +725,18 @@ function LifeMatrixRadar() {
         <div className="flex-1 min-w-0 max-w-xs">
           {activeArea ? (
             <div
-              className="rounded-xl border-l-4 bg-white p-5 shadow-sm transition-all duration-500 animate-fade-in"
+              className="rounded-xl border-l-4 bg-[#13131F] p-5 shadow-sm transition-all duration-500 animate-fade-in"
               style={{ borderColor: activeArea.color }}
               key={activeArea.label}
             >
               <div className="flex items-center gap-2 mb-2">
                 <div className="h-3 w-3 rounded-full" style={{ backgroundColor: activeArea.color }} />
-                <span className="text-sm font-bold text-zinc-900">{activeArea.label}</span>
+                <span className="text-sm font-bold text-white">{activeArea.label}</span>
                 <span className="text-sm font-bold" style={{ color: activeArea.color }}>
                   {activeArea.target}/100
                 </span>
               </div>
-              <p className="text-sm text-zinc-500 leading-relaxed">
+              <p className="text-sm text-[#A0A0B8] leading-relaxed">
                 {AREA_INSIGHTS[activeArea.label]}
               </p>
             </div>
@@ -748,8 +745,8 @@ function LifeMatrixRadar() {
               {MATRIX_AREAS.map((area) => (
                 <div key={area.label} className="flex items-center gap-3">
                   <div className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: area.color }} />
-                  <span className="text-sm font-medium text-zinc-700 w-28">{area.label}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-zinc-100 overflow-hidden">
+                  <span className="text-sm font-medium text-[#A0A0B8] w-28">{area.label}</span>
+                  <div className="flex-1 h-1.5 rounded-full bg-white/10 overflow-hidden">
                     <div className="h-full rounded-full transition-all duration-1000" style={{ backgroundColor: area.color, width: `${area.target}%` }} />
                   </div>
                   <span className="text-sm font-bold w-8 text-right" style={{ color: area.color }}>{area.target}</span>
@@ -757,7 +754,7 @@ function LifeMatrixRadar() {
               ))}
             </div>
           ) : (
-            <div className="text-sm text-zinc-400 italic">
+            <div className="text-sm text-[#A0A0B8]/60 italic">
               Mapping your life areas...
             </div>
           )}
@@ -865,13 +862,13 @@ function GrowthChart() {
   }
 
   return (
-    <div ref={ref} className="rounded-2xl border border-zinc-200 bg-[#FAFAF7] p-6 overflow-hidden">
+    <div ref={ref} className="rounded-2xl border border-white/10 bg-[#13131F] p-6 overflow-hidden">
       {/* Legend */}
       <div className="flex flex-wrap gap-4 mb-4 justify-center">
         {GROWTH_LINES.map((line) => (
           <div key={line.label} className="flex items-center gap-1.5">
             <div className="h-2 w-2 rounded-full" style={{ backgroundColor: line.color }} />
-            <span className="text-xs text-zinc-500">{line.label}</span>
+            <span className="text-xs text-[#A0A0B8]">{line.label}</span>
           </div>
         ))}
       </div>
@@ -882,8 +879,8 @@ function GrowthChart() {
           const y = padT + chartH - (val / 100) * chartH;
           return (
             <g key={val}>
-              <line x1={padL} y1={y} x2={w - padR} y2={y} stroke="#E4E4E7" strokeWidth="0.5" />
-              <text x={padL - 8} y={y + 3} textAnchor="end" fontSize="9" fill="#A1A1AA">
+              <line x1={padL} y1={y} x2={w - padR} y2={y} stroke="rgba(255,255,255,0.1)" strokeWidth="0.5" />
+              <text x={padL - 8} y={y + 3} textAnchor="end" fontSize="9" fill="#A0A0B8">
                 {val}
               </text>
             </g>
@@ -894,7 +891,7 @@ function GrowthChart() {
         {MONTHS.map((month, i) => {
           const x = padL + (i / (numPoints - 1)) * chartW;
           return (
-            <text key={month} x={x} y={h - 10} textAnchor="middle" fontSize="9" fill="#A1A1AA">
+            <text key={month} x={x} y={h - 10} textAnchor="middle" fontSize="9" fill="#A0A0B8">
               {month}
             </text>
           );
@@ -1013,38 +1010,38 @@ export function LandingPage() {
   const [tickerPaused, setTickerPaused] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-zinc-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0F] text-white pb-24 sm:pb-0 overflow-x-hidden">
       {/* ───── NAVBAR ───── */}
-      <nav className="fixed top-0 inset-x-0 z-50 bg-[#FAFAF7]/80 backdrop-blur-md border-b border-zinc-200/60">
+      <nav className="fixed top-0 inset-x-0 z-50 bg-[#0A0A0F]/80 backdrop-blur-md border-b border-white/5">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-8">
             <Link href="/" className="flex items-center gap-2 group">
               <img src="/AcuityLogo.png" alt="Acuity logo" className="shrink-0 rounded-lg" style={{ width: 36, height: 36 }} />
               <span className="text-lg font-bold tracking-tight">Acuity</span>
             </Link>
-            <div className="hidden sm:flex items-center gap-6 text-sm text-zinc-500">
+            <div className="hidden sm:flex items-center gap-6 text-sm text-[#A0A0B8]">
               <a
                 href="#"
-                className="transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+                className="transition hover:text-white relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
               >
                 Home
               </a>
               <WhoItsForDropdown />
               <a
                 href="#how-it-works"
-                className="transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+                className="transition hover:text-white relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
               >
                 How it Works
               </a>
               <a
                 href="#pricing"
-                className="transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+                className="transition hover:text-white relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
               >
                 Pricing
               </a>
               <a
                 href="#"
-                className="transition hover:text-zinc-900 relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+                className="transition hover:text-white relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
               >
                 Press
               </a>
@@ -1053,7 +1050,7 @@ export function LandingPage() {
           <Link
             href="/waitlist?utm_campaign=home"
             onClick={trackInitiateCheckout}
-            className="rounded-full bg-zinc-900 px-5 py-2 text-sm font-medium text-white transition hover:bg-zinc-700 hover:shadow-lg hover:shadow-zinc-900/20 active:scale-95"
+            className="rounded-full bg-[#7C5CFC] px-5 py-2 text-sm font-medium text-white transition hover:bg-[#6B4FE0] hover:shadow-lg hover:shadow-[#7C5CFC]/20 active:scale-95"
           >
             Join the Waitlist
           </Link>
@@ -1070,22 +1067,13 @@ export function LandingPage() {
             <div className="flex-1 max-w-xl">
               <Reveal>
                 <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-[1.05]">
-                  <Typewriter text="Meet Acuity." />
+                  Brain dump daily. Get your life back.
                 </h1>
               </Reveal>
 
-              <Reveal delay={1}>
-                <p className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl lg:text-4xl leading-snug">
-                  Turn{" "}
-                  <span className="text-red-400">chaos</span>{" "}
-                  into{" "}
-                  <span className="text-emerald-500">clarity</span>.
-                </p>
-              </Reveal>
-
               <Reveal delay={2}>
-                <p className="mt-5 text-base text-zinc-400 leading-relaxed max-w-sm">
-                  The daily debrief that decodes your mental patterns.
+                <p className="mt-5 text-base text-[#A0A0B8] leading-relaxed max-w-sm">
+                  60 seconds of talking. AI extracts your tasks, tracks your goals, logs your mood, and reveals the patterns in your own life.
                 </p>
               </Reveal>
 
@@ -1094,18 +1082,18 @@ export function LandingPage() {
                   <Link
                     href="/waitlist?utm_campaign=home"
                     onClick={trackInitiateCheckout}
-                    className="rounded-xl bg-zinc-900 px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
+                    className="rounded-full bg-[#7C5CFC] px-7 py-3.5 text-sm font-semibold text-white transition hover:bg-[#6B4FE0] hover:shadow-xl hover:shadow-[#7C5CFC]/10 active:scale-95"
                   >
                     Join the waitlist — first month free
                   </Link>
                   <a
                     href="#how-it-works"
-                    className="rounded-xl border border-zinc-200 px-7 py-3.5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-white active:scale-95"
+                    className="rounded-xl border border-white/10 px-7 py-3.5 text-sm font-semibold text-[#A0A0B8] transition hover:border-white/20 hover:bg-white/5 active:scale-95"
                   >
                     See how it works
                   </a>
                 </div>
-                <p className="mt-3 text-xs text-zinc-400">
+                <p className="mt-3 text-xs text-[#A0A0B8]">
                   No credit card required
                 </p>
               </Reveal>
@@ -1115,13 +1103,13 @@ export function LandingPage() {
             <div className="flex-1 mt-12 lg:mt-0 flex justify-center lg:justify-end">
               <div className="relative w-[320px] h-[580px] sm:w-[380px] sm:h-[640px]">
                 {/* Phone 1 (back) — floating — light theme matching app */}
-                <div className="absolute right-0 top-8 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-zinc-200 p-2 shadow-2xl rotate-3 animate-float-delay">
-                  <div className="h-full w-full rounded-[1.5rem] bg-[#FAFAF7] p-4 flex flex-col gap-3 overflow-hidden">
-                    <div className="text-xs text-zinc-400 font-medium">
+                <div className="absolute right-0 top-8 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-[#1E1E2E] p-2 shadow-2xl rotate-3 animate-float-delay">
+                  <div className="h-full w-full rounded-[1.5rem] bg-[#13131F] p-4 flex flex-col gap-3 overflow-hidden">
+                    <div className="text-xs text-[#A0A0B8] font-medium">
                       Weekly Report
                     </div>
-                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                      <div className="text-xs text-zinc-400 mb-2">
+                    <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                      <div className="text-xs text-[#A0A0B8] mb-2">
                         Mood Trend
                       </div>
                       <div className="h-12">
@@ -1131,35 +1119,35 @@ export function LandingPage() {
                         />
                       </div>
                     </div>
-                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                      <div className="text-xs text-zinc-400 mb-1">
+                    <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                      <div className="text-xs text-[#A0A0B8] mb-1">
                         Top Insight
                       </div>
-                      <div className="text-xs text-zinc-600">
+                      <div className="text-xs text-[#A0A0B8]">
                         You mention &ldquo;sleep&rdquo; 4x this week. Consider a
                         wind-down routine.
                       </div>
                     </div>
-                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                      <div className="text-xs text-zinc-400 mb-1">
+                    <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                      <div className="text-xs text-[#A0A0B8] mb-1">
                         Goals Progress
                       </div>
                       <div className="space-y-2">
                         <div>
-                          <div className="flex justify-between text-xs text-zinc-600 mb-1">
+                          <div className="flex justify-between text-xs text-[#A0A0B8] mb-1">
                             <span>Exercise</span>
                             <span>3/5</span>
                           </div>
-                          <div className="h-1.5 rounded-full bg-zinc-100">
+                          <div className="h-1.5 rounded-full bg-white/10">
                             <div className="h-full w-3/5 rounded-full bg-emerald-500 transition-all duration-1000" />
                           </div>
                         </div>
                         <div>
-                          <div className="flex justify-between text-xs text-zinc-600 mb-1">
+                          <div className="flex justify-between text-xs text-[#A0A0B8] mb-1">
                             <span>Reading</span>
                             <span>5/7</span>
                           </div>
-                          <div className="h-1.5 rounded-full bg-zinc-100">
+                          <div className="h-1.5 rounded-full bg-white/10">
                             <div className="h-full w-5/6 rounded-full bg-violet-500 transition-all duration-1000" />
                           </div>
                         </div>
@@ -1169,19 +1157,19 @@ export function LandingPage() {
                 </div>
 
                 {/* Phone 2 (front) — floating — light theme matching app */}
-                <div className="absolute left-0 top-0 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-zinc-200 p-2 shadow-2xl -rotate-3 z-10 animate-float">
-                  <div className="h-full w-full rounded-[1.5rem] bg-[#FAFAF7] p-4 flex flex-col gap-3 overflow-hidden">
+                <div className="absolute left-0 top-0 w-[220px] sm:w-[260px] h-[440px] sm:h-[500px] rounded-[2rem] bg-[#1E1E2E] p-2 shadow-2xl -rotate-3 z-10 animate-float">
+                  <div className="h-full w-full rounded-[1.5rem] bg-[#13131F] p-4 flex flex-col gap-3 overflow-hidden">
                     <div className="flex items-center justify-between">
-                      <div className="text-xs text-zinc-400 font-medium">
+                      <div className="text-xs text-[#A0A0B8] font-medium">
                         Today&apos;s Debrief
                       </div>
-                      <div className="flex items-center gap-1 rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] text-emerald-600">
+                      <div className="flex items-center gap-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 text-[10px] text-emerald-600">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         Good mood
                       </div>
                     </div>
-                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                      <div className="text-xs text-zinc-400 mb-2">
+                    <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                      <div className="text-xs text-[#A0A0B8] mb-2">
                         Extracted Tasks
                       </div>
                       <CascadingTasks
@@ -1192,19 +1180,19 @@ export function LandingPage() {
                         ]}
                       />
                     </div>
-                    <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                      <div className="text-xs text-zinc-400 mb-1">
+                    <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                      <div className="text-xs text-[#A0A0B8] mb-1">
                         Key Theme
                       </div>
-                      <div className="text-xs text-zinc-600">
+                      <div className="text-xs text-[#A0A0B8]">
                         Feeling productive but stretched thin on side projects.
                       </div>
                     </div>
-                    <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
+                    <div className="rounded-xl border border-[#7C5CFC]/30 bg-[#7C5CFC]/10 p-3">
                       <div className="text-xs text-violet-600 mb-1">
                         Goal Detected
                       </div>
-                      <div className="text-xs text-zinc-600">
+                      <div className="text-xs text-[#A0A0B8]">
                         &ldquo;Launch MVP by end of month&rdquo;
                       </div>
                     </div>
@@ -1216,8 +1204,26 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* ───── SOCIAL PROOF ───── */}
+      <section className="px-6 py-8">
+        <Reveal>
+          <div className="mx-auto max-w-2xl flex flex-col sm:flex-row items-center justify-center gap-4 text-center">
+            <div className="flex items-center gap-1">
+              {[...Array(5)].map((_, i) => (
+                <svg key={i} className="h-5 w-5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                </svg>
+              ))}
+            </div>
+            <p className="text-sm text-[#A0A0B8]">
+              Join <span className="text-white font-semibold">500+</span> people already on the waitlist
+            </p>
+          </div>
+        </Reveal>
+      </section>
+
       {/* ───── STATS TICKER ───── */}
-      <section className="py-12 px-6 border-y border-zinc-200/60 bg-white/50 backdrop-blur">
+      <section className="py-12 px-6 border-y border-white/5 bg-[#13131F]/50 backdrop-blur">
         <div className="mx-auto max-w-5xl">
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-8 text-center">
             {stats.map((stat, i) => (
@@ -1229,7 +1235,7 @@ export function LandingPage() {
                     prefix={stat.prefix}
                   />
                 </div>
-                <div className="mt-1 text-sm text-zinc-500">{stat.label}</div>
+                <div className="mt-1 text-sm text-[#A0A0B8]">{stat.label}</div>
               </Reveal>
             ))}
           </div>
@@ -1241,7 +1247,7 @@ export function LandingPage() {
       <section className="py-16 px-6 overflow-hidden">
         <div className="mx-auto max-w-2xl text-center">
           <Reveal>
-            <h3 className="text-lg font-semibold text-zinc-600">
+            <h3 className="text-lg font-semibold text-[#A0A0B8]">
               Used by productivity obsessives 👀
             </h3>
           </Reveal>
@@ -1250,12 +1256,12 @@ export function LandingPage() {
               {["S", "M", "P", "A", "J", "R"].map((letter, i) => (
                 <div
                   key={i}
-                  className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#FAFAF7] bg-zinc-200 text-sm font-semibold text-zinc-500 transition-transform hover:scale-110 hover:z-10 cursor-default"
+                  className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#0A0A0F] bg-[#1E1E2E] text-sm font-semibold text-[#A0A0B8] transition-transform hover:scale-110 hover:z-10 cursor-default"
                 >
                   {letter}
                 </div>
               ))}
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#FAFAF7] bg-zinc-900 text-xs font-semibold text-white transition-transform hover:scale-110">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#0A0A0F] bg-[#7C5CFC] text-xs font-semibold text-white transition-transform hover:scale-110">
                 +99
               </div>
             </div>
@@ -1268,8 +1274,8 @@ export function LandingPage() {
           onMouseEnter={() => setTickerPaused(true)}
           onMouseLeave={() => setTickerPaused(false)}
         >
-          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#FAFAF7] to-transparent z-10" />
-          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#FAFAF7] to-transparent z-10" />
+          <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-[#0A0A0F] to-transparent z-10" />
+          <div className="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-[#0A0A0F] to-transparent z-10" />
           <div className="overflow-hidden">
             <div
               className="flex gap-12 animate-ticker w-max"
@@ -1278,7 +1284,7 @@ export function LandingPage() {
               {[...tickerItems, ...tickerItems, ...tickerItems].map((item, i) => (
                 <span
                   key={i}
-                  className="shrink-0 text-sm font-medium text-zinc-400 whitespace-nowrap"
+                  className="shrink-0 text-sm font-medium text-[#A0A0B8]/60 whitespace-nowrap"
                 >
                   {item}
                 </span>
@@ -1296,7 +1302,7 @@ export function LandingPage() {
               <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
                 How it works
               </h2>
-              <p className="mt-4 text-zinc-500 text-lg">
+              <p className="mt-4 text-[#A0A0B8] text-lg">
                 Three steps. Sixty seconds. Zero effort.
               </p>
             </div>
@@ -1307,11 +1313,11 @@ export function LandingPage() {
             <div className="flex flex-col gap-8 lg:items-center lg:flex-row">
               <div className="flex-1">
                 <Reveal>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-[#1E1E2E] px-3 py-1 text-xs font-semibold text-[#A0A0B8] uppercase tracking-wider mb-4">
                     Step 1
                   </div>
                   <h3 className="text-3xl font-bold sm:text-4xl">Record</h3>
-                  <p className="mt-4 text-lg text-zinc-500 leading-relaxed max-w-md">
+                  <p className="mt-4 text-lg text-[#A0A0B8] leading-relaxed max-w-md">
                     Hit record. Speak freely for 60 seconds about your day, your
                     worries, your wins — whatever comes to mind.
                   </p>
@@ -1319,9 +1325,9 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
-                    <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
-                      <div className="text-xs text-zinc-500 font-medium mb-auto">
+                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-[#1E1E2E] p-2 shadow-xl">
+                    <div className="h-full w-full rounded-[2rem] bg-[#13131F] p-5 flex flex-col overflow-hidden">
+                      <div className="text-xs text-[#A0A0B8] font-medium mb-auto">
                         Recording
                       </div>
                       <div className="flex flex-col items-center justify-center flex-1 gap-4">
@@ -1340,10 +1346,10 @@ export function LandingPage() {
                           </div>
                         </div>
                         <WaveformVisualizer />
-                        <div className="text-xl font-bold text-zinc-900 font-mono">
+                        <div className="text-xl font-bold text-white font-mono">
                           0:47
                         </div>
-                        <div className="text-xs text-zinc-500">
+                        <div className="text-xs text-[#A0A0B8]">
                           Speak freely...
                         </div>
                       </div>
@@ -1357,11 +1363,11 @@ export function LandingPage() {
             <div className="flex flex-col gap-8 lg:items-center lg:flex-row-reverse">
               <div className="flex-1">
                 <Reveal>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-[#1E1E2E] px-3 py-1 text-xs font-semibold text-[#A0A0B8] uppercase tracking-wider mb-4">
                     Step 2
                   </div>
                   <h3 className="text-3xl font-bold sm:text-4xl">Extract</h3>
-                  <p className="mt-4 text-lg text-zinc-500 leading-relaxed max-w-md">
+                  <p className="mt-4 text-lg text-[#A0A0B8] leading-relaxed max-w-md">
                     AI transcribes and extracts tasks, goals, mood, themes, and
                     insights from your stream of consciousness.
                   </p>
@@ -1369,14 +1375,14 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
-                    <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
-                      <div className="text-xs text-zinc-500 font-medium mb-3">
+                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-[#1E1E2E] p-2 shadow-xl">
+                    <div className="h-full w-full rounded-[2rem] bg-[#13131F] p-5 flex flex-col overflow-hidden">
+                      <div className="text-xs text-[#A0A0B8] font-medium mb-3">
                         AI Extraction
                       </div>
                       <div className="space-y-2.5 flex-1">
-                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                          <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-1.5">
+                        <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                          <div className="text-[10px] text-[#A0A0B8] uppercase tracking-wider mb-1.5">
                             Tasks
                           </div>
                           <CascadingTasks
@@ -1387,19 +1393,19 @@ export function LandingPage() {
                             ]}
                           />
                         </div>
-                        <div className="rounded-xl border border-violet-200 bg-violet-50 p-3">
+                        <div className="rounded-xl border border-[#7C5CFC]/30 bg-[#7C5CFC]/10 p-3">
                           <div className="text-[10px] text-violet-600 uppercase tracking-wider mb-1">
                             Goal
                           </div>
-                          <div className="text-xs text-zinc-600">
+                          <div className="text-xs text-[#A0A0B8]">
                             &ldquo;Ship the beta this week&rdquo;
                           </div>
                         </div>
-                        <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-3">
+                        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3">
                           <div className="text-[10px] text-emerald-600 uppercase tracking-wider mb-1">
                             Mood
                           </div>
-                          <div className="text-xs text-zinc-600">
+                          <div className="text-xs text-[#A0A0B8]">
                             Energized but slightly anxious
                           </div>
                         </div>
@@ -1414,11 +1420,11 @@ export function LandingPage() {
             <div className="flex flex-col gap-8 lg:items-center lg:flex-row">
               <div className="flex-1">
                 <Reveal>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-zinc-100 px-3 py-1 text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-4">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-[#1E1E2E] px-3 py-1 text-xs font-semibold text-[#A0A0B8] uppercase tracking-wider mb-4">
                     Step 3
                   </div>
                   <h3 className="text-3xl font-bold sm:text-4xl">Reflect</h3>
-                  <p className="mt-4 text-lg text-zinc-500 leading-relaxed max-w-md">
+                  <p className="mt-4 text-lg text-[#A0A0B8] leading-relaxed max-w-md">
                     Get a weekly narrative report showing patterns in your life,
                     so you can course-correct before the next week starts.
                   </p>
@@ -1426,14 +1432,14 @@ export function LandingPage() {
               </div>
               <div className="flex-1 flex justify-center">
                 <Reveal delay={1}>
-                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-zinc-200 p-2 shadow-xl">
-                    <div className="h-full w-full rounded-[2rem] bg-[#FAFAF7] p-5 flex flex-col overflow-hidden">
-                      <div className="text-xs text-zinc-500 font-medium mb-3">
+                  <div className="w-[220px] h-[420px] rounded-[2.5rem] bg-[#1E1E2E] p-2 shadow-xl">
+                    <div className="h-full w-full rounded-[2rem] bg-[#13131F] p-5 flex flex-col overflow-hidden">
+                      <div className="text-xs text-[#A0A0B8] font-medium mb-3">
                         Weekly Report
                       </div>
                       <div className="space-y-2.5 flex-1">
-                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                          <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-2">
+                        <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                          <div className="text-[10px] text-[#A0A0B8] uppercase tracking-wider mb-2">
                             Mood this week
                           </div>
                           <div className="h-10">
@@ -1443,20 +1449,20 @@ export function LandingPage() {
                             />
                           </div>
                         </div>
-                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                          <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-1">
+                        <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                          <div className="text-[10px] text-[#A0A0B8] uppercase tracking-wider mb-1">
                             Pattern
                           </div>
-                          <div className="text-xs text-zinc-600">
+                          <div className="text-xs text-[#A0A0B8]">
                             Best mood on days you exercised. Worst on days with
                             meetings after 6pm.
                           </div>
                         </div>
-                        <div className="rounded-xl border border-zinc-200 bg-white p-3 shadow-sm">
-                          <div className="text-[10px] text-zinc-400 uppercase tracking-wider mb-1">
+                        <div className="rounded-xl border border-white/10 bg-[#1E1E2E] p-3 shadow-sm">
+                          <div className="text-[10px] text-[#A0A0B8] uppercase tracking-wider mb-1">
                             Top 3 Actions
                           </div>
-                          <div className="space-y-1 text-xs text-zinc-600">
+                          <div className="space-y-1 text-xs text-[#A0A0B8]">
                             <div>1. Block mornings for deep work</div>
                             <div>2. No meetings after 5pm</div>
                             <div>3. Exercise before noon</div>
@@ -1478,17 +1484,17 @@ export function LandingPage() {
           {/* Header */}
           <Reveal>
             <div className="text-center mb-16">
-              <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#7C5CFC] mb-4">
                 Life Matrix
               </p>
-              <h2 className="text-4xl font-bold tracking-tight text-zinc-900 sm:text-5xl lg:text-6xl">
+              <h2 className="text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
                 Your mind has patterns.
                 <br />
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-indigo-500">
                   We decode them.
                 </span>
               </h2>
-              <p className="mt-4 text-zinc-500 text-base max-w-xl mx-auto">
+              <p className="mt-4 text-[#A0A0B8] text-base max-w-xl mx-auto">
                 Every debrief maps your strengths, surfaces your blind spots,
                 and shows you exactly where to focus next.
               </p>
@@ -1509,14 +1515,14 @@ export function LandingPage() {
             <Link
               href="/waitlist?utm_campaign=home"
               onClick={trackInitiateCheckout}
-              className="inline-flex items-center gap-2 rounded-xl bg-zinc-900 px-8 py-4 text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/10 active:scale-95"
+              className="inline-flex items-center gap-2 rounded-full bg-[#7C5CFC] px-8 py-4 text-sm font-semibold text-white transition hover:bg-[#6B4FE0] hover:shadow-xl hover:shadow-[#7C5CFC]/10 active:scale-95"
             >
               Join the waitlist — first month free
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
               </svg>
             </Link>
-            <p className="mt-3 text-sm text-zinc-400">
+            <p className="mt-3 text-sm text-[#A0A0B8]">
               No card required · Cancel anytime
             </p>
           </div>
@@ -1524,19 +1530,19 @@ export function LandingPage() {
       </section>
 
       {/* ───── TRACK PROGRESS — ANIMATED GROWTH CHART ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-5xl">
           <Reveal>
             <div className="text-center mb-12">
-              <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#7C5CFC] mb-4">
                 Track Progress
               </p>
-              <h2 className="text-3xl font-bold tracking-tight text-zinc-900 sm:text-5xl">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-5xl">
                 Growth you can see.
                 <br />
-                <span className="text-zinc-400">Automatically.</span>
+                <span className="text-[#A0A0B8]">Automatically.</span>
               </h2>
-              <p className="mt-4 text-zinc-500 text-base max-w-lg mx-auto">
+              <p className="mt-4 text-[#A0A0B8] text-base max-w-lg mx-auto">
                 Every area of your life trends upward over time. No manual logging — just talk, and watch the lines climb.
               </p>
             </div>
@@ -1556,7 +1562,7 @@ export function LandingPage() {
             <h2 className="text-center text-3xl font-bold tracking-tight sm:text-5xl">
               People are loving it
             </h2>
-            <p className="mx-auto mt-4 text-center text-zinc-500 text-lg">
+            <p className="mx-auto mt-4 text-center text-[#A0A0B8] text-lg">
               Join thousands reclaiming their headspace.
             </p>
           </Reveal>
@@ -1564,7 +1570,7 @@ export function LandingPage() {
           <div className="mt-16 grid gap-8 sm:grid-cols-3">
             {testimonials.map((t, i) => (
               <Reveal key={t.name} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
-                <figure className="group rounded-2xl border border-zinc-100 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+                <figure className="group rounded-2xl border border-white/10 bg-[#13131F] p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
                   <div className="flex items-center gap-1 mb-4">
                     {[...Array(5)].map((_, j) => (
                       <svg
@@ -1578,16 +1584,16 @@ export function LandingPage() {
                       </svg>
                     ))}
                   </div>
-                  <blockquote className="text-sm leading-relaxed text-zinc-600">
+                  <blockquote className="text-sm leading-relaxed text-[#A0A0B8]">
                     &ldquo;{t.quote}&rdquo;
                   </blockquote>
                   <figcaption className="mt-5 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-zinc-100 text-sm font-bold text-zinc-500 transition-colors group-hover:bg-violet-100 group-hover:text-violet-600">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1E1E2E] text-sm font-bold text-[#A0A0B8] transition-colors group-hover:bg-[#7C5CFC]/20 group-hover:text-[#7C5CFC]">
                       {t.name[0]}
                     </div>
                     <div>
                       <div className="text-sm font-semibold">{t.name}</div>
-                      <div className="text-xs text-zinc-400">{t.role}</div>
+                      <div className="text-xs text-[#A0A0B8]/60">{t.role}</div>
                     </div>
                   </figcaption>
                 </figure>
@@ -1597,14 +1603,30 @@ export function LandingPage() {
         </div>
       </section>
 
+      {/* ───── TRUST STRIP ───── */}
+      <section className="px-6 py-8">
+        <Reveal>
+          <div className="mx-auto max-w-3xl flex flex-wrap items-center justify-center gap-x-6 gap-y-3">
+            {["Audio deleted within 24hrs", "No card required", "Cancel anytime", "First month free"].map((item, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-[#A0A0B8]">
+                <svg className="h-4 w-4 text-emerald-400 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+                </svg>
+                {item}
+              </div>
+            ))}
+          </div>
+        </Reveal>
+      </section>
+
       {/* ───── PRICING ───── */}
-      <section id="pricing" className="px-6 py-24 sm:py-32 bg-white">
+      <section id="pricing" className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-md text-center">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
               Simple pricing
             </h2>
-            <p className="mt-4 text-zinc-500 text-lg">
+            <p className="mt-4 text-[#A0A0B8] text-lg">
               One plan. Everything included. Cancel anytime.
             </p>
           </Reveal>
@@ -1614,25 +1636,25 @@ export function LandingPage() {
               {/* Shimmer border effect */}
               <div className="absolute -inset-[1px] rounded-2xl bg-gradient-to-r from-violet-400 via-indigo-400 to-violet-400 opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-shimmer blur-[1px]" />
 
-              <div className="relative rounded-2xl border border-zinc-200 bg-[#FAFAF7] p-8 text-left shadow-sm">
-                <p className="text-sm font-semibold uppercase tracking-wider text-violet-600">
+              <div className="relative rounded-2xl border border-white/10 bg-[#13131F] p-8 text-left shadow-sm">
+                <p className="text-sm font-semibold uppercase tracking-wider text-[#7C5CFC]">
                   Pro
                 </p>
                 <p className="mt-4 flex items-baseline gap-1">
                   <span className="text-5xl font-extrabold">
                     $12.99
                   </span>
-                  <span className="text-zinc-400">/month</span>
+                  <span className="text-[#A0A0B8]">/month</span>
                 </p>
-                <p className="mt-2 text-sm text-zinc-400">
+                <p className="mt-2 text-sm text-[#A0A0B8]">
                   Join the waitlist &middot; no credit card required
                 </p>
 
-                <ul className="mt-8 space-y-3 text-sm text-zinc-600">
+                <ul className="mt-8 space-y-3 text-sm text-[#A0A0B8]">
                   {pricingFeatures.map((f) => (
                     <li key={f} className="flex items-start gap-2.5">
                       <svg
-                        className="mt-0.5 h-4 w-4 shrink-0 text-violet-600"
+                        className="mt-0.5 h-4 w-4 shrink-0 text-[#7C5CFC]"
                         fill="none"
                         viewBox="0 0 24 24"
                         stroke="currentColor"
@@ -1652,13 +1674,39 @@ export function LandingPage() {
                 <Link
                   href="/waitlist?utm_campaign=home"
                   onClick={trackInitiateCheckout}
-                  className="mt-8 block w-full rounded-xl bg-zinc-900 py-3.5 text-center text-sm font-semibold text-white transition hover:bg-zinc-700 hover:shadow-xl hover:shadow-zinc-900/20 active:scale-95"
+                  className="mt-8 block w-full rounded-full bg-[#7C5CFC] py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#6B4FE0] hover:shadow-xl hover:shadow-[#7C5CFC]/20 active:scale-95"
                 >
                   Join the waitlist — first month free
                 </Link>
               </div>
             </div>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ───── FAQ ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-2xl">
+          <Reveal>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-12 text-white">
+              Frequently asked questions
+            </h2>
+          </Reveal>
+          <div className="space-y-4">
+            {[
+              { q: "Is this actually private?", a: "Your audio is deleted within 24 hours of transcription. We never sell your data." },
+              { q: "Do I have to use it every night?", a: "No. But users who record 4+ times in week one get dramatically better results." },
+              { q: "What if I don't know what to say?", a: "That's the point. Just talk. The AI figures out the rest." },
+              { q: "Is this just a journaling app?", a: "No. You don't write anything. You talk for 60 seconds and AI turns it into structured intelligence." },
+            ].map((faq, i) => (
+              <Reveal key={i} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+                <div className="rounded-xl border border-white/10 bg-[#13131F] p-6">
+                  <h3 className="text-base font-semibold text-white mb-2">{faq.q}</h3>
+                  <p className="text-sm text-[#A0A0B8] leading-relaxed">{faq.a}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -1681,7 +1729,7 @@ export function LandingPage() {
                   60 seconds.
                 </span>
               </h2>
-              <p className="mt-5 text-zinc-400 text-lg max-w-md mx-auto">
+              <p className="mt-5 text-[#A0A0B8] text-lg max-w-md mx-auto">
                 Start tonight. Wake up to extracted tasks, tracked goals, and a
                 clearer picture of your life.
               </p>
@@ -1689,11 +1737,11 @@ export function LandingPage() {
                 <Link
                   href="/waitlist?utm_campaign=home"
                   onClick={trackInitiateCheckout}
-                  className="rounded-xl bg-white px-8 py-4 text-sm font-bold text-zinc-900 shadow-lg shadow-white/10 transition hover:shadow-xl hover:shadow-white/20 hover:-translate-y-0.5 active:scale-95"
+                  className="rounded-full bg-[#7C5CFC] px-8 py-4 text-sm font-bold text-white shadow-lg shadow-[#7C5CFC]/10 transition hover:shadow-xl hover:shadow-[#7C5CFC]/20 hover:-translate-y-0.5 active:scale-95"
                 >
                   Join the waitlist — first month free
                 </Link>
-                <span className="text-sm text-zinc-500">
+                <span className="text-sm text-[#A0A0B8]">
                   Then $12.99/month · cancel anytime
                 </span>
               </div>
@@ -1703,7 +1751,7 @@ export function LandingPage() {
       </section>
 
       {/* ───── FOOTER ───── */}
-      <footer className="border-t border-zinc-200 px-6 py-12 bg-[#FAFAF7]">
+      <footer className="border-t border-white/10 px-6 py-12 bg-[#0A0A0F]">
         <div className="mx-auto max-w-5xl">
           <div className="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
             <div>
@@ -1713,44 +1761,60 @@ export function LandingPage() {
                   Acuity
                 </span>
               </div>
-              <p className="mt-2 text-sm text-zinc-400 max-w-xs">
+              <p className="mt-2 text-sm text-[#A0A0B8] max-w-xs">
                 The daily debrief that turns chaos into clarity.
               </p>
             </div>
 
-            <div className="flex items-center gap-6 text-sm text-zinc-500">
-              <a href="#" className="transition hover:text-zinc-900">
+            <div className="flex items-center gap-6 text-sm text-[#A0A0B8]">
+              <a href="#" className="transition hover:text-white">
                 Terms
               </a>
-              <a href="#" className="transition hover:text-zinc-900">
+              <a href="#" className="transition hover:text-white">
                 Privacy
               </a>
-              <a href="#" className="transition hover:text-zinc-900">
+              <a href="#" className="transition hover:text-white">
                 Contact
               </a>
             </div>
 
-            <div className="flex items-center gap-4 text-sm text-zinc-500">
-              <a href="#" className="transition hover:text-zinc-900">
+            <div className="flex items-center gap-4 text-sm text-[#A0A0B8]">
+              <a href="#" className="transition hover:text-white">
                 Twitter/X
               </a>
-              <a href="#" className="transition hover:text-zinc-900">
+              <a href="#" className="transition hover:text-white">
                 Instagram
               </a>
-              <a href="#" className="transition hover:text-zinc-900">
+              <a href="#" className="transition hover:text-white">
                 TikTok
               </a>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-zinc-200 text-center">
-            <p className="text-xs text-zinc-400">
+          <div className="mt-8 pt-6 border-t border-white/10 text-center">
+            <p className="text-xs text-[#A0A0B8]">
               Built with{" "}
-              <span className="font-medium text-zinc-600">Claude</span>
+              <span className="font-medium text-[#A0A0B8]">Claude</span>
             </p>
           </div>
         </div>
       </footer>
+
+      {/* ───── STICKY MOBILE CTA ───── */}
+      <div className="fixed bottom-0 inset-x-0 z-40 sm:hidden">
+        <div className="bg-[#0A0A0F]/95 backdrop-blur-lg border-t border-white/10 px-4 py-3">
+          <Link
+            href="/waitlist?utm_campaign=home"
+            onClick={trackInitiateCheckout}
+            className="block w-full rounded-full bg-[#7C5CFC] py-3.5 text-center text-sm font-semibold text-white transition hover:bg-[#6B4FE0] active:scale-[0.98]"
+          >
+            Join the waitlist &mdash; first month free
+          </Link>
+          <p className="mt-1.5 text-center text-xs text-[#A0A0B8]">
+            Early access &mdash; limited spots at founding member pricing
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

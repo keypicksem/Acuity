@@ -17,6 +17,10 @@ import {
   TestimonialsSection,
   PricingSection,
   CTABanner,
+  SocialProofBar,
+  TrustStrip,
+  FAQSection,
+  StickyCTA,
 } from "@/components/landing-shared";
 
 const UTM = "therapy";
@@ -24,7 +28,7 @@ const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function TherapyPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-zinc-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0F] text-white overflow-x-hidden pb-24 sm:pb-0">
       <LandingNav />
 
       {/* ───── HERO ───── */}
@@ -35,7 +39,7 @@ export default function TherapyPage() {
             <HeroHeadline text="What if you had a therapist who listened every single night?" />
           </Reveal>
           <Reveal delay={1}>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed max-w-2xl mx-auto">
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed max-w-2xl mx-auto">
               Acuity listens to your 60-second nightly debrief, tracks your emotional
               patterns, and writes your weekly mental health report &mdash; for less than
               the cost of one therapy copay.
@@ -48,7 +52,7 @@ export default function TherapyPage() {
               </PulsingCTA>
               <a
                 href="#how-it-works"
-                className="rounded-xl border border-zinc-200 px-7 py-3.5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-white active:scale-95"
+                className="rounded-xl border border-white/10 px-7 py-3.5 text-sm font-semibold text-[#A0A0B8] transition hover:border-white/20 hover:bg-white/5 active:scale-95"
               >
                 See how it works
               </a>
@@ -61,6 +65,8 @@ export default function TherapyPage() {
           </Reveal>
         </div>
       </section>
+
+      <SocialProofBar />
 
       {/* ───── PAIN SECTION ───── */}
       <PainSection
@@ -76,6 +82,8 @@ export default function TherapyPage() {
         headline="Acuity fills the 6 days between sessions."
         body="Every night you speak freely for 60 seconds. Acuity tracks your mood, detects emotional patterns, flags recurring themes, and builds a mental health timeline that compounds over time. Show up to therapy with 7 days of actual data — not just how you feel in the moment."
       />
+
+      <TrustStrip />
 
       {/* ───── PRE-HOW-IT-WORKS CTA ───── */}
       <MidPageCTA
@@ -125,10 +133,10 @@ export default function TherapyPage() {
       />
 
       {/* ───── COMPARISON TABLE ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32 bg-transparent">
         <div className="mx-auto max-w-3xl">
           <Reveal>
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-12">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-12 text-white">
               Therapy vs. Acuity
             </h2>
           </Reveal>
@@ -197,6 +205,62 @@ export default function TherapyPage() {
         ]}
       />
 
+      {/* ───── WHAT USERS SAY ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-2xl">
+          <Reveal>
+            <div className="rounded-xl border border-white/10 bg-[#13131F] p-8 sm:p-10">
+              <div className="flex items-center gap-1 mb-4">
+                {[...Array(5)].map((_, i) => (
+                  <svg key={i} className="h-4 w-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg>
+                ))}
+              </div>
+              <blockquote className="text-base sm:text-lg text-[#A0A0B8] leading-relaxed italic">
+                &ldquo;I stopped going to therapy because of the cost. Acuity gives me the pattern recognition I was getting in sessions — at a fraction of the price.&rdquo;
+              </blockquote>
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#7C5CFC]/20 text-sm font-bold text-[#7C5CFC]">S</div>
+                <div>
+                  <div className="text-sm font-semibold text-white">Sarah, 31</div>
+                </div>
+              </div>
+            </div>
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ───── FEATURE HIGHLIGHTS ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-3xl">
+          <Reveal>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-12 text-white">
+              Built for emotional clarity
+            </h2>
+          </Reveal>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { title: "Mood tracking", desc: "Log your emotional state nightly with zero effort — just speak." },
+              { title: "Pattern detection", desc: "AI identifies recurring emotional themes across days and weeks." },
+              { title: "Weekly report", desc: "Every Sunday, a narrative about your emotional week — wins, spirals, blind spots." },
+            ].map((f, i) => (
+              <Reveal key={i} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+                <div className="rounded-xl border border-white/10 bg-[#13131F] p-6 text-center">
+                  <div className="h-10 w-10 rounded-xl bg-[#7C5CFC]/10 flex items-center justify-center mb-4 mx-auto">
+                    <svg className="h-5 w-5 text-[#7C5CFC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-2">{f.title}</h3>
+                  <p className="text-xs text-[#A0A0B8] leading-relaxed">{f.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ───── TESTIMONIALS ───── */}
       <TestimonialsSection
         headline="What therapy-goers are saying"
@@ -229,6 +293,8 @@ export default function TherapyPage() {
         utmCampaign={UTM}
       />
 
+      <FAQSection />
+
       {/* ───── FINAL CTA ───── */}
       <CTABanner
         headline="Your thoughts deserve to be heard every night. Not just once a week."
@@ -236,6 +302,7 @@ export default function TherapyPage() {
       />
 
       <Footer />
+      <StickyCTA utmCampaign={UTM} />
     </div>
   );
 }

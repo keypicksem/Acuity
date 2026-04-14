@@ -16,6 +16,10 @@ import {
   TestimonialsSection,
   PricingSection,
   CTABanner,
+  SocialProofBar,
+  TrustStrip,
+  FAQSection,
+  StickyCTA,
 } from "@/components/landing-shared";
 
 const UTM = "weekly-report";
@@ -23,7 +27,7 @@ const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function WeeklyReportPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-zinc-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0F] text-white pb-24 sm:pb-0 overflow-x-hidden">
       <LandingNav />
 
       {/* ───── HERO ───── */}
@@ -31,13 +35,12 @@ export default function WeeklyReportPage() {
         <ParallaxOrbs />
         <div className="relative mx-auto max-w-4xl px-6 text-center">
           <Reveal>
-            <HeroHeadline text="Every Sunday morning, Acuity sends you a story about your week. Written by AI. Starring you." />
+            <HeroHeadline text="Every Sunday, an AI writes your week back to you." />
           </Reveal>
           <Reveal delay={1}>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-              Not bullet points. Not a summary. A 400-word narrative of your week
-              &mdash; your wins, your patterns, your emotional arc, your blind spots
-              &mdash; written in your own voice.
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed max-w-2xl mx-auto">
+              From your own voice notes. Your wins. Your patterns. What you said
+              you&apos;d do versus what actually happened.
             </p>
           </Reveal>
           <Reveal delay={2}>
@@ -47,7 +50,7 @@ export default function WeeklyReportPage() {
               </PulsingCTA>
               <a
                 href="#how-it-works"
-                className="rounded-xl border border-zinc-200 px-7 py-3.5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-white active:scale-95"
+                className="rounded-xl border border-white/10 px-7 py-3.5 text-sm font-semibold text-[#A0A0B8] transition hover:border-white/20 hover:bg-white/5 active:scale-95"
               >
                 See how it works
               </a>
@@ -60,6 +63,8 @@ export default function WeeklyReportPage() {
           </Reveal>
         </div>
       </section>
+
+      <SocialProofBar />
 
       {/* ───── REPORT PREVIEW ───── */}
       <section className="px-6 py-24 sm:py-32">
@@ -145,17 +150,17 @@ export default function WeeklyReportPage() {
       </section>
 
       {/* ───── LIFE MATRIX ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-5xl">
           <Reveal>
             <div className="text-center mb-14">
-              <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#7C5CFC] mb-4">
                 Life Matrix
               </p>
               <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
                 Your Life Matrix grows with every report.
               </h2>
-              <p className="mt-4 text-zinc-500 text-base max-w-xl mx-auto">
+              <p className="mt-4 text-[#A0A0B8] text-base max-w-xl mx-auto">
                 Across Health, Wealth, Relationships, Spirituality, Career, and Growth
                 &mdash; Acuity tracks your scores over time and surfaces the patterns
                 that weekly reports reveal.
@@ -230,7 +235,7 @@ export default function WeeklyReportPage() {
                 Report 12 is transformative.
               </span>
             </h2>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed">
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed">
               The first weekly report shows you last week. The twelfth shows you who
               you&apos;ve been for three months &mdash; the patterns that repeat, the
               growth that compounds, the blind spots that finally become visible. This
@@ -252,7 +257,7 @@ export default function WeeklyReportPage() {
                 />
               ))}
             </div>
-            <p className="mt-4 text-xs text-zinc-400">
+            <p className="mt-4 text-xs text-[#A0A0B8]/60">
               12 weeks of compounding insight
             </p>
           </Reveal>
@@ -291,6 +296,10 @@ export default function WeeklyReportPage() {
         utmCampaign={UTM}
       />
 
+      <TrustStrip />
+
+      <FAQSection />
+
       {/* ───── FINAL CTA ───── */}
       <CTABanner
         headline="Your first report arrives Sunday. Start recording tonight."
@@ -299,6 +308,7 @@ export default function WeeklyReportPage() {
       />
 
       <Footer />
+      <StickyCTA utmCampaign={UTM} />
     </div>
   );
 }

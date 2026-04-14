@@ -17,6 +17,10 @@ import {
   PricingSection,
   CTABanner,
   AnimatedCounter,
+  SocialProofBar,
+  TrustStrip,
+  FAQSection,
+  StickyCTA,
 } from "@/components/landing-shared";
 
 const UTM = "founders";
@@ -24,7 +28,7 @@ const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function FoundersPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-zinc-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0F] text-white pb-24 sm:pb-0 overflow-x-hidden">
       <LandingNav />
 
       {/* ───── HERO ───── */}
@@ -32,13 +36,13 @@ export default function FoundersPage() {
         <ParallaxOrbs />
         <div className="relative mx-auto max-w-4xl px-6 text-center">
           <Reveal>
-            <HeroHeadline text="The 60-second nightly debrief that high performers use instead of therapy." />
+            <HeroHeadline text="Your nightly debrief. 60 seconds. AI does the rest." />
           </Reveal>
           <Reveal delay={1}>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-              Speak freely for 60 seconds. Acuity extracts your action items, tracks
-              your decision patterns, flags your blind spots, and writes your weekly
-              performance report &mdash; automatically.
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed max-w-2xl mx-auto">
+              Every night you go to bed with 40 unfinished thoughts. Acuity captures
+              every task, tracks every goal, and writes your weekly debrief
+              automatically.
             </p>
           </Reveal>
           <Reveal delay={2}>
@@ -48,7 +52,7 @@ export default function FoundersPage() {
               </PulsingCTA>
               <a
                 href="#how-it-works"
-                className="rounded-xl border border-zinc-200 px-7 py-3.5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-white active:scale-95"
+                className="rounded-xl border border-white/10 px-7 py-3.5 text-sm font-semibold text-[#A0A0B8] transition hover:border-white/20 hover:bg-white/5 active:scale-95"
               >
                 See how it works
               </a>
@@ -62,6 +66,8 @@ export default function FoundersPage() {
         </div>
       </section>
 
+      <SocialProofBar />
+
       {/* ───── FOUNDER PAIN ───── */}
       <PainSection
         points={[
@@ -71,14 +77,43 @@ export default function FoundersPage() {
         ]}
       />
 
+      {/* ───── FOUNDER STATS ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-3xl">
+          <Reveal>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl text-center mb-10 text-white">
+              Founders who use Acuity report
+            </h2>
+          </Reveal>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              "Fewer forgotten tasks",
+              "Clearer weekly priorities",
+              "Less mental overhead at bedtime",
+            ].map((stat, i) => (
+              <Reveal key={i} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+                <div className="rounded-xl border border-white/10 bg-[#13131F] p-6 text-center">
+                  <div className="h-10 w-10 rounded-xl bg-[#7C5CFC]/10 flex items-center justify-center mb-4 mx-auto">
+                    <svg className="h-5 w-5 text-[#7C5CFC]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <p className="text-sm font-semibold text-white">{stat}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* ───── WHAT ACUITY EXTRACTS ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-3xl">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-4">
               What Acuity extracts from a founder debrief
             </h2>
-            <p className="text-center text-zinc-500 mb-12">
+            <p className="text-center text-[#A0A0B8] mb-12">
               From a single 60-second recording, Acuity automatically extracts:
             </p>
           </Reveal>
@@ -111,8 +146,8 @@ export default function FoundersPage() {
               },
             ].map((item, i) => (
               <Reveal key={i} delay={Math.min(i + 1, 5) as 1 | 2 | 3 | 4 | 5}>
-                <div className="flex items-center gap-4 rounded-xl border border-zinc-100 bg-[#FAFAF7] p-5 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
-                  <div className="h-10 w-10 rounded-xl bg-violet-100 flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#13131F] p-5 transition-all duration-300 hover:shadow-md hover:-translate-y-0.5">
+                  <div className="h-10 w-10 rounded-xl bg-violet-500/10 flex items-center justify-center shrink-0">
                     <svg
                       className="h-5 w-5 text-violet-600"
                       fill="none"
@@ -127,7 +162,7 @@ export default function FoundersPage() {
                       />
                     </svg>
                   </div>
-                  <p className="text-sm text-zinc-700 font-medium">{item.text}</p>
+                  <p className="text-sm text-[#A0A0B8] font-medium">{item.text}</p>
                 </div>
               </Reveal>
             ))}
@@ -189,13 +224,13 @@ export default function FoundersPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-4">
               Your Sunday morning debrief. Written by AI.
             </h2>
-            <p className="text-center text-zinc-500 mb-12">
+            <p className="text-center text-[#A0A0B8] mb-12">
               Framed as a performance report, not a wellness diary.
             </p>
           </Reveal>
 
           <Reveal delay={1}>
-            <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+            <div className="rounded-2xl border border-white/10 bg-[#13131F] p-8 shadow-sm">
               <div className="grid gap-4 sm:grid-cols-2">
                 {[
                   "Task completion rate this week",
@@ -219,11 +254,11 @@ export default function FoundersPage() {
                         d="M5 13l4 4L19 7"
                       />
                     </svg>
-                    <span className="text-sm text-zinc-600">{item}</span>
+                    <span className="text-sm text-[#A0A0B8]">{item}</span>
                   </div>
                 ))}
               </div>
-              <div className="mt-6 rounded-xl bg-violet-50 border border-violet-100 p-4">
+              <div className="mt-6 rounded-xl bg-[#7C5CFC]/10 border border-[#7C5CFC]/30 p-4">
                 <div className="flex items-start gap-2.5">
                   <svg
                     className="mt-0.5 h-4 w-4 shrink-0 text-violet-600"
@@ -238,7 +273,7 @@ export default function FoundersPage() {
                       d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z"
                     />
                   </svg>
-                  <span className="text-sm text-violet-700 font-medium">
+                  <span className="text-sm text-[#7C5CFC] font-medium">
                     + One key insight the AI surfaced that you missed
                   </span>
                 </div>
@@ -249,7 +284,7 @@ export default function FoundersPage() {
       </section>
 
       {/* ───── COMPOUNDING INTELLIGENCE ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-zinc-900 text-white">
+      <section className="px-6 py-24 sm:py-32 bg-[#13131F] text-white">
         <div className="mx-auto max-w-3xl text-center">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
@@ -297,7 +332,7 @@ export default function FoundersPage() {
       </section>
 
       {/* ───── TIME ROI ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-3xl text-center">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
@@ -306,7 +341,7 @@ export default function FoundersPage() {
                 7 minutes a week.
               </span>
             </h2>
-            <p className="mt-4 text-lg text-zinc-500 mb-8">
+            <p className="mt-4 text-lg text-[#A0A0B8] mb-8">
               That&apos;s the total time investment. In return:
             </p>
           </Reveal>
@@ -333,7 +368,7 @@ export default function FoundersPage() {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  <span className="text-sm text-zinc-600">{item}</span>
+                  <span className="text-sm text-[#A0A0B8]">{item}</span>
                 </div>
               ))}
             </div>
@@ -379,6 +414,10 @@ export default function FoundersPage() {
         utmCampaign={UTM}
       />
 
+      <TrustStrip />
+
+      <FAQSection />
+
       {/* ───── FINAL CTA ───── */}
       <CTABanner
         headline="You track your MRR. Your burn rate. Your pipeline. Start tracking what's actually running your business — your mind."
@@ -387,6 +426,7 @@ export default function FoundersPage() {
       />
 
       <Footer />
+      <StickyCTA utmCampaign={UTM} />
     </div>
   );
 }

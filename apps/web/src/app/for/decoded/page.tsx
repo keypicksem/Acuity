@@ -15,6 +15,10 @@ import {
   TestimonialsSection,
   PricingSection,
   CTABanner,
+  SocialProofBar,
+  TrustStrip,
+  FAQSection,
+  StickyCTA,
 } from "@/components/landing-shared";
 
 const UTM = "decoded";
@@ -22,7 +26,7 @@ const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function DecodedPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-zinc-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0F] text-white pb-24 sm:pb-0 overflow-x-hidden">
       <LandingNav />
 
       {/* ───── HERO ───── */}
@@ -30,13 +34,11 @@ export default function DecodedPage() {
         <ParallaxOrbs />
         <div className="relative mx-auto max-w-4xl px-6 text-center">
           <Reveal>
-            <HeroHeadline text="You have patterns running your life that you've never seen." />
+            <HeroHeadline text="Your subconscious, decoded." />
           </Reveal>
           <Reveal delay={1}>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-              Acuity listens to your nightly debrief and decodes your subconscious
-              &mdash; surfacing the emotional patterns, recurring thoughts, and hidden
-              themes that are quietly shaping everything you do.
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed max-w-2xl mx-auto">
+              Most people have no idea what&apos;s actually driving their moods, decisions, and habits. Acuity reveals the patterns you can&apos;t see from the inside.
             </p>
           </Reveal>
           <Reveal delay={2}>
@@ -46,7 +48,7 @@ export default function DecodedPage() {
               </PulsingCTA>
               <a
                 href="#how-it-works"
-                className="rounded-xl border border-zinc-200 px-7 py-3.5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-white active:scale-95"
+                className="rounded-xl border border-white/10 px-7 py-3.5 text-sm font-semibold text-[#A0A0B8] transition hover:border-white/20 hover:bg-white/5 active:scale-95"
               >
                 See how it works
               </a>
@@ -60,8 +62,10 @@ export default function DecodedPage() {
         </div>
       </section>
 
+      <SocialProofBar />
+
       {/* ───── OPENING HOOK ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-zinc-900">
+      <section className="px-6 py-24 sm:py-32 bg-[#13131F]">
         <div className="mx-auto max-w-3xl text-center">
           <Reveal>
             <p className="text-2xl sm:text-4xl font-bold text-white leading-snug tracking-tight">
@@ -73,6 +77,36 @@ export default function DecodedPage() {
               </span>
             </p>
           </Reveal>
+        </div>
+      </section>
+
+      {/* ───── WHAT ACUITY REVEALS ───── */}
+      <section className="px-6 py-24 sm:py-32">
+        <div className="mx-auto max-w-3xl">
+          <Reveal>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-center mb-12 text-white">
+              What Acuity reveals
+            </h2>
+          </Reveal>
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              { title: "What triggers your stress", desc: "See the recurring situations, people, and thoughts that spike your anxiety." },
+              { title: "What actually moves your goals forward", desc: "Discover which actions correlate with real progress — not just busy work." },
+              { title: "What you keep avoiding", desc: "Surface the things you keep saying you'll do — and keep putting off." },
+            ].map((card, i) => (
+              <Reveal key={i} delay={Math.min(i + 1, 3) as 1 | 2 | 3}>
+                <div className="rounded-xl border border-white/10 bg-[#13131F] p-6">
+                  <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center mb-4">
+                    <svg className="h-5 w-5 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-sm font-semibold text-white mb-2">{card.title}</h3>
+                  <p className="text-xs text-[#A0A0B8] leading-relaxed">{card.desc}</p>
+                </div>
+              </Reveal>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -136,11 +170,11 @@ export default function DecodedPage() {
       />
 
       {/* ───── LIFE MATRIX ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-5xl">
           <Reveal>
             <div className="text-center mb-14">
-              <p className="text-xs font-semibold uppercase tracking-widest text-violet-600 mb-4">
+              <p className="text-xs font-semibold uppercase tracking-widest text-[#7C5CFC] mb-4">
                 Life Matrix
               </p>
               <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
@@ -212,7 +246,7 @@ export default function DecodedPage() {
             <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
               The moment everything clicks.
             </h2>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed">
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed">
               Most users describe receiving their first weekly report as the moment
               Acuity became real. Not because it told them something new. Because it
               showed them something they already knew &mdash; but had never seen
@@ -254,6 +288,10 @@ export default function DecodedPage() {
         utmCampaign={UTM}
       />
 
+      <TrustStrip />
+
+      <FAQSection />
+
       {/* ───── FINAL CTA ───── */}
       <CTABanner
         headline="Your patterns are already running. Start seeing them tonight."
@@ -262,6 +300,7 @@ export default function DecodedPage() {
       />
 
       <Footer />
+      <StickyCTA utmCampaign={UTM} />
     </div>
   );
 }

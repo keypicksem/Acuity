@@ -16,6 +16,10 @@ import {
   PricingSection,
   CTABanner,
   AnimatedCounter,
+  SocialProofBar,
+  TrustStrip,
+  FAQSection,
+  StickyCTA,
 } from "@/components/landing-shared";
 
 const UTM = "sleep";
@@ -23,7 +27,7 @@ const WAITLIST = `/waitlist?utm_campaign=${UTM}`;
 
 export default function SleepPage() {
   return (
-    <div className="min-h-screen bg-[#FAFAF7] text-zinc-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#0A0A0F] text-white pb-24 sm:pb-0 overflow-x-hidden">
       <LandingNav />
 
       {/* ───── HERO ───── */}
@@ -31,12 +35,13 @@ export default function SleepPage() {
         <ParallaxOrbs />
         <div className="relative mx-auto max-w-4xl px-6 text-center">
           <Reveal>
-            <HeroHeadline text="Can't turn your brain off at night?" />
+            <HeroHeadline text="Can't sleep because your brain won't stop?" />
           </Reveal>
           <Reveal delay={1}>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed max-w-2xl mx-auto">
-              Acuity gives your thoughts somewhere to go. Speak for 60 seconds before
-              bed. Empty your head. Sleep soundly.
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed max-w-2xl mx-auto">
+              Racing thoughts at night aren&apos;t a sleep problem — they&apos;re an
+              unprocessed thoughts problem. Acuity gives you 60 seconds to get it all
+              out before bed.
             </p>
           </Reveal>
           <Reveal delay={2}>
@@ -46,7 +51,7 @@ export default function SleepPage() {
               </PulsingCTA>
               <a
                 href="#how-it-works"
-                className="rounded-xl border border-zinc-200 px-7 py-3.5 text-sm font-semibold text-zinc-600 transition hover:border-zinc-300 hover:bg-white active:scale-95"
+                className="rounded-xl border border-white/10 px-7 py-3.5 text-sm font-semibold text-[#A0A0B8] transition hover:border-white/20 hover:bg-white/5 active:scale-95"
               >
                 See how it works
               </a>
@@ -60,11 +65,13 @@ export default function SleepPage() {
         </div>
       </section>
 
+      <SocialProofBar />
+
       {/* ───── THE RELATABLE OPENING ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-zinc-900">
+      <section className="px-6 py-24 sm:py-32 bg-[#13131F]">
         <div className="mx-auto max-w-2xl text-center">
           <Reveal>
-            <div className="space-y-4 text-xl sm:text-2xl font-medium text-zinc-300 leading-relaxed">
+            <div className="space-y-4 text-xl sm:text-2xl font-medium text-[#A0A0B8] leading-relaxed">
               <p className="text-white">It&apos;s 11pm.</p>
               <p className="text-white">You should be asleep.</p>
               <p>
@@ -84,11 +91,11 @@ export default function SleepPage() {
       <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-3xl">
           <Reveal>
-            <div className="rounded-2xl border border-zinc-200 bg-white p-8 sm:p-12 shadow-sm">
+            <div className="rounded-2xl border border-white/10 bg-[#13131F] p-8 sm:p-12 shadow-sm">
               <h2 className="text-2xl font-bold tracking-tight sm:text-3xl mb-4">
                 Why your brain won&apos;t stop.
               </h2>
-              <p className="text-zinc-500 leading-relaxed">
+              <p className="text-[#A0A0B8] leading-relaxed">
                 Your mind treats unprocessed thoughts like open browser tabs. They stay
                 active, consuming energy, until they&apos;re acknowledged and filed. The
                 nightly debrief is the oldest sleep hack in existence &mdash; getting
@@ -151,20 +158,18 @@ export default function SleepPage() {
       {/* ───── BEFORE / AFTER ───── */}
       <BeforeAfterSection
         before={[
-          "Lying awake for 45 minutes",
-          "Running mental checklists",
-          "Worrying about what you forgot",
-          "Waking up still tired",
-          "Starting the day reactive",
+          "Lying awake replaying everything",
+          "Forgetting tasks by morning",
+          "Mind still running at midnight",
         ]}
         after={[
-          "60 seconds to empty your head",
-          "Everything captured automatically",
-          "Brain has permission to rest",
-          "Waking up lighter",
-          "Starting the day with clarity",
+          "Brain emptied in 60 seconds",
+          "Tasks captured automatically",
+          "Mind finally quiet",
         ]}
       />
+
+      <TrustStrip />
 
       {/* ───── SLEEP STATS ───── */}
       <StatsSection
@@ -175,17 +180,17 @@ export default function SleepPage() {
         ]}
       />
       <div className="text-center -mt-6 mb-12">
-        <p className="text-xs text-zinc-400 italic">Based on user-reported survey data</p>
+        <p className="text-xs text-[#A0A0B8]/60 italic">Based on user-reported survey data</p>
       </div>
 
       {/* ───── NIGHTLY RITUAL ───── */}
-      <section className="px-6 py-24 sm:py-32 bg-white">
+      <section className="px-6 py-24 sm:py-32">
         <div className="mx-auto max-w-3xl text-center">
           <Reveal>
             <h2 className="text-3xl font-bold tracking-tight sm:text-5xl">
               Make it your last habit before bed.
             </h2>
-            <p className="mt-6 text-lg text-zinc-500 leading-relaxed">
+            <p className="mt-6 text-lg text-[#A0A0B8] leading-relaxed">
               The most powerful version of Acuity is as a nightly ritual. Same time
               every night &mdash; right before you put your phone down. 60 seconds.
               Everything out. Lights off.
@@ -194,25 +199,25 @@ export default function SleepPage() {
 
           <Reveal delay={1}>
             <div className="mt-12 grid gap-6 sm:grid-cols-2 max-w-lg mx-auto">
-              <div className="rounded-2xl border border-zinc-100 bg-[#FAFAF7] p-6 shadow-sm">
-                <div className="h-10 w-10 rounded-xl bg-violet-100 flex items-center justify-center mb-4 mx-auto">
+              <div className="rounded-2xl border border-white/10 bg-[#1E1E2E] p-6 shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-violet-500/10 flex items-center justify-center mb-4 mx-auto">
                   <svg className="h-5 w-5 text-violet-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
                   </svg>
                 </div>
                 <h3 className="text-sm font-semibold mb-1">Nightly reminder</h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[#A0A0B8]">
                   Set a custom time to get your nightly debrief reminder
                 </p>
               </div>
-              <div className="rounded-2xl border border-zinc-100 bg-[#FAFAF7] p-6 shadow-sm">
-                <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-4 mx-auto">
+              <div className="rounded-2xl border border-white/10 bg-[#1E1E2E] p-6 shadow-sm">
+                <div className="h-10 w-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 mx-auto">
                   <svg className="h-5 w-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.362 5.214A8.252 8.252 0 0112 21 8.25 8.25 0 016.038 7.048 8.287 8.287 0 009 9.6a8.983 8.983 0 013.361-6.867 8.21 8.21 0 003 2.48z" />
                   </svg>
                 </div>
                 <h3 className="text-sm font-semibold mb-1">Streak tracking</h3>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-[#A0A0B8]">
                   Build your streak and watch consistency compound
                 </p>
               </div>
@@ -253,6 +258,8 @@ export default function SleepPage() {
         utmCampaign={UTM}
       />
 
+      <FAQSection />
+
       {/* ───── FINAL CTA ───── */}
       <CTABanner
         headline="Your brain has been waiting for somewhere to put all of this."
@@ -262,6 +269,7 @@ export default function SleepPage() {
       />
 
       <Footer />
+      <StickyCTA utmCampaign={UTM} />
     </div>
   );
 }
