@@ -1067,7 +1067,7 @@ export function LandingPage() {
             <div className="flex-1 max-w-xl">
               <Reveal>
                 <h1 className="text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl leading-[1.05]">
-                  Brain dump daily. Turn chaos into clarity.
+                  Brain dump daily. Get your life back.
                 </h1>
               </Reveal>
 
@@ -1762,7 +1762,7 @@ export function LandingPage() {
                 </span>
               </div>
               <p className="mt-2 text-sm text-[#A0A0B8] max-w-xs">
-                Brain dump daily. Turn chaos into clarity.
+                Brain dump daily. Get your life back.
               </p>
             </div>
 
