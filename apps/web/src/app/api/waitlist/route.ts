@@ -128,7 +128,7 @@ function buildWelcomeEmail(name: string | null): string {
           <tr>
             <td align="center" style="padding-bottom:40px;">
               <p style="margin:0;font-size:13px;color:#A0A0B8;letter-spacing:0.5px;">
-                Brain dump daily. Get your life back.
+                Brain dump daily. Turn chaos into clarity.
               </p>
             </td>
           </tr>

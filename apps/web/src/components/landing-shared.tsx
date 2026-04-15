@@ -397,7 +397,7 @@ export function Footer() {
               <span className="text-lg font-bold tracking-tight text-white">Acuity</span>
             </div>
             <p className="mt-2 text-sm text-[#A0A0B8] max-w-xs">
-              The daily debrief that turns chaos into clarity.
+              Brain dump daily. Turn chaos into clarity.
             </p>
           </div>
           <div className="flex items-center gap-6 text-sm text-[#A0A0B8]">
