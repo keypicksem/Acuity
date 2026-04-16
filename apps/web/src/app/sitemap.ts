@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { BLOG_POSTS } from "@/lib/blog-posts";
+import { PERSONA_PAGES } from "@/lib/persona-pages";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://getacuity.io";
@@ -63,5 +64,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     priority: 0.7,
   }));
 
-  return [...staticPages, ...blogPages];
+  const personaPages: MetadataRoute.Sitemap = PERSONA_PAGES.map((p) => ({
+    url: `${baseUrl}/for/${p.slug}`,
+    lastModified,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...personaPages, ...blogPages];
 }
