@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
+import Script from "next/script";
 import "./globals.css";
 
 import { Providers } from "@/components/providers";
 import { NavBar } from "@/components/nav-bar";
+import { GoogleAnalytics } from "@/components/google-analytics";
+
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 const inter = Inter({
   subsets: ["latin"],
@@ -58,6 +62,18 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
       <head>
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
@@ -81,6 +97,7 @@ export default function RootLayout({
       </head>
       <body className="bg-[#FAFAF7] text-zinc-900 antialiased">
         <Providers>
+          <GoogleAnalytics />
           <NavBar />
           {children}
         </Providers>
