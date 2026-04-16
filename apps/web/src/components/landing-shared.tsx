@@ -369,6 +369,12 @@ export function LandingNav() {
             >
               Pricing
             </a>
+            <Link
+              href="/blog"
+              className="transition hover:text-white relative after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-violet-500 after:transition-all hover:after:w-full"
+            >
+              Articles
+            </Link>
           </div>
         </div>
         <Link
