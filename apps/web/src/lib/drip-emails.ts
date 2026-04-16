@@ -20,7 +20,7 @@ function layout(content: string): string {
           <!-- Logo -->
           <tr>
             <td align="center" style="padding-bottom:12px;">
-              <img src="https://getacuity.io/AcuityLogo.png" alt="Acuity" width="48" height="48" style="border-radius:12px;" />
+              <img src="https://getacuity.io/AcuityLogo.png" alt="Acuity" width="48" height="48" />
             </td>
           </tr>
           <tr>
