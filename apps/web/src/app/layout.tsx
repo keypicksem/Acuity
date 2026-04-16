@@ -74,6 +74,11 @@ export default function RootLayout({
             gtag('config', '${GA_MEASUREMENT_ID}');
           `}
         </Script>
+        {/* Hotjar / Contentsquare */}
+        <Script
+          src="https://t.contentsquare.net/uxa/b1a44cfc8f53e.js"
+          strategy="afterInteractive"
+        />
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="shortcut icon" href="/favicon.ico" />
